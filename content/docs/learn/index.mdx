@@ -1,0 +1,44 @@
+---
+title: Learn TrueCalc
+description: A beginner-to-advanced guide to spreadsheet formulas and workbooks with TrueCalc — no spreadsheet experience required.
+---
+
+Welcome! This guide teaches you spreadsheet formulas and TrueCalc from zero —
+you do not need to have ever opened a spreadsheet. Chapters arrive as the
+corresponding features ship:
+
+- **Foundations** — formulas, values and types, functions, cell references,
+  error codes, and why you must choose a dialect (Google Sheets vs Excel).
+- **Workbooks** — workbooks, worksheets and cells; saving a workbook as JSON.
+- **Advanced** — recalculation, circular references, arrays and spill,
+  reproducibility and volatile functions.
+- **Platforms** — the browser and Node, MCP for AI agents, and the hosted API.
+
+## A first taste
+
+Every code example in this guide is executed against the pinned
+`@truecalc/core` package on every CI run — if an example breaks, the build
+fails. Here is one:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+// Engines are always created for an explicit conformance target.
+const engine = createEngine('google-sheets');
+
+// ABS returns the absolute value of a number.
+// Fixture: google_sheets/math.tsv — "absolute value of negative integer"
+const result = engine.evaluate('=ABS(-26)', null);
+assert.deepEqual(result, { type: 'number', value: 26 });
+```
+
+Formula examples are tested too:
+
+```formula test
+=ABS(-26) // => 26
+```
+
+(Expected values come from the Google Sheets conformance fixtures in
+`truecalc/core` — this guide never asserts spreadsheet behavior that has not
+been verified against a real spreadsheet.)
