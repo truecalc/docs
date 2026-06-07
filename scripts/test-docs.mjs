@@ -103,7 +103,9 @@ async function main() {
         filename = `block-${i}.mjs`;
         code = formulaHarness(block.code);
       } else {
-        console.error(`SKIP   ${rel}:${block.line} — unsupported test language \`${block.lang}\``);
+        total += 1;
+        failed += 1;
+        console.error(`FAIL   ${rel}:${block.line} — unsupported test language \`${block.lang}\``);
         continue;
       }
       i += 1;

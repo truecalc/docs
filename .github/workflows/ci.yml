@@ -22,6 +22,7 @@ jobs:
       - name: gen-docs drift check
         run: |
           node scripts/gen-docs.mjs
+          git add -N content/docs/reference/functions
           git diff --exit-code -- content/docs/reference/functions
 
       - name: test-docs (Learn examples)

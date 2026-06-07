@@ -16,7 +16,8 @@ import { mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const PINNED_CORE_REF = 'main';
+// Advance via version-bump PRs only (CLAUDE.md version-pin rule).
+const PINNED_CORE_REF = '57964975b79e7326c3b69ab21d53119171767e05';
 const FUNCTIONS_JSON_URL =
   process.env.FUNCTIONS_JSON_URL ??
   `https://raw.githubusercontent.com/truecalc/core/${PINNED_CORE_REF}/functions.json`;
@@ -115,7 +116,11 @@ async function main() {
   if (!Array.isArray(functions)) {
     throw new Error('functions.json must be a JSON array');
   }
-  functions.sort((a, b) => String(a.name).localeCompare(String(b.name), 'en'));
+  functions.sort((a, b) => {
+    const an = String(a.name);
+    const bn = String(b.name);
+    return an < bn ? -1 : an > bn ? 1 : 0;
+  });
 
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
