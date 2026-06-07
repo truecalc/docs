@@ -5,11 +5,18 @@ Documentation site for [TrueCalc](https://github.com/truecalc/core) — built wi
 
 ## Layout
 
-- `content/docs/learn/` — the **Learn** tab: beginner→advanced guide, written
+The docs UI is served at the app root, so on GitHub Pages (base path `/docs`)
+the final URLs are:
+
+- `content/docs/learn/` — the **Learn** tab
+  (<https://truecalc.github.io/docs/learn>): beginner→advanced guide, written
   phase-by-phase alongside the code. Marked code examples are executed in CI.
-- `content/docs/reference/` — the **Reference** tab: function pages (generated
+- `content/docs/reference/` — the **Reference** tab
+  (<https://truecalc.github.io/docs/reference>): function pages (generated
   from `functions.json` in `truecalc/core`), error codes, dialects, workbook schema.
-- `content/docs/api/` — the **API** tab: MCP tools and the hosted REST API.
+- `content/docs/api/` — the **API** tab
+  (<https://truecalc.github.io/docs/api>): MCP tools and the hosted REST API.
+- `content/docs/index.mdx` — the site homepage (<https://truecalc.github.io/docs/>).
 
 ## Commands
 
