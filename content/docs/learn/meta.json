@@ -1,0 +1,5 @@
+{
+  "title": "Learn",
+  "root": true,
+  "pages": ["index", "(foundations)", "(workbooks)", "(advanced)", "(platforms)"]
+}
