@@ -1,0 +1,207 @@
+---
+title: Recalculation
+description: Editing a workbook with set/get/clear, what recalc does, full versus incremental recomputation, and how a RecalcContext makes volatile functions like NOW and TODAY deterministic.
+---
+
+The [previous chapter](/learn/depending-on-other-cells) built the map: a
+`DependencyGraph` that knows which cell feeds which, and in what order they
+must be evaluated. **Recalculation** is what walks that map and fills in the
+answers — it is the step that turns `=B1*12` from an empty placeholder into
+`14400`.
+
+This chapter covers the two halves of a live workbook: **editing** it (writing
+and clearing cells) and **recomputing** it (running the formulas). And it
+covers the property that makes the whole thing trustworthy:
+**determinism** — the same workbook, recomputed the same way, always gives
+byte-for-byte the same result.
+
+## Editing a workbook
+
+In the Workbooks section you built a workbook by inserting cells directly into
+a sheet's grid. That is fine for constructing one from scratch, but a *live*
+workbook needs an editing API that validates as it goes. That is `set`, `get`,
+and `clear`:
+
+```rust
+use truecalc_workbook::{Workbook, Worksheet, EngineFlavor, CellInput, Value, Address};
+
+let mut wb = Workbook::new(EngineFlavor::Sheets);
+wb.add_sheet(Worksheet::new("Budget")).unwrap();
+
+let a1: Address = "A1".parse().unwrap();
+let b1: Address = "B1".parse().unwrap();
+let b2: Address = "B2".parse().unwrap();
+
+// A literal value.
+wb.set("Budget", b1, CellInput::Literal(Value::Number(1200.0))).unwrap();
+
+// A formula - stored verbatim, validated for syntax, but NOT yet evaluated.
+wb.set("Budget", b2, CellInput::Formula("=B1*12".to_owned())).unwrap();
+```
+
+Three things in that snippet are worth knowing:
+
+- **A write is one of two shapes.** `CellInput` has exactly two variants:
+  `CellInput::Literal(value)` for a typed value and `CellInput::Formula(text)`
+  for a formula (stored verbatim, leading `=` and all). The surface layers
+  (the browser build, the AI-agent MCP, the hosted API) decide how to turn a
+  user's raw keystrokes into one of these — a leading `=` means a formula,
+  anything else is a literal.
+- **`set` validates but does not evaluate.** It checks the formula's *syntax*
+  against the workbook's locked engine and enforces size limits, but it leaves
+  the cell's value `Empty` until the next recalc. Writing a formula and reading
+  it back before recalculating gives you the formula text and an empty value —
+  exactly the honest behavior the Workbooks section warned about, now with the
+  missing half (recalc) about to arrive.
+- **Clearing means removing.** `wb.clear("Budget", b1)` deletes the cell's
+  entry. There is no "write an empty value" — an empty box is simply an absent
+  cell, which is why `CellInput::Literal(Value::Empty)` is rejected. This keeps
+  the [sparse grid](/learn/what-is-a-workbook) and the
+  [portability guarantee](/learn/portability-and-version-control) intact.
+
+To read a cell back, `get` returns the **authored** cell (the literal or
+formula you wrote), and `resolved` returns the **effective value** at any
+address — which matters once arrays start to [spill](/learn/arrays-and-spill).
+
+Named ranges have the same CRUD shape: `define_name`, `redefine_name`,
+`remove_name`, and `name` to look one up. Defining a name validates that its
+target sheet exists, so you can never create a dangling name.
+
+## Recomputing: full and incremental
+
+Now the payoff. `recalc` walks the dependency graph in topological order and
+writes each fresh result back into the grid:
+
+```rust
+use truecalc_workbook::RecalcContext;
+
+// A deterministic context (explained below). Etc/GMT, a fixed instant, seed 0.
+let ctx = RecalcContext::new(0, "Etc/GMT", 0).unwrap();
+
+// Full recalc: evaluate every formula cell, precedents first.
+let changes = wb.recalc(&ctx);
+
+// Now B2 holds 14400.0 - B1 (1200) was read before B2 (=B1*12) evaluated.
+```
+
+`recalc` returns a `Vec<Change>` — one `Change` per cell whose value actually
+moved, each carrying the cell's `sheet`, `addr`, `old` value, and `new` value.
+The list is returned in a **pinned order** (by sheet tab index, then row, then
+column), so it is itself reproducible. Returning the changes as plain data —
+rather than firing callbacks — keeps the workbook a [value
+object](/learn/what-is-a-workbook).
+
+A full recalc redoes *everything*, which is wasteful when you have just edited
+one cell. So there is a second mode:
+
+```rust
+// You changed B1. Recompute only what that edit affects.
+let changes = wb.recalc_incremental(&ctx, &[("Budget".to_owned(), b1)]);
+```
+
+`recalc_incremental` takes the cells an edit touched and recomputes only their
+**transitive dependents** — the cells that read the edit, and the cells that
+read *those*, and so on — reusing every stored result outside that closure. If
+you changed `B1`, it redoes `B2` and `B3` but not the unrelated `Z9`.
+
+The two modes are guaranteed to agree. For the same workbook and the same
+context, an incremental recalc produces exactly the subset of changes a full
+recalc would — the crate's test suite asserts
+`recalc_incremental(edits) === recalc()`. Incremental is just full recalc
+restricted to the part that could have changed.
+
+<Callout type="info">
+There is one deliberate exception to "only recompute the dependents":
+**volatile** cells are *always* recomputed, even by an incremental pass, no
+matter what you edited. That is the next section.
+</Callout>
+
+## Determinism and the `RecalcContext`
+
+You may have noticed both recalc calls take a `RecalcContext`. This little
+struct is what makes recalculation **deterministic**: the same workbook plus
+the same context always produces a byte-identical grid. That property is the
+backbone of TrueCalc — it is what lets a workbook computed in the browser, on
+a server, or inside an AI agent agree to the last digit.
+
+The context exists because some functions are **volatile** — they do not
+depend only on the cells they read, but on something outside the spreadsheet,
+like the current time or a random number. `NOW()` and `TODAY()` read the
+clock; `RAND()` rolls dice. If you let them read the *real* clock, two recalcs
+a second apart would disagree, and the workbook would no longer be
+reproducible.
+
+The `RecalcContext` **pins** those outside influences to fixed inputs:
+
+```rust
+// timestamp_ms (UTC), an IANA timezone id, and an RNG seed.
+let ctx = RecalcContext::new(
+    1_749_283_200_000, // a fixed UTC instant, in Unix milliseconds
+    "America/New_York", // the timezone NOW()/TODAY() are rendered into
+    42,                 // the seed for random draws
+).unwrap();
+```
+
+- **`timestamp_ms`** is the instant `NOW()` and `TODAY()` see, as
+  milliseconds since the Unix epoch (UTC). Recalc converts it to a local
+  spreadsheet [serial number](/learn/values-and-types) and hands that to the
+  engine in place of the real clock. Same instant in, same `NOW()` out.
+- **`timezone`** is the IANA zone the instant is localized into — `"Etc/GMT"`,
+  `"America/New_York"`, and so on. Crucially, this conversion runs against a
+  **vendored** copy of the IANA timezone database that ships *inside*
+  TrueCalc, never the host OS's tz tables. So the same instant in the same zone
+  gives the same local date on every machine, regardless of how the operating
+  system happens to be configured. `RecalcContext::new` returns `None` if the
+  zone string is not a real IANA id.
+- **`rng_seed`** keys the random functions so a given cell draws the same
+  "random" number every time.
+
+<Callout type="warn">
+**Honest status of random functions.** The `rng_seed` is carried by the
+context today so the API is stable, but the core engine's `RAND` /
+`RANDBETWEEN` / `RANDARRAY` still read the system clock directly and do not yet
+accept a per-cell key — wiring the seed all the way through requires a change
+in the core crate and is planned for a later phase. So **right now** recalc is
+fully deterministic for every workbook that does not call a random function
+(which is every conformance fixture). `NOW()` / `TODAY()` determinism, by
+contrast, is wired up and working through the vendored timezone database.
+</Callout>
+
+Because dates are the part that *is* fully pinned, it is worth seeing that the
+engine's date math itself is fixture-verified. The context just decides *which*
+instant `NOW()` reports; the arithmetic on the resulting serial is the same
+engine you met in Foundations:
+
+```formula test
+# A date is a serial number; arithmetic on it is ordinary number math.
+# Fixture: workbook.tsv - "date arithmetic across month boundary" (=DATE(2026,6,30)+1)
+=DATE(2026,6,30)+1 // => 46204
+```
+
+```formula test
+# The serial epoch the context localizes NOW()/TODAY() against.
+# Fixture: workbook.tsv - "epoch anchor: serial zero formatted" (=TEXT(0,"yyyy-mm-dd"))
+=TEXT(0,"yyyy-mm-dd") // => 1899-12-30
+```
+
+(`NOW()` and `TODAY()` themselves are *volatile*, so they have no fixed
+expected value and cannot appear in a conformance fixture — that is exactly why
+they need a `RecalcContext` to be reproducible at all. What the fixtures pin is
+the date-serial system the context feeds them into.)
+
+## What you learned
+
+- Edit a workbook with **`set`** (a `CellInput::Literal` or
+  `CellInput::Formula`), **`get`** (the authored cell), and **`clear`**
+  (remove the entry); `set` validates syntax but does **not** evaluate.
+- **`recalc`** recomputes every formula in topological order and returns the
+  ordered list of **`Change`s**; **`recalc_incremental`** recomputes only an
+  edit's transitive dependents and is guaranteed to agree with a full recalc.
+- A **`RecalcContext`** makes recalc **deterministic**: same workbook + same
+  context = byte-identical grid.
+- The context **pins volatiles** — `NOW()`/`TODAY()` to a fixed instant and
+  timezone via a **vendored** IANA database; random functions carry a seed but
+  full RNG determinism is still pending a core change (be aware of this).
+
+Next: what happens when the graph loops back on itself —
+[circular references](/learn/circular-references).

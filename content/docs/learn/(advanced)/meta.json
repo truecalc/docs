@@ -1,3 +1,9 @@
 {
-  "pages": []
+  "title": "Advanced",
+  "pages": [
+    "depending-on-other-cells",
+    "recalculation",
+    "circular-references",
+    "arrays-and-spill"
+  ]
 }

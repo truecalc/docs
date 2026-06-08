@@ -1,0 +1,121 @@
+---
+title: Circular references
+description: What a circular reference is, why a spreadsheet cannot resolve one, how TrueCalc detects cycles instead of looping forever, and the error every cell on a cycle takes.
+---
+
+The [recalculation chapter](/learn/recalculation) hinged on one assumption:
+that the formulas can be put in a **topological order**, every cell after the
+cells it reads. Sometimes they cannot — and the reason is a **circular
+reference**.
+
+## A definition you can picture
+
+A circular reference is a loop of dependencies: a cell that, directly or
+through a chain of other cells, ends up depending on **itself**.
+
+The simplest case is a cell that names itself:
+
+```
+A1 = =A1 + 1
+```
+
+To compute `A1` you must first know `A1`. There is no value that satisfies
+that — add one to the answer and you get a different answer, forever. The loop
+can also be longer and less obvious:
+
+```
+A1 = =B1 + 1
+B1 = =C1 * 2
+C1 = =A1        <- closes the loop back to A1
+```
+
+`A1` reads `B1`, which reads `C1`, which reads `A1` again. Follow the arrows
+and you walk in a circle. None of these three cells can go "first," so there is
+no valid evaluation order for any of them.
+
+## Why a spreadsheet cannot just compute it
+
+A naive calculator would try to evaluate `A1`, discover it needs `B1`, try to
+evaluate `B1`, discover it needs `C1`, try `C1`, discover it needs `A1`... and
+loop until it ran out of memory or time. A spreadsheet must never do that. So
+instead of *following* the loop, TrueCalc *detects* it.
+
+Recall from the [dependency graph chapter](/learn/depending-on-other-cells)
+that `topological_order()` returns either an order (`Ok`) **or** the set of
+cells trapped in a cycle (`Err`). That is the detection. Under the hood the
+graph runs a standard strongly-connected-components pass (Tarjan's algorithm)
+to find every cell that lies on a cycle, exposed as:
+
+```rust
+// The set of cells on a circular dependency. Empty if the graph is acyclic.
+let cycle = graph.cycle_cells();
+```
+
+The cost is proportional to the size of the graph — it visits each edge once —
+so detection is cheap and, crucially, **always terminates**. A loop can never
+hang a recalc.
+
+## What recalc does with a cycle
+
+When `recalc` (or `recalc_incremental`) meets a cycle, it does three things:
+
+1. **It does not loop.** The cycle is identified before evaluation, not
+   stumbled into during it.
+2. **Every cell on the cycle takes an error.** A cell that cannot be ordered
+   gets the circular-dependency error rather than a number.
+3. **Everything else is unaffected.** Cells *outside* the loop still evaluate
+   normally, in their own topological order. A circular reference in one corner
+   of a sheet does not poison the cells that do not depend on it.
+
+In the `truecalc-workbook` crate that error code is a named constant:
+
+```rust
+use truecalc_workbook::CIRCULAR_ERROR; // currently "#REF!"
+```
+
+Cells that are not *on* the loop but *read* a cell that is will, in turn,
+receive an error too — an error propagates through the formulas that consume
+it, exactly as the [error-codes chapter](/learn/errors) described for every
+other spreadsheet error.
+
+<Callout type="warn">
+**Honesty about the exact code.** Google Sheets reports a circular dependency
+as `#REF!` (its UI also shows the words "Circular dependency detected"), and
+that is the code TrueCalc uses. But there is **not yet a conformance fixture**
+for cycles in `truecalc/core` — the workbook fixture set committed so far
+covers cross-sheet references, named ranges, and date typing, not cycles. So,
+following this guide's [fixture-citation rule](/learn/errors), we tell you the
+truth: the workbook crate's *behavior* is verified by its own tests (a cycle is
+detected, every cell on it takes the error, and recalc terminates), and the
+**exact code** is taken from the schema spec and will be re-confirmed against a
+real spreadsheet once a `cycles` fixture lands. We would rather flag that than
+assert a fixture that does not exist.
+</Callout>
+
+## Intentional cycles? Not in v1
+
+Some spreadsheets let you *opt in* to circular references and resolve them by
+**iterative calculation** — running the loop a fixed number of times, or until
+the numbers stop moving much, to approximate things like compound interest
+defined in terms of itself. TrueCalc's v1 does **not** do this. A cycle is
+always an error, never an iteration. Treat a circular reference as a mistake to
+fix — usually by breaking the loop with an extra cell that holds the previous
+step's value.
+
+## What you learned
+
+- A **circular reference** is a cell that depends on itself, directly or
+  through a chain — there is no valid order to evaluate it.
+- TrueCalc **detects** cycles (a strongly-connected-components pass behind
+  `graph.cycle_cells()`) instead of following them, so recalc **always
+  terminates**.
+- Every cell **on** a cycle takes the circular-dependency error
+  (`CIRCULAR_ERROR`, currently `#REF!`); cells that **read** a cycle inherit an
+  error by propagation; cells **outside** it compute normally.
+- The exact code is **not yet fixture-pinned** (no cycles fixture in core yet)
+  — behavior is test-verified, the code comes from the schema spec.
+- v1 has **no iterative calculation**: a cycle is always an error, never an
+  approximation.
+
+Next: when a single formula fills many cells at once —
+[arrays and spill](/learn/arrays-and-spill).
