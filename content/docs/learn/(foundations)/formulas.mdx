@@ -75,8 +75,8 @@ run — the text after `// =>` is the asserted result:
 =50% // => 0.5
 # & joins text — fixture: text.tsv "CHAR concatenated with string"
 =CHAR(72)&"ello" // => Hello
-# comparisons return TRUE/FALSE — fixtures: operator.tsv "equal numbers returns TRUE",
-# logical.tsv "comparison as condition: 5>3 is true"
+# comparisons return TRUE/FALSE — fixtures: operator.tsv "unequal numbers
+# returns FALSE" (=EQ(5,6) → FALSE) and "5 is greater than 3 returns TRUE" (=GT(5,3) → TRUE)
 =5=6 // => FALSE
 =5>3 // => TRUE
 ```
