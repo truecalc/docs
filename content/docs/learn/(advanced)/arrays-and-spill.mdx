@@ -1,0 +1,166 @@
+---
+title: Arrays and spill
+description: When one formula returns a whole grid of values, how that array spills from its anchor into a rectangle, what blocks a spill, and why spilled cells are never serialized.
+---
+
+Most formulas return a single value: `=B1*12` is one number. But some formulas
+return a **whole grid** — many rows and columns at once. When that happens, the
+result has to go *somewhere*, and the somewhere is a rectangle of cells next to
+the formula. That overflow is called **spill**, and it is the last piece of the
+Phase 3 runtime.
+
+## A formula that returns more than one value
+
+You have already seen array *values* in passing. A literal array like
+`{1,2,3}` is a one-row grid; `{1;2;3}` is a one-column grid (the `,` separates
+columns, the `;` separates rows). Plenty of functions return arrays too —
+filtering a list, transposing a block, generating a sequence.
+
+When a function operates over an array, the engine handles the grid as a single
+value. The conformance fixtures verify this scalar behavior — for example,
+collapsing an array to one cell, or feeding an array result into another
+function:
+
+```formula test
+# An array constrained to a single cell collapses to that scalar.
+# Fixture: array.tsv - "constrain to single cell returns scalar"
+=ARRAY_CONSTRAIN({10,20;30,40},1,1) // => 10
+```
+
+```formula test
+# An array result flows straight into another function.
+# Fixture: array.tsv - "constrain result used in SUM"
+=SUM(ARRAY_CONSTRAIN({1,2,3;4,5,6},1,3)) // => 6
+```
+
+That is the engine's view: an array is just a value, and a formula can produce
+one. The *workbook's* job is to decide where a multi-cell array goes when it is
+the result of a cell. That is spill.
+
+## The spill model: anchor plus rectangle
+
+When a formula cell produces an `m x n` array, the cell it lives in becomes the
+**anchor**, and the array fills the rectangle whose top-left corner is the
+anchor:
+
+```
+        col C        col D
+row 1   =SEQUENCE(2,2)   .          <- C1 is the anchor (authored formula)
+        +----------+----------+
+        |    1     |    2     |     <- C1, D1
+        +----------+----------+
+        |    3     |    4     |     <- C2, D2
+        +----------+----------+
+```
+
+The cell `C1` holds the formula and the full `2 x 2` array. The other three
+cells — `D1`, `C2`, `D2` — are **spilled** cells. They show values, but you did
+not author them; they are a *view* materialized from the anchor's array.
+
+This split between the authored anchor and the derived spilled cells is the key
+idea, and it has two important consequences.
+
+### Spilled cells are computed but never stored
+
+You can *read* a spilled cell — its value is reconstructed from the anchor's
+array — but it is **never serialized**. When the workbook is
+[saved to JSON](/learn/saving-as-json), only the anchor's array goes on the
+wire. The spilled cells are rebuilt on load by a simple rule: for each stored
+array, lay it into the rectangle anchored at its cell.
+
+This is why the workbook has two read methods, which the
+[recalculation chapter](/learn/recalculation) mentioned:
+
+```rust
+// `get` returns only AUTHORED cells. A spilled cell has no authored
+// entry, so get returns None for it.
+let anchor_cell = wb.get("Sheet1", "C1".parse().unwrap()); // Some(...)
+let spilled     = wb.get("Sheet1", "D1".parse().unwrap()); // None
+
+// `resolved` returns the EFFECTIVE value at any address, following spills,
+// and tells you which anchor a spilled cell came from.
+let r = wb.resolved("Sheet1", "D1".parse().unwrap()).unwrap();
+// r.value  == the array element at D1
+// r.anchor == Some(C1)   (None for an authored cell)
+```
+
+Keeping spilled cells out of storage is what preserves the
+[portability guarantee](/learn/portability-and-version-control): there is
+exactly one way to write the workbook, and a million spilled cells never bloat
+the file.
+
+### A spill can be blocked
+
+The rectangle a formula wants to spill into might not be empty. If any cell in
+the target rectangle (other than the anchor itself) **already holds something**
+— a literal you typed, another formula, or a cell already claimed by an earlier
+spill this recalc — the spill is **blocked**. When that happens:
+
+- the anchor takes the blocked-spill **error** instead of an array, and
+- **no array is stored** at all — nothing is partially written.
+
+```
+        col C        col D
+row 1   =SEQUENCE(2,2)   .
+        +----------+----------+
+        | #REF!    |          |   <- C1 anchor: blocked, holds the error
+        +----------+----------+
+        |          | "hi"     |   <- D2 was already occupied -> it blocked the spill
+        +----------+----------+
+```
+
+A spill is also blocked if the rectangle would run off the edge of the sheet's
+address bounds. Either way the rule is all-or-nothing: a spill that cannot lay
+down its *entire* rectangle lays down none of it, and the anchor reports the
+error.
+
+Because spills resolve in deterministic recalc order (the same topological,
+sheet-then-row-then-column order from earlier chapters), two arrays competing
+for the same cell resolve reproducibly: the earlier anchor wins, and the later
+one blocks. Same workbook, same context, same outcome — every time.
+
+<Callout type="warn">
+**Honesty about the exact code.** Google Sheets reports a blocked array
+expansion as `#REF!`, and that is the code the workbook crate uses
+(`BLOCKED_SPILL_ERROR`). As with [circular references](/learn/circular-references),
+there is **not yet a blocked-spill conformance fixture** in `truecalc/core` —
+the committed workbook fixtures cover cross-sheet refs, named ranges, and date
+typing, not spill. So per this guide's
+[fixture-citation rule](/learn/errors): the crate's *behavior* is verified by
+its own tests (a blocked anchor takes the error, stores no array, and leaves
+the target cells untouched), and the **exact code** comes from the workbook
+JSON schema spec, to be re-confirmed against a real spreadsheet when a `spill`
+fixture lands.
+</Callout>
+
+<Callout type="info">
+**One edge still being pinned.** Aggregating *over* a spill range (for example,
+`=SUM(C1#)` summing a neighbor's spilled output, or a plain range that overlaps
+spilled cells) is an area where the exact result is still being verified against
+real-spreadsheet behavior. This guide does not yet teach a worked
+sum-over-spill result, because we will not assert a number we have not pinned to
+a fixture. Reading individual spilled cells with `resolved` is solid; treat
+range math that leans on spilled cells as not-yet-documented until the fixtures
+catch up.
+</Callout>
+
+## What you learned
+
+- A formula can return a **whole array**; the cell it lives in is the
+  **anchor**, and the array **spills** into the rectangle below-and-right of it.
+- The anchor is **authored** and stores the array; the other cells in the
+  rectangle are **spilled** — readable via `resolved`, returning `None` from
+  `get`, and **never serialized** (only the anchor's array is saved).
+- A spill is **blocked** (anchor takes a `#REF!`-class error, *no* array
+  stored) if any target cell is already occupied or the rectangle leaves the
+  sheet; it is **all-or-nothing** and resolves in deterministic order.
+- The exact blocked-spill code is **not yet fixture-pinned** (no spill fixture
+  in core) — behavior is test-verified, code from the schema spec.
+- **Sum-over-spill** range aggregation is still being pinned and is
+  deliberately not taught as a fixed result yet.
+
+This closes the **Advanced** runtime arc: you now know how cells depend on each
+other, how a workbook recomputes deterministically, what happens when
+dependencies loop, and how a single formula fills many cells. From here the
+guide moves on to the **Platforms** — running TrueCalc in the browser, on
+Node, through MCP for AI agents, and via the hosted API.

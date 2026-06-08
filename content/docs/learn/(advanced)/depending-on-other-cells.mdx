@@ -1,0 +1,190 @@
+---
+title: Formulas that depend on other cells
+description: How one cell's formula reads another, what a dependency graph is, why evaluation order matters, and how TrueCalc derives precedents and dependents from your formulas.
+---
+
+The [Workbooks](/learn/what-is-a-workbook) section built a workbook as a
+*data model*: it stored your cells, your formulas, and your sheets, and
+round-tripped them perfectly — but it did **not** compute a formula from the
+cells it referenced. A cell holding `=B1*12` just sat there with an empty
+value, even when `B1` held `1200`.
+
+This section is where that comes alive. Before a workbook can recompute, it
+has to answer one question: *when this cell changes, what else has to change?*
+Answering it is the job of the **dependency graph**, and this chapter is about
+what that graph is and why it exists.
+
+## A formula reads other cells
+
+The whole point of a spreadsheet is that a cell can be defined *in terms of
+other cells*. If you have ever opened a spreadsheet you have done this without
+naming it: you put a price in `B1`, a quantity in `B2`, and in `B3` you write
+`=B1*B2`. Now `B3` is not a fixed number — it is a little recipe that *reads*
+`B1` and `B2`.
+
+We say `B3` **depends on** `B1` and `B2`. Turn that around and you get the
+two words TrueCalc uses everywhere:
+
+- The **precedents** of a cell are the cells it reads. `B3`'s precedents are
+  `B1` and `B2`.
+- The **dependents** of a cell are the cells that read *it*. `B1`'s
+  dependents include `B3`.
+
+Precedents point "backwards" to inputs; dependents point "forwards" to the
+things that must be redone when an input changes. They are the same edges seen
+from opposite ends.
+
+A formula can read more than single cells. It can read a **range** of cells at
+once, and it can read a [named range](/learn/named-ranges). Each of those is
+still just "cells this formula depends on." Here is the scalar idea — summing
+a block of numbers — running for real against the published engine:
+
+```formula test
+# A formula that reads three cells at once via a range.
+# Fixture: workbook.tsv — "column range name in SUM" (=SUM(PRICES), PRICES = 10,20,30)
+=SUM({10;20;30}) // => 60
+```
+
+<Callout type="info">
+The `formula test` blocks in this section run against the published
+`@truecalc/core` npm package on every CI build, exactly like the Foundations
+examples. They evaluate *one formula in isolation* — which is all the npm
+package does today. The **workbook** pieces (the dependency graph, recalc,
+spill) live in the separate `truecalc-workbook` Rust crate, which is not yet
+published, so the workbook code on these pages is **illustrative Rust** rather
+than copy-paste-runnable. We are honest about that throughout: where a claim
+about spreadsheet *behavior* can be pinned to a conformance fixture, it is
+cited; where the workbook crate is the only authority, we say so.
+</Callout>
+
+## Why order matters
+
+Once cells depend on each other, you can no longer evaluate them in just any
+order. Suppose:
+
+```
+B1 = 1200        (a literal)
+B2 = =B1 * 12    (depends on B1)
+B3 = =B2 + 100   (depends on B2)
+```
+
+If you evaluated `B3` *first*, it would read a `B2` that has not been computed
+yet and get the wrong answer. The only correct order evaluates a cell **after**
+everything it reads:
+
+```
+B1  ->  B2  ->  B3
+```
+
+This "precedents first" ordering has a name: a **topological order** of the
+dependency graph. A topological order is any sequence in which every cell
+comes after all of its precedents. For the chain above there is exactly one;
+for a wider sheet there may be many valid orders, and any of them produces the
+same answers.
+
+A topological order only exists if the graph has no loops — if no cell
+(directly or through a chain) ends up depending on itself. When it does, you
+have a **circular reference**, which is the subject of [its own
+chapter](/learn/circular-references).
+
+## The dependency graph
+
+Put all those precedent/dependent edges together and you have a **dependency
+graph**: a map of which cells feed which. TrueCalc builds this graph from your
+workbook in the `truecalc-workbook` crate, as a type called `DependencyGraph`:
+
+```rust
+use truecalc_workbook::DependencyGraph;
+
+// The graph is a pure, derived view of the workbook's formulas.
+// It owns no values and evaluates nothing - it only records edges.
+let graph = DependencyGraph::build(&workbook);
+```
+
+You rarely build it by hand — recalc (the next chapter) does it for you — but
+it is worth knowing what it computes, because every later behavior follows
+from it. The graph exposes exactly the four questions you would ask:
+
+- `graph.precedents_of(cell)` — what this formula cell reads.
+- `graph.direct_dependents_of(cell)` — the formula cells that read this one
+  directly.
+- `graph.topological_order()` — a precedents-first order of all formula cells,
+  **or** the set of cells caught in a cycle if no such order exists.
+- `graph.cycle_cells()` — the cells that lie on a circular dependency.
+
+That `topological_order()` return type is worth pausing on. In Rust it is a
+`Result<Vec<CellRef>, BTreeSet<CellRef>>`: either the ordered list of cells to
+evaluate (`Ok`), or — when the graph loops — the set of cells trapped in the
+cycle (`Err`). The graph never throws and never hangs on a loop; it *reports*
+the loop so recalc can handle it deliberately.
+
+### How TrueCalc finds the edges
+
+You never declare dependencies. TrueCalc reads them straight out of your
+formula text. When it builds the graph, for every formula cell it:
+
+1. parses the verbatim formula with the workbook's locked engine (the Google
+   Sheets or Excel rules you chose at creation);
+2. extracts every reference the formula makes — single cells, ranges, and
+   names — using the same reference machinery the resolver uses; and
+3. records an edge from each referenced cell (or range, or name) to this
+   formula cell.
+
+A few details make this scale and stay honest:
+
+- **Ranges are not exploded.** A formula reading `A1:A100000` becomes *one*
+  range edge, not a hundred thousand cell edges. When a single cell changes,
+  the graph checks whether it falls inside each range, so the work stays
+  proportional to the number of *distinct ranges*, not their area.
+- **Names are an indirection.** A formula that reads the name `PRICES` depends
+  on the *name*, and the name depends on whatever cells it currently points
+  at. Re-pointing the name (a mutation we will meet next) updates the
+  dependents without rebuilding every formula's edges.
+- **Unresolvable references are kept, not dropped.** If a formula refers to a
+  sheet or name that does not exist, the graph records it as an *unresolved*
+  precedent — it carries no edge (nothing can change it), but it is preserved
+  so recalc can produce the right spreadsheet error. That `#REF!` for a
+  missing sheet and `#NAME?` for a missing name are
+  [fixture-verified](/learn/errors):
+
+```formula test
+# Missing-sheet refs evaluate to #REF!; missing names to #NAME?.
+# Multi-sheet fixtures: workbook.tsv - "missing sheet single cell ref"
+#   (=MissingSheet!A1 -> #REF!) and "missing name bare reference"
+#   (=NOT_A_DEFINED_NAME -> #NAME?).
+# Runnable line below: info.tsv - "ERROR.TYPE of #N/A returns 7".
+=ERROR.TYPE(NA()) // => 7
+```
+
+(Those two `workbook.tsv` rows pin the real multi-sheet behavior; the runnable
+line above just confirms these `#` errors are ordinary evaluated values that
+the engine reports rather than throws — the npm package cannot itself host a
+multi-sheet workbook yet, so the cross-sheet rows live only in the fixture.)
+
+## The graph is a function of your formulas
+
+One last idea that pays off in the next chapters: the dependency graph is
+*entirely determined* by your workbook's formulas, sheet names, and
+named-range targets. Nothing else feeds it. That means any edit which changes
+one of those — writing or clearing a formula cell, renaming a sheet,
+re-pointing a name — can change the graph, and the workbook keeps it in step.
+An edit that touches only a *literal* value (say, changing `B1` from `1200` to
+`1300`) does **not** change the graph at all: the same cells still read the
+same cells. It only changes the *answers*, which is recalculation — next.
+
+## What you learned
+
+- A formula **depends on** the cells it reads; those are its **precedents**,
+  and the formulas that read it are its **dependents**.
+- Evaluation must follow a **topological order** — every cell after its
+  precedents — and such an order exists only when the graph has no loops.
+- TrueCalc builds a **`DependencyGraph`** from your formulas automatically,
+  deriving edges by parsing each formula and extracting its references.
+- Ranges are stored as **single compressed edges**, names are an
+  **indirection**, and unresolvable references are **kept** so recalc can emit
+  the right error (`#REF!`, `#NAME?` — fixture-verified).
+- The graph is a pure function of your **formulas, sheet names, and names** —
+  changing a literal value never changes the graph, only the answers.
+
+Next: turning those edges into fresh values —
+[recalculation](/learn/recalculation).
