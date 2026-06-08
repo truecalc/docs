@@ -1,0 +1,177 @@
+---
+title: Saving a workbook as JSON
+description: How a TrueCalc workbook serializes to JSON — the cross-surface contract, its canonical byte-identical form, and a field-by-field tour of the document.
+---
+
+A workbook is a [value object](/learn/what-is-a-workbook) — plain data — so
+it can be turned into text and back again with nothing lost. TrueCalc's text
+format is **JSON**, and it is not an afterthought: the JSON shape is the
+official, normative **contract** that every surface of TrueCalc agrees on.
+The Rust library, the WebAssembly build, the MCP server for AI agents, and
+the hosted API all read and write *the same JSON*. That shared format is how
+a workbook built in one place is understood everywhere else.
+
+## Writing and reading
+
+A workbook serializes with `serde_json`, like any other Rust value object:
+
+```rust
+use truecalc_workbook::{Workbook, EngineFlavor};
+
+let workbook = Workbook::new(EngineFlavor::Sheets);
+
+// Serialize to a JSON string...
+let json = serde_json::to_string(&workbook).unwrap();
+
+// ...and read it straight back.
+let restored: Workbook = serde_json::from_str(&json).unwrap();
+
+assert_eq!(restored, workbook);
+```
+
+A brand-new, empty workbook serializes to exactly this:
+
+```json
+{"engine":"sheets","names":[],"sheets":[],"version":"1"}
+```
+
+That one line already shows three rules worth knowing.
+
+### Every top-level field is always present
+
+Even though `names` and `sheets` are empty, they are written out, and so is
+`version`. The document always has the same four keys — `engine`, `names`,
+`sheets`, `version` — so a reader never has to guess whether a missing key
+meant "empty" or "old format." Leaving them out would create two different
+ways to write the same workbook, and TrueCalc's whole game is that there is
+exactly *one* way.
+
+### The engine flavor is recorded, and required
+
+`"engine":"sheets"` is the flavor you locked in at creation. It is required
+on read, too — a document without it is rejected, because (as the
+[dialects chapter](/learn/dialects) explained) a spreadsheet with no chosen
+dialect has no defined behavior. The only two values are `"sheets"` and
+`"excel"`.
+
+### The schema version is a string
+
+`"version":"1"` tags which version of this contract the document follows. It
+is the string `"1"`, not the number `1` — compared by exact match. A library
+reads every version it knows and refuses versions from the future with a
+clear "upgrade TrueCalc" message, so an old file always opens in a new
+library.
+
+## A worked example
+
+Here is a fuller document: two worksheets, a named range, a literal, a
+formula cell whose value is an error, and an array. This is the worked
+example from the workbook
+[JSON schema reference](/reference/schema), shown here pretty-printed for
+reading (the real canonical form, explained below, has no spaces):
+
+```json
+{
+  "engine": "sheets",
+  "names": [
+    { "name": "TaxRate", "ref": "Sheet2!B5" }
+  ],
+  "sheets": [
+    {
+      "cells": {
+        "A1": { "value": { "type": "number", "value": 100 } },
+        "A2": {
+          "formula": "=1/0",
+          "value": { "error": "#DIV/0!", "type": "error" }
+        }
+      },
+      "name": "Sheet1"
+    },
+    {
+      "cells": {
+        "A1": {
+          "formula": "=Sheet1!A1*TaxRate",
+          "value": { "type": "number", "value": 8 }
+        },
+        "B5": { "value": { "type": "number", "value": 0.08 } }
+      },
+      "name": "Sheet2"
+    }
+  ],
+  "version": "1"
+}
+```
+
+Read it top to bottom and the model from the last chapter is all there:
+
+- **`sheets`** is an array, and its order is meaningful — array position is
+  tab position.
+- Each worksheet has a **`name`** and a **`cells`** object keyed by plain
+  uppercase A1 address (`A1`, `B5`). Only authored cells appear; the grid is
+  sparse.
+- A **literal cell** is just `{ "value": ... }` (see `Sheet1!A1`).
+- A **formula cell** adds the verbatim `"formula"` text (see `Sheet2!A1`,
+  which keeps `=Sheet1!A1*TaxRate` exactly as authored).
+- A **value** is always `{ "type": ..., "value": ... }` — except an error,
+  which uses an `"error"` key instead of `"value"`.
+- A **named range** (`names`) pairs a `name` with a sheet-qualified
+  reference (`ref`).
+
+<Callout type="info">
+`Sheet2!A1` shows `"value": 8`, but remember from the previous chapter that
+**recalculation is not built yet**. That `8` is whatever value was last
+stored on the cell, not something the engine computed from `Sheet1!A1` and
+`TaxRate` on load. The JSON faithfully records both the formula text and its
+most-recently-known value; wiring the two together is the job of the recalc
+engine in a later phase.
+</Callout>
+
+## The byte-identical guarantee
+
+Most JSON is "the same" only loosely — keys can come in any order, numbers
+can be padded, whitespace varies. That looseness is fine for a config file
+and fatal for a *contract*. TrueCalc therefore defines one **canonical**
+form: a single exact sequence of bytes for any given workbook.
+
+The canonical form follows
+[RFC 8785, the JSON Canonicalization Scheme (JCS)](https://www.rfc-editor.org/rfc/rfc8785),
+plus a few workbook-specific rules. In practice that means:
+
+- **Object keys are sorted** by their characters. (One consequence that
+  surprises people: cell `A10` sorts *before* `A2`, because it compares
+  character by character, not as a number.)
+- **No whitespace at all** — no spaces, no line breaks, no trailing newline.
+- **Numbers are written in one canonical way** — `8`, never `8.0`; and
+  `0.1 + 0.2` honestly prints as `0.30000000000000004` rather than being
+  rounded to hide how computers store decimals.
+
+Two important promises follow:
+
+1. **Round-trips are exact.** Read a workbook and write it again and you get
+   byte-for-byte the same document. Formula text in particular is stored
+   verbatim and never reformatted.
+2. **Every surface agrees.** The same workbook produces the same canonical
+   bytes whether it was written by Rust, WebAssembly, the MCP server, or the
+   hosted API.
+
+Because the rules are a published standard, anyone can verify the canonical
+bytes with an off-the-shelf JCS library in any language — you do not have to
+trust TrueCalc's own code to check that a document is canonical. The full,
+normative rules (number formatting at the extremes, dates, arrays, spill
+reconstruction) live in the
+[workbook JSON schema reference](/reference/schema).
+
+## What you learned
+
+- A workbook serializes to **JSON**, and that JSON is TrueCalc's
+  **cross-surface contract** — every surface reads and writes the same shape.
+- A document always carries four top-level fields: **`engine`**, **`names`**,
+  **`sheets`**, **`version`** (the string `"1"`).
+- Cells are an object keyed by **A1 address**; literals are `{ "value": ... }`,
+  formulas add verbatim **`"formula"`** text; the grid is sparse.
+- There is one **canonical** byte sequence per workbook (RFC 8785 / JCS):
+  sorted keys, no whitespace, canonical numbers — so **round-trips are exact**
+  and **every surface agrees**.
+
+Next: what that exactness buys you —
+[portability and version control](/learn/portability-and-version-control).

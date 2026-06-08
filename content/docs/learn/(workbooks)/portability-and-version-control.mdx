@@ -1,0 +1,112 @@
+---
+title: Portability & version control
+description: Why a workbook that is a canonical JSON value object can live in Git — review spreadsheet changes in a pull request and track them like code.
+---
+
+The last two chapters built up to a single, practical payoff. A workbook is
+a [value object](/learn/what-is-a-workbook), and it serializes to
+[one canonical sequence of bytes](/learn/saving-as-json). Put those together
+and a spreadsheet stops being an opaque binary blob and becomes something you
+can do with what you already do with code: **store it in a file, track it in
+Git, and review changes in a pull request.**
+
+If you have only ever emailed `budget_final_v3_REALLY_final.xlsx` around,
+this is the chapter that explains why TrueCalc went to the trouble.
+
+## The problem with ordinary spreadsheet files
+
+A traditional spreadsheet file is a zipped bundle of binary parts. Two
+useful things you cannot do with it:
+
+- **See what changed.** Save the same file twice with no edits and the bytes
+  can still differ — timestamps, internal ordering, compression. A version
+  control system shows "the file changed" and can tell you nothing more.
+- **Trust a review.** Because you cannot read the diff, you cannot approve a
+  change to a spreadsheet the way you approve a change to code. You re-open
+  the whole file and hope you spot the edit.
+
+Canonical JSON fixes both, and it fixes them *because* of the rules from the
+previous chapter, not by accident.
+
+## Why canonical form makes diffs meaningful
+
+Recall the two guarantees of the canonical form:
+
+1. **Round-trips are exact** — read a workbook and write it back and you get
+   identical bytes.
+2. **Sorted keys, no whitespace, canonical numbers** — there is exactly one
+   way to write any given workbook.
+
+Together these mean **no edit, no diff**. If you open a workbook and save it
+without changing anything, the file on disk is byte-for-byte identical, so
+version control reports nothing. And when you *do* change one cell, the diff
+shows that one cell and nothing else — no spurious churn from reordered keys
+or reformatted numbers drowning out the real change.
+
+## Reviewing a change in a pull request
+
+Suppose a `budget.json` workbook is checked into a repository, and a
+teammate raises the rent and adds an annualized total. Because the format is
+canonical text, the change arrives as an ordinary, readable diff:
+
+```diff
+       "cells": {
+         "A1": { "value": { "type": "text", "value": "Rent" } },
+-        "B1": { "value": { "type": "number", "value": 1200 } }
++        "B1": { "value": { "type": "number", "value": 1350 } },
++        "A2": { "value": { "type": "text", "value": "Annual" } },
++        "B2": { "formula": "=B1*12", "value": { "type": "empty", "value": null } }
+       },
+       "name": "Budget"
+```
+
+A reviewer can read this the way they read any code review: rent went from
+`1200` to `1350`, and a new `Annual` row was added with the formula
+`=B1*12`. You can approve, request changes, or comment on the exact line —
+the spreadsheet edit is now subject to the same scrutiny as a code change.
+
+<Callout type="info">
+Notice `B2`'s value is `{"type":"empty","value":null}`. As the earlier
+chapters stressed, **recalculation is not built yet**, so a freshly authored
+formula cell carries an empty value until something evaluates it. In a review
+you are looking at *structure and intent* — the formula text `=B1*12` and
+where it lives — not a recomputed result. When the recalc engine ships, the
+stored value will reflect the computed total, and the diff will show that too.
+</Callout>
+
+A few properties make these diffs trustworthy rather than noisy:
+
+- **Formula text is verbatim.** `=B1*12` is stored exactly as authored and
+  never reformatted, so a formula edit shows up as precisely the characters
+  that changed.
+- **The grid is sparse.** Only authored cells are written, so adding one cell
+  adds one line — not a screenful of empty boxes.
+- **Stable ordering.** Keys are sorted by the canonical rules, so cells stay
+  in the same place between saves; a diff never reshuffles the document.
+
+## What the schema version is for
+
+You may have wondered why every document carries `"version":"1"`. This is the
+piece that keeps the format trustworthy *over time*. The version is the
+contract's own version number. When TrueCalc evolves the format, it bumps the
+version, and the change is **visible in the diff** — a workbook's version line
+changes exactly when its format does, so an upgrade is never silent. Old
+documents always load in newer libraries; future-versioned documents are
+refused with a clear "upgrade TrueCalc" message rather than misread.
+
+## What you learned
+
+- A canonical-JSON workbook is **plain text in a file**, so it lives in Git
+  like source code.
+- **No edit, no diff**: identical workbooks produce identical bytes, so
+  version control reports only real changes.
+- A one-cell change is a **one-line diff** you can **review in a pull
+  request** — verbatim formulas, sparse grid, stable ordering keep it clean.
+- The **`version`** field versions the contract itself, and format changes
+  show up in the diff rather than happening silently.
+
+This closes the **Workbooks** section's first arc — the workbook as a
+portable, reviewable data model. The next section, **Advanced**, brings it to
+life: formulas that depend on other cells, **recalculation**, circular
+references, and arrays and spill. Every example there will be CI-tested, the
+same way the Foundations examples are.
