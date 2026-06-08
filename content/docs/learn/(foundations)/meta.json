@@ -1,3 +1,13 @@
 {
-  "pages": []
+  "title": "Foundations",
+  "pages": [
+    "formulas",
+    "values-and-types",
+    "functions",
+    "cell-references",
+    "cross-sheet-references",
+    "named-ranges",
+    "errors",
+    "dialects"
+  ]
 }

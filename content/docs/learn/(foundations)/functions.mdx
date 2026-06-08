@@ -1,0 +1,114 @@
+---
+title: Functions
+description: How spreadsheet functions work — arguments, variadic functions, nesting, optional arguments, and what happens when you get the argument count wrong.
+---
+
+Operators cover arithmetic, but most spreadsheet power lives in
+**functions**: named operations that take arguments in parentheses and
+return a value. TrueCalc implements **484** Google Sheets functions, each
+verified against the conformance fixtures.
+
+## Anatomy of a function call
+
+```
+=UPPER("lorem ipsum")
+ │     │
+ │     └─ argument(s), comma-separated
+ └─ function name (written UPPERCASE by convention)
+```
+
+```formula test
+# Fixture: text.tsv — "uppercase of lorem ipsum"
+=UPPER("lorem ipsum") // => LOREM IPSUM
+```
+
+## Functions take one, many, or a variable number of arguments
+
+`SUM` and `AVERAGE` are **variadic** — they accept any number of arguments:
+
+```formula test
+# Fixture: math.tsv — "sum of individual arguments"
+=SUM(1,2,3,4,5) // => 15
+# Fixture: statistical.tsv — "average with negative values"
+=AVERAGE(-3,-1,1,3) // => 0
+# Fixture: statistical.tsv — "average of single value returns that value"
+=AVERAGE(42) // => 42
+```
+
+Arguments must still make sense individually — `AVERAGE` refuses text that
+isn't a number:
+
+```formula test
+# Fixture: statistical.tsv — "average ignores text strings" (the fixture name
+# notwithstanding, Sheets returns #VALUE! for a non-numeric text literal)
+=AVERAGE(1,"two",3) // => #VALUE!
+```
+
+## Functions nest
+
+Any argument can itself be a function call. Evaluation runs inside-out:
+
+```formula test
+# Fixture: text.tsv — "SUBSTITUTE inside UPPER"
+=UPPER(SUBSTITUTE("hello world","world","earth")) // => HELLO EARTH
+# Fixture: math.tsv — "ACOS nested in ROUND for precision control"
+=ROUND(ACOS(0.5),4) // => 1.0472
+```
+
+Nesting is how small functions compose into real logic — there is no limit
+you will hit in practice.
+
+## Optional arguments
+
+Square brackets in a function's syntax mean *optional*. `IFERROR(value,
+[value_if_error])` falls back to a blank when you omit the second argument:
+
+```formula test
+# Fixture: logical.tsv — 'error caught: IFERROR(1/0,"err")'
+=IFERROR(1/0,"err") // => err
+# Fixture: logical.tsv — "non-error value returned as-is: IFERROR(5,0)"
+=IFERROR(5,0) // => 5
+```
+
+(Omitting the second argument entirely returns a blank — fixture:
+logical.tsv — "no second arg: blank returned on error".)
+
+## Wrong argument counts are errors
+
+Functions check their arity. Give `ISBLANK` two arguments and Sheets — and
+therefore TrueCalc — answers `#N/A`:
+
+```formula test
+# Fixture: info.tsv — "too many arguments returns error" (=ISBLANK("a","b") → #N/A)
+=ISBLANK("a","b") // => #N/A
+```
+
+## Discovering functions from code
+
+The engine ships machine-readable metadata for common functions —
+name, category, syntax, and a one-line description:
+
+```ts test
+import { list_functions } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const fns = list_functions();
+const sum = fns.find((f) => f.name === 'SUM');
+assert.ok(sum, 'SUM should be listed');
+assert.equal(sum.category, 'math');
+assert.equal(sum.syntax, 'SUM(value1, ...)');
+```
+
+The complete, generated catalogue of all 484 functions lives in the
+[Reference tab](/reference/functions).
+
+## What you learned
+
+- Functions are named operations: `NAME(arg1, arg2, …)`.
+- Some are variadic (`SUM`, `AVERAGE`); some have optional arguments
+  (square brackets in the syntax).
+- Function calls nest to arbitrary depth; evaluation is inside-out.
+- Wrong argument counts return `#N/A`, not a crash.
+
+Next: where values usually come from in a spreadsheet —
+[cell references and ranges](/learn/cell-references).

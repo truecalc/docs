@@ -1,0 +1,121 @@
+---
+title: What is a formula?
+description: Your first spreadsheet formula — what the = sign means, the arithmetic and text operators, and how to evaluate a formula with TrueCalc.
+---
+
+If you have never opened a spreadsheet, here is the whole idea in one
+sentence: a spreadsheet is a grid of boxes (called **cells**), and each box
+holds either a plain value — like `42` or `"Paid"` — or a **formula** that
+computes a value from other values.
+
+A formula always starts with an equals sign:
+
+```
+=3+4
+```
+
+When a spreadsheet sees that leading `=`, it doesn't store the text `3+4` —
+it computes the answer, `7`, and shows you that instead. Everything else in
+this guide builds on that single trick.
+
+## Evaluating a formula with TrueCalc
+
+TrueCalc is a formula engine without the grid: you hand it a formula, it
+hands back the computed value. You always start by creating an **engine**
+for an explicit conformance target — the spreadsheet product whose behavior
+you want, exactly. (Why you must choose is the subject of the
+[dialects chapter](/learn/dialects).)
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+// Always name your target explicitly. 'google-sheets' is the
+// conformance target verified by the Google Sheets fixtures.
+const engine = createEngine('google-sheets');
+
+// + adds two numbers. Sheets exposes the same operation as the ADD
+// function — fixture: google_sheets/operator.tsv —
+// "basic addition of two integers" (=ADD(3,4) → 7) and
+// "GS-only: no equivalent in Excel (use + operator)".
+const result = engine.evaluate('=3+4', null);
+assert.deepEqual(result, { type: 'number', value: 7 });
+```
+
+Every result has a `type` and (usually) a `value` — the
+[values and types chapter](/learn/values-and-types) tours all of them.
+
+## The operators
+
+Formulas combine values with **operators**. Google Sheets defines each
+operator's behavior; it also exposes each one as an equivalent function,
+which is how the conformance fixtures pin the behavior down:
+
+| Operator | Meaning            | Sheets function form | Fixture (google_sheets/…)                                       |
+| -------- | ------------------ | -------------------- | --------------------------------------------------------------- |
+| `+`      | addition           | `ADD`                | operator.tsv — "basic addition of two integers"                 |
+| `-`      | subtraction        | `MINUS`              | operator.tsv — `=MINUS(…)` rows                                 |
+| `*`      | multiplication     | `MULTIPLY`           | operator.tsv — "basic multiplication"                           |
+| `/`      | division           | `DIVIDE`             | operator.tsv — `=DIVIDE(…)` rows                                |
+| `^`      | exponentiation     | `POW`                | operator.tsv — "2 to the power of 3 is 8"                       |
+| `%`      | percent (postfix)  | `UNARY_PERCENT`      | operator.tsv — "50 as percent equals 0.5"                       |
+| `&`      | text concatenation | `CONCAT`             | text.tsv — "CHAR concatenated with string" (`=CHAR(72)&"ello"`) |
+| `=` `<>` `>` `>=` `<` `<=` | comparisons | `EQ`, `NE`, `GT`, `GTE`, `LT`, `LTE` | operator.tsv — "equal numbers returns TRUE" and friends |
+
+Each line below is executed against the pinned `@truecalc/core` on every CI
+run — the text after `// =>` is the asserted result:
+
+```formula test
+# + and - — fixtures: operator.tsv "basic addition of two integers", "=MINUS" rows
+=3+4 // => 7
+=10-3 // => 7
+# ^ — fixture: operator.tsv "2 to the power of 3 is 8" (=POW(2,3))
+=2^3 // => 8
+# % — fixture: operator.tsv "50 as percent equals 0.5" (=UNARY_PERCENT(50))
+=50% // => 0.5
+# & joins text — fixture: text.tsv "CHAR concatenated with string"
+=CHAR(72)&"ello" // => Hello
+# comparisons return TRUE/FALSE — fixtures: operator.tsv "equal numbers returns TRUE",
+# logical.tsv "comparison as condition: 5>3 is true"
+=5=6 // => FALSE
+=5>3 // => TRUE
+```
+
+## Parentheses group work
+
+Just like in school arithmetic, parentheses decide what happens first:
+
+```formula test
+# Fixture: operator.tsv — "nested ADD inside MULTIPLY"
+# (=MULTIPLY(ADD(2,3),ADD(1,4)) → 25)
+=(2+3)*(1+4) // => 25
+```
+
+## Formulas can decide things
+
+Operators feed naturally into **functions** — named operations like `IF`,
+which picks one of two values based on a condition:
+
+```formula test
+# Fixture: logical.tsv — "comparison as condition: 5>3 is true"
+=IF(5>3,"greater","not") // => greater
+```
+
+Functions are the next chapter's subject — TrueCalc implements 484 of them.
+
+## A note on the leading =
+
+Inside a spreadsheet cell, the `=` is what distinguishes a formula from
+plain text. TrueCalc's API accepts formulas with or without it; this guide
+always writes the `=` so examples can be pasted straight into a real
+spreadsheet.
+
+## What you learned
+
+- A formula starts with `=` and computes a value.
+- You always evaluate against an explicit engine: `createEngine('google-sheets')`.
+- Operators: `+ - * / ^ %` for numbers, `&` for text, `= <> > >= < <=` for comparisons.
+- Parentheses group sub-expressions.
+
+Next: the kinds of values a formula can produce —
+[values and types](/learn/values-and-types).
