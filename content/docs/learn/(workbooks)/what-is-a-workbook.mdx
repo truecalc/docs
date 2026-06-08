@@ -1,0 +1,182 @@
+---
+title: What is a workbook?
+description: Workbooks, worksheets, and cells — the three nested containers a spreadsheet is built from, and how TrueCalc models them as a plain value object.
+---
+
+So far this guide has handed the engine one formula at a time. A real
+spreadsheet is bigger than that: it is a *file* full of grids, and the grids
+refer to each other. The container that holds all of it is a **workbook**.
+
+If you have never opened a spreadsheet, here is the whole vocabulary in
+three nested boxes:
+
+- A **cell** is one box. It holds a single value — a number, some text — or
+  a formula that computes one.
+- A **worksheet** (or just "sheet") is a grid of cells with a name, like
+  `Sheet1` or `Budget`. The tabs along the bottom of a spreadsheet are its
+  worksheets.
+- A **workbook** is the whole file: an ordered list of worksheets, plus
+  workbook-wide [named ranges](/learn/named-ranges). When you save a
+  spreadsheet, you save a workbook.
+
+```
+Workbook  (the file)
+└─ Worksheet "Sheet1"  (a named grid; tab order matters)
+   └─ Cell "A1"        (one box: a value or a formula)
+```
+
+## TrueCalc's workbook is a value object
+
+In the Foundations chapters the engine was *stateless*: you gave it a
+formula and some bindings, it gave back a value, and it remembered nothing.
+A workbook is the opposite — it is the thing that *holds* state. But
+TrueCalc keeps it as simple as possible: a workbook is a **value object**.
+
+That phrase has a precise meaning here. A value object is just data:
+
+- no hidden state, no callbacks, no live connection to anything;
+- two workbooks built the same way are *equal*, and you can copy, compare,
+  and hash them like a number or a string;
+- the only way to learn what is in a workbook is to read its fields.
+
+This matters because it is what makes a workbook **portable** — you can
+write it to a file, send it across a network, or commit it to Git, and the
+thing that comes back is identical to the thing you sent. The next two
+chapters are entirely about that property.
+
+<Callout type="info">
+The workbook lives in a separate crate, `truecalc-workbook`, alongside the
+formula engine in [`truecalc/core`](https://github.com/truecalc/core). It is
+MIT-licensed like the rest of the workspace and is **under active
+development** — the type names below are current, but the crate is not yet
+published to crates.io, so the examples on these pages are illustrative Rust
+rather than copy-paste-runnable. (The Foundations examples run against the
+published `@truecalc/core` npm package, which does not expose workbooks yet.)
+</Callout>
+
+## Building a workbook
+
+You always start a workbook by choosing its **engine flavor** — Google
+Sheets or Excel. This is the same explicit choice you made with
+`createEngine('google-sheets')` in the [dialects chapter](/learn/dialects),
+and for the same reason: the two products disagree at the edges (date
+serials, a famous leap-year bug), so a workbook must commit to one set of
+rules. A workbook is **engine-locked at creation**: you pass the flavor to
+the constructor, and there is no setter to change it afterward.
+
+```rust
+use truecalc_workbook::{Workbook, Worksheet, Cell, Value, EngineFlavor};
+
+// The engine flavor is required — there is no default.
+let mut workbook = Workbook::new(EngineFlavor::Sheets);
+
+// Add a worksheet. Array position is tab position.
+let mut sheet = Worksheet::new("Budget");
+
+// A literal cell holds a value directly.
+sheet.cells_mut().insert(
+    "A1".to_owned(),
+    Cell::literal(Value::Text("Rent".to_owned())).unwrap(),
+);
+sheet.cells_mut().insert(
+    "B1".to_owned(),
+    Cell::literal(Value::Number(1200.0)).unwrap(),
+);
+
+// A formula cell carries its authored text and its most recent value.
+sheet.cells_mut().insert(
+    "B2".to_owned(),
+    Cell::with_formula("=B1*12", Value::Empty),
+);
+
+workbook.sheets_mut().push(sheet);
+```
+
+There are three ideas packed into that snippet, and each is worth a moment.
+
+### Cells come in exactly two shapes
+
+A cell is either a **literal** (a value you typed) or a **formula** (text
+starting with `=`, plus the value it last evaluated to):
+
+- `Cell::literal(value)` — a typed value. It rejects an *empty* literal:
+  an empty box is simply an absent cell, and storing "empty" explicitly
+  would be a different thing on disk than leaving it out, which would break
+  the portability guarantee. To clear a cell you remove its entry, you do
+  not write an empty value into it.
+- `Cell::with_formula("=B1*12", value)` — the formula text is stored
+  **verbatim**, exactly as authored including the leading `=`; it is never
+  reformatted. The second argument is the cell's most recent computed
+  value.
+
+### Empty cells are not stored at all
+
+A worksheet is a **sparse grid**: only the cells you actually authored exist.
+A blank spreadsheet with one number in `Z100` does not store a million empty
+boxes — it stores one entry. An address that is not in the grid simply means
+"empty cell."
+
+### Why a formula cell needs a value too
+
+You may have noticed `B2` above carries `Value::Empty` even though it has a
+formula. That is deliberate, and it points at the honest state of things
+today.
+
+<Callout type="warn">
+**The recalculation engine does not exist yet.** Right now a workbook is a
+faithful *data model* — it stores your cells, your formulas, and your sheets,
+and it round-trips them perfectly. But it does **not** yet compute a formula
+from the cells it references. `B2`'s formula `=B1*12` will not automatically
+become `14400` just because `B1` is `1200`. A freshly authored formula cell
+carries an empty value until something evaluates it.
+
+Making cells recompute from one another — dependencies, recalculation,
+circular-reference detection — is the subject of the **Advanced** section of
+this guide, and it ships with a later phase. For now, treat the workbook as
+what it is: a precise, portable container for spreadsheet *structure*.
+</Callout>
+
+This is the same honesty you saw with
+[cross-sheet references](/learn/cross-sheet-references): TrueCalc would
+rather model a thing exactly and tell you what is not wired up yet than
+pretend a half-built feature works.
+
+## The seven kinds of cell value
+
+A cell value is one of seven types — the same family the
+[values and types chapter](/learn/values-and-types) introduced for the
+stateless engine, with two more that only appear inside a workbook:
+
+| Value          | Example                          | Notes                                            |
+| -------------- | -------------------------------- | ------------------------------------------------ |
+| `Number`       | `Value::Number(1200.0)`          | A finite number.                                 |
+| `Text`         | `Value::Text("Rent".into())`     | Any text.                                        |
+| `Boolean`      | `Value::Boolean(true)`           | `true` / `false`.                                |
+| `Error`        | `Value::Error("#DIV/0!".into())` | A spreadsheet error code.                        |
+| `Empty`        | `Value::Empty`                   | An evaluated-empty result (not a stored blank).  |
+| `Array`        | a 2-D grid of the above          | The result of a formula that fills many cells.   |
+| `Date`         | `Value::Date(46180.0)`           | A date as a serial number.                       |
+
+`Array` and `Date` are the new arrivals. An **array** value is what a formula
+produces when it fills a rectangle of cells at once (a topic for the
+arrays-and-spill chapter in Advanced). A **date** is stored as a *serial
+number* — the count of days since the engine's epoch — which is exactly how
+real spreadsheets store dates under the hood, and exactly why the engine
+flavor is locked: the two products count from different start dates.
+
+## What you learned
+
+- A spreadsheet nests three containers: **cells** inside **worksheets**
+  inside a **workbook**.
+- A TrueCalc workbook is a **value object** — plain, copyable, comparable
+  data with no hidden state, which is what makes it portable.
+- A workbook is **engine-locked at creation**: `Workbook::new(EngineFlavor::Sheets)`.
+- Cells are either **literals** or **formulas**; the grid is **sparse**
+  (empty cells are simply absent).
+- Cell values are one of **seven types**; `Array` and `Date` join the five
+  you already met.
+- **Recalculation is not built yet** — a workbook today is a precise data
+  model, not a live calculator.
+
+Next: how a workbook turns into text you can save —
+[saving a workbook as JSON](/learn/saving-as-json).
