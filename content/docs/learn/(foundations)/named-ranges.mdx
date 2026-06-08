@@ -1,0 +1,92 @@
+---
+title: Named ranges
+description: Why names beat coordinates — naming values for readable formulas, and how TrueCalc's bindings give you named values today.
+---
+
+`=B2*C7` works, but three weeks later nobody remembers what `B2` or `C7`
+hold. Spreadsheets solve this with **named ranges**: you give a cell (or a
+range) a name like `price` or `tax_rate`, then use the name in formulas.
+
+```
+=price*quantity
+```
+
+reads like what it does. That is the entire pitch.
+
+## Named values in TrueCalc, today
+
+TrueCalc's stateless evaluator treats *any* identifier in a formula as a
+name to look up in your bindings — so named values work right now, with
+the same mechanism you used for [cell references](/learn/cell-references):
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// Multiplication behavior — fixture: google_sheets/operator.tsv —
+// "basic multiplication" (=MULTIPLY(3,4) → 12)
+const total = engine.evaluate('=price*quantity', {
+  price: 19.99,
+  quantity: 3,
+});
+assert.deepEqual(total, { type: 'number', value: 59.97 });
+```
+
+From the engine's point of view there is no difference between `A1` and
+`price` — both are names resolved from the bindings you pass. The
+difference is entirely for humans, and it is worth a lot.
+
+## A worked example: a checkout total
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+const bindings = { subtotal: 100, tax_rate: 0.0875 };
+
+// Floating-point doubles bite here: 100 * 1.0875 is not exactly 108.75.
+// Sheets numbers carry the same IEEE-754 quirks — fixture:
+// google_sheets/operator.tsv — "adding fractions" (=ADD(0.1,0.2) →
+// 0.30000000000000004).
+const raw = engine.evaluate('=subtotal*(1+tax_rate)', bindings);
+assert.deepEqual(raw, { type: 'number', value: 108.74999999999999 });
+
+// So formulas that produce money should round explicitly.
+const total = engine.evaluate('=ROUND(subtotal*(1+tax_rate),2)', bindings);
+assert.deepEqual(total, { type: 'number', value: 108.75 });
+```
+
+Notice how much of that you could read aloud.
+`=ROUND(subtotal*(1+tax_rate),2)` is self-documenting in a way
+`=ROUND(B4*(1+C9),2)` never will be.
+
+## Naming style
+
+The bindings object accepts any string key, but your future self will
+thank you for:
+
+- lowercase names with underscores: `tax_rate`, `unit_price`;
+- names that say what the value *is*, not where it came from;
+- avoiding names that look like cell addresses (`A1`, `XFD9`) unless they
+  *are* cell values — readers assume A1-style names refer to a grid.
+
+## Named ranges over real ranges
+
+In a full spreadsheet, a name can also label a whole range
+(`expenses = B2:B500`) and feed range-hungry functions like `SUM`. That
+depends on range evaluation, which arrives with the workbook — the
+Workbooks section of this guide will extend names to ranges when it ships.
+
+## What you learned
+
+- Names make formulas self-documenting: `=price*quantity`.
+- TrueCalc bindings already give you named values — identifiers and cell
+  addresses resolve exactly the same way.
+- Round money at the formula level: doubles are doubles.
+- Range-valued names arrive with the workbook.
+
+Next: when formulas go wrong — [error codes](/learn/errors).

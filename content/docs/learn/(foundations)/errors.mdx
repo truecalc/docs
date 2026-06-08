@@ -1,0 +1,138 @@
+---
+title: Error codes
+description: The spreadsheet error values — what causes each one, how errors propagate through formulas, and how to catch or inspect them.
+---
+
+Formulas fail in structured ways. Instead of crashing, a spreadsheet
+formula that goes wrong evaluates to an **error value** — a special value
+starting with `#` that tells you what kind of failure happened. TrueCalc
+returns these as `{ type: 'error', error: '#…' }` — evaluation itself
+never throws an exception for a formula-level failure.
+
+## The error values
+
+```formula test
+# DIV/0 — dividing by zero.
+# Fixture: operator.tsv — "divide by zero returns #DIV/0!" (=DIVIDE(5,0))
+=1/0 // => #DIV/0!
+
+# VALUE — an operand has the wrong type and cannot coerce.
+# Fixture: operator.tsv — "non-numeric text returns error" (=ADD("hello",1))
+="hello"+1 // => #VALUE!
+
+# NAME — the formula uses a name the engine does not know,
+# usually a misspelled function.
+# Fixtures: info.tsv — "ERROR.TYPE of #NAME? returns 5"
+# (=ERROR.TYPE(NOTAFUNCTION()) → 5; code 5 is #NAME?) and
+# "#NAME? error is caught" (=ISERR(NOTAFUNCTION()) → TRUE)
+=NOTAFUNCTION() // => #NAME?
+
+# NUM — a numeric computation has no valid result.
+# Fixture: math.tsv — "negative number returns NUM error" (=SQRT(-1))
+=SQRT(-1) // => #NUM!
+
+# N/A — "not available": a lookup found nothing, or arguments are missing.
+# Fixture: info.tsv — "NA returns #N/A error"
+=NA() // => #N/A
+
+# Wrong argument counts also surface as #N/A.
+# Fixture: info.tsv — "too many arguments returns error" (=ISBLANK("a","b"))
+=ISBLANK("a","b") // => #N/A
+
+# REF — a reference points outside what exists, e.g. an index past
+# the end of an array.
+# Fixture: lookup.tsv — "row index out of range → REF error" (=INDEX({1,2,3},5))
+=INDEX({1,2,3},5) // => #REF!
+```
+
+You may also meet `#ERROR!` in the Google Sheets UI — its on-screen marker
+for a formula it cannot parse. (That marker is a parse-time artifact, not an
+evaluated value, so the conformance fixtures — which record evaluated
+results — do not cover it.) TrueCalc reports parse problems before
+evaluation instead, through `validate`:
+
+```ts test
+import { validate } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const check = validate('=SUM(1,');
+assert.equal(check.valid, false);
+assert.ok(check.error); // a human-readable parse message
+```
+
+## Errors propagate
+
+An error anywhere inside a formula infects the whole result — outer
+functions do not get a chance to "fix" it by accident:
+
+```formula test
+# Fixture: operator.tsv — "NA error propagates" (=CONCAT(NA(),"text"))
+=CONCAT(NA(),"text") // => #N/A
+# Fixture: logical.tsv — "error in condition propagates"
+=IF(1/0,"yes","no") // => #DIV/0!
+```
+
+This is a feature: a quietly wrong number is far more dangerous than a
+loud `#DIV/0!`.
+
+## Catching errors on purpose
+
+When a fallback is genuinely correct, say so explicitly with `IFERROR`:
+
+```formula test
+# Fixture: logical.tsv — 'error caught: IFERROR(1/0,"err")'
+=IFERROR(1/0,"err") // => err
+```
+
+`IFNA` is the narrow version — it catches *only* `#N/A` and lets every
+other error through:
+
+```formula test
+# Fixture: logical.tsv — 'NA error caught: IFNA(NA(),"err")'
+=IFNA(NA(),"caught") // => caught
+# Fixture: logical.tsv — "non-NA error (div-by-zero) not caught by IFNA"
+=IFNA(1/0,"caught") // => #DIV/0!
+```
+
+Prefer `IFNA` for lookups: it forgives "not found" without also
+swallowing genuine bugs like a division by zero.
+
+## Inspecting errors
+
+`ISERROR` asks *whether* something failed; `ERROR.TYPE` asks *which*
+error it is (each error value has a stable code number):
+
+```formula test
+# Fixture: info.tsv — "division by zero is an error" (=ISERROR(1/0) → TRUE)
+=ISERROR(1/0) // => TRUE
+# Fixture: info.tsv — "ERROR.TYPE of #DIV/0! returns 2"
+=ERROR.TYPE(1/0) // => 2
+# Fixture: info.tsv — "ERROR.TYPE of #NAME? returns 5"
+=ERROR.TYPE(NOTAFUNCTION()) // => 5
+```
+
+And from code, an error is just another result shape:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// Fixture: google_sheets/operator.tsv — "divide by zero returns #DIV/0!"
+assert.deepEqual(engine.evaluate('=1/0', null),
+  { type: 'error', error: '#DIV/0!' });
+```
+
+## What you learned
+
+- Errors are values (`#DIV/0!`, `#VALUE!`, `#NAME?`, `#NUM!`, `#N/A`,
+  `#REF!`), not exceptions.
+- Errors propagate outward until something catches them.
+- `IFERROR` catches everything; `IFNA` catches only `#N/A` — prefer the
+  narrow one.
+- `ISERROR` and `ERROR.TYPE` inspect failures; `validate` catches parse
+  problems before evaluation.
+
+Next, the chapter the whole engine is built around:
+[Sheets vs Excel — choosing a dialect](/learn/dialects).

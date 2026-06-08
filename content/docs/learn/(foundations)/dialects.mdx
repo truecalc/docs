@@ -1,0 +1,144 @@
+---
+title: "Sheets vs Excel: choosing a dialect"
+description: Spreadsheet products disagree at the edges — date serials, the 1900 leap-year bug, function sets. Why TrueCalc requires an explicit dialect and never guesses.
+---
+
+Every chapter so far created its engine the same way:
+
+```ts
+import { createEngine } from '@truecalc/core';
+
+const engine = createEngine('google-sheets');
+```
+
+This final Foundations chapter explains why that string is **required** —
+why TrueCalc has no default dialect, and refuses to guess one for you.
+
+## Spreadsheets agree… mostly
+
+Google Sheets and Microsoft Excel agree on the easy cases: both say
+`=SUM(1,2,3,4,5)` is `15`, both say `=UPPER("lorem ipsum")` is
+`LOREM IPSUM`. If they agreed on everything there would be nothing to
+choose. The differences hide at the edges — and the edges are where dates,
+money, and audits live. The conformance fixtures in `truecalc/core` tag
+such rows with the `compatibility` category: places where spreadsheet
+products are known (or suspected) to diverge.
+
+## Exhibit A: which date is serial number 1?
+
+[Values and types](/learn/values-and-types) showed that a date is a serial
+number — a count of days since an epoch. So here is an innocent question:
+*which date is serial number 1?*
+
+Google Sheets' answer, fixture-verified line by line — December 31, 1899:
+
+```formula test
+# Fixtures: date.tsv — "day from serial 1 (Jan 1 1900)" (=DAY(1) → 31),
+# "month from serial 1 (Jan 1 1900)" (=MONTH(1) → 12),
+# "year 1900 from serial 1" (=YEAR(1) → 1899)
+=DAY(1) // => 31
+=MONTH(1) // => 12
+=YEAR(1) // => 1899
+# Serial 0 is the Sheets epoch itself, December 30, 1899 —
+# fixture: date.tsv — "day from serial 0 (Dec 30 1899 in Excel)"
+=DAY(0) // => 30
+```
+
+Excel's documented answer to the same question is **January 1, 1900** — a
+different day. (The fixture descriptions above record that Excel reading in
+parentheses.) The same serial number names different dates in the two
+products, which means *every* date that crosses a system boundary is a
+chance to be silently off by days.
+
+## Exhibit B: February 29, 1900 — a date that never happened
+
+1900 was not a leap year (century years must be divisible by 400). But
+Lotus 1-2-3 believed it was, and Excel deliberately inherited that bug for
+file compatibility: Excel's calendar contains a February 29, 1900, at
+serial 60. Google Sheets' calendar does not:
+
+```formula test
+# Sheets: serial 60 is February 28, 1900 — there is no Feb 29.
+# Fixture: date.tsv — "DAY on serial 60 (Feb 29 1900 bug)" (compatibility row)
+=DAY(60) // => 28
+# Day counts across the phantom day stay calendar-correct in Sheets:
+# 31 days of January + 28 of February = 59.
+# Fixture: date.tsv — "DAYS spanning 1900 leap bug date may differ" (compatibility row)
+=DAYS(DATE(1900,3,1),DATE(1900,1,1)) // => 59
+```
+
+Both fixture rows carry the `compatibility` tag — their descriptions
+explicitly warn that Excel's documented behavior differs (Excel counts the
+phantom day). An engine that mixed the two calendars would corrupt
+day-count arithmetic for early-1900 dates without ever raising an error.
+
+## Exhibit C: functions that exist in only one dialect
+
+Sheets ships operator-equivalent functions that Excel simply does not
+have — the fixture descriptions themselves record the divergence:
+
+```formula test
+# Fixtures: operator.tsv — "GS-only: no equivalent in Excel (use + operator)",
+# "GS-only — Excel uses * operator", "GS-only — no Excel ISBETWEEN function"
+=ADD(100,200) // => 300
+=MULTIPLY(6,7) // => 42
+=ISBETWEEN(5,1,10) // => TRUE
+```
+
+A formula that is perfectly valid in one dialect can be a `#NAME?`-shaped
+mystery in the other. "Just evaluate it" is not a well-defined request
+until you say *whose rules*.
+
+## Why TrueCalc refuses to guess
+
+A formula engine with a silent default would happily give you answers that
+are subtly wrong for the product you actually care about — and a subtly
+wrong number is far worse than a loud error (the same principle you met in
+[error codes](/learn/errors)). So in TrueCalc the dialect is part of the
+API itself: every engine is created **for** an explicit conformance
+target, and everything it evaluates follows that target's rules.
+
+In `@truecalc/core` 0.6.x, `google-sheets` is the only dialect that ships —
+it is the one backed today by the Google Sheets conformance fixture suite.
+Asking for anything else is an error, never a fallback:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+// An engine you cannot have yet is an error — not a silent
+// substitution of a different product's behavior.
+assert.throws(() => createEngine('excel'));
+assert.throws(() => createEngine('a-spreadsheet-i-made-up'));
+
+// The error names the problem.
+try {
+  createEngine('excel');
+} catch (err) {
+  assert.match(String(err), /Unknown conformance target/);
+}
+```
+
+When the `excel` dialect ships, it will arrive the same way
+`google-sheets` did: behind its own conformance fixture suite, so that
+every behavior difference — date serials included — is pinned to evidence
+rather than to anyone's memory of how Excel behaves. Until then, this
+guide asserts Excel behavior nowhere; the Excel-side statements on this
+page are the documented divergences that the `compatibility` fixture rows
+were written to flag.
+
+## What you learned
+
+- Sheets and Excel agree on easy cases and diverge at the edges: date
+  serial epochs, the 1900 leap-year bug, and dialect-only functions.
+- In Sheets, serial 1 is December 31, 1899 (fixture-verified); Excel
+  documents serial 1 as January 1, 1900.
+- A silent default dialect would produce silently wrong answers, so
+  TrueCalc makes the choice explicit on every entry point:
+  `createEngine('google-sheets')`.
+- `google-sheets` is the only dialect in 0.6.x; unknown targets throw.
+
+That closes **Foundations**. The next section of this guide — Workbooks —
+arrives with the `truecalc-workbook` crate: multi-sheet grids, real ranges,
+cross-sheet references, and recalculation, every example CI-tested like the
+ones you just read.

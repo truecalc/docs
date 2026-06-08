@@ -1,0 +1,68 @@
+---
+title: Cross-sheet references
+description: How formulas refer to cells on other worksheets — Sheet1!A1 notation, quoting sheet names, and TrueCalc's current support status.
+---
+
+A spreadsheet file usually contains more than one grid. Each grid is a
+**worksheet** (or just "sheet"), with its own name — `Sheet1`, `Budget`,
+`Q1 Revenue` — and formulas on one sheet can read cells on another.
+
+## The notation
+
+A cross-sheet reference is the sheet name, an exclamation mark, then an
+ordinary cell or range reference:
+
+```
+=Budget!B2
+=SUM(Revenue!A1:A10)
+```
+
+If the sheet name contains spaces or punctuation, wrap it in single
+quotes:
+
+```
+='Q1 Revenue'!B2
+```
+
+(The blocks above are illustrative notation, not executed examples — read
+on for why.)
+
+## Where TrueCalc stands today
+
+Cross-sheet references only mean something when there are sheets — and the
+stateless evaluator has none. Today the parser does not accept the `!`
+syntax at all, which you can verify for yourself:
+
+```ts test
+import { validate } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const check = validate('=Sheet2!A1');
+assert.equal(check.valid, false);
+```
+
+This is honest behavior: rather than half-supporting the syntax, the
+engine rejects it until it can resolve it correctly.
+
+## What's coming
+
+Cross-sheet references arrive with the **workbook** — a multi-sheet value
+object whose JSON form is TrueCalc's cross-surface contract. The workbook
+is in active development; when it ships, the Workbooks section of this
+guide will teach:
+
+- creating a workbook with multiple named sheets,
+- `Sheet!A1` and `'Quoted Name'!A1:B10` references,
+- recalculation across sheets.
+
+Every claim in those chapters will be CI-tested the same way this page is.
+
+## What you learned
+
+- Worksheets are named grids inside one workbook; `Sheet!A1` reads across them.
+- Quote sheet names that contain spaces: `'Q1 Revenue'!B2`.
+- TrueCalc's parser currently rejects `!` references — support lands with
+  the workbook.
+
+Next: giving values readable names —
+[named ranges](/learn/named-ranges).

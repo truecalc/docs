@@ -1,0 +1,128 @@
+---
+title: Values and types
+description: The value types a formula can produce — numbers, text, booleans, dates-as-numbers, the empty value — and how types coerce into each other.
+---
+
+Every formula evaluates to exactly one **value**, and every value has a
+**type**. TrueCalc returns the type explicitly, so this is a good moment to
+meet all of them.
+
+## The result shape
+
+`engine.evaluate()` returns a tagged object — `type` tells you what you got:
+
+| `type`   | Shape                                  | Produced by (for example) |
+| -------- | -------------------------------------- | ------------------------- |
+| `number` | `{ type: 'number', value: 15 }`        | arithmetic, `SUM`, dates  |
+| `text`   | `{ type: 'text', value: 'Hello' }`     | string literals, `CONCATENATE` |
+| `bool`   | `{ type: 'bool', value: true }`        | comparisons, `TRUE()`/`FALSE()` |
+| `error`  | `{ type: 'error', error: '#DIV/0!' }`  | anything that goes wrong  |
+| `empty`  | `{ type: 'empty' }`                    | an empty cell / unbound reference |
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// number — fixture: google_sheets/math.tsv — "sum of individual arguments"
+assert.deepEqual(engine.evaluate('=SUM(1,2,3,4,5)', null),
+  { type: 'number', value: 15 });
+
+// text — fixture: google_sheets/text.tsv — "concatenate two strings"
+assert.deepEqual(engine.evaluate('=CONCATENATE("Hello"," World")', null),
+  { type: 'text', value: 'Hello World' });
+
+// bool — fixture: google_sheets/operator.tsv — "equal numbers returns TRUE"
+assert.deepEqual(engine.evaluate('=EQ(5,5)', null),
+  { type: 'bool', value: true });
+
+// bool from a function — fixture: google_sheets/logical.tsv —
+// "FALSE() returns logical FALSE"
+assert.deepEqual(engine.evaluate('=FALSE()', null),
+  { type: 'bool', value: false });
+```
+
+Errors get a whole chapter of their own: [error codes](/learn/errors).
+
+## Dates are numbers
+
+Spreadsheets do not have a separate date type. A date is a **serial
+number** — the count of days since the epoch (December 30, 1899 for Google
+Sheets serial 0; the [dialects chapter](/learn/dialects) returns to this).
+December 31, 2023 is day 45,291:
+
+```formula test
+# Fixture: date.tsv — "Month/Day/Year with full year" (=DATEVALUE("12/31/2023") → 45291)
+=DATEVALUE("12/31/2023") // => 45291
+# Fixture: date.tsv — "YEAR extracts year from DATE"
+=YEAR(DATE(2023,6,15)) // => 2023
+# Fixture: date.tsv — "day from serial 1 (Jan 1 1900)" — serial 1 is Dec 31, 1899 in Sheets
+=DAY(1) // => 31
+```
+
+Formatting a serial back into something readable is `TEXT`'s job:
+
+```formula test
+# Fixture: text.tsv — "TEXT format percentage"
+=TEXT(0.285,"0.0%") // => 28.5%
+```
+
+## Coercion: types bend toward what the operation needs
+
+When an operation wants a number but receives text or a boolean, Sheets
+tries to **coerce** — and TrueCalc matches that behavior fixture-by-fixture:
+
+```formula test
+# Text that looks like a number coerces — fixture: math.tsv
+# "text that looks like number coerces in SUM"
+=SUM("1","2","3") // => 6
+# TRUE coerces to 1 — fixture: operator.tsv "TRUE coerces to 1" (=ADD(TRUE,1) → 2)
+=TRUE+1 // => 2
+# FALSE coerces to 0 — fixture: logical.tsv "FALSE() in arithmetic: treated as 0"
+=FALSE()+1 // => 1
+# N() makes coercion explicit — fixture: info.tsv "N of TRUE returns 1"
+=N(TRUE) // => 1
+# But text that is NOT a number is an error — fixture: operator.tsv
+# "non-numeric text returns error" (=ADD("hello",1) → #VALUE!)
+="hello"+1 // => #VALUE!
+```
+
+## Numbers are floating-point
+
+Spreadsheet numbers are IEEE-754 doubles — the same numbers JavaScript
+uses — including their famous rounding quirks. Google Sheets itself
+computes `0.1 + 0.2` this way:
+
+```formula test
+# Fixture: operator.tsv — "adding fractions" (=ADD(0.1,0.2) → 0.30000000000000004)
+=0.1+0.2 // => 0.30000000000000004
+```
+
+When you need a money-safe answer, round explicitly — `ROUND(x, 2)` — a
+pattern you will meet again in [named ranges](/learn/named-ranges).
+
+## Empty is its own thing
+
+An empty cell is not the number 0, not the empty string `""` — it is the
+distinct **empty** value (`{ type: 'empty' }` in TrueCalc). Sheets is
+strict about the difference: an empty *string* is not blank:
+
+```formula test
+# Fixture: info.tsv — "empty string literal is not blank" (=ISBLANK("") → FALSE)
+=ISBLANK("") // => FALSE
+```
+
+You will meet the empty value again when we wire up
+[cell references](/learn/cell-references), where an unbound reference
+behaves like an empty cell.
+
+## What you learned
+
+- Five result types: `number`, `text`, `bool`, `error`, `empty`.
+- Dates are day-count serial numbers; `TEXT` formats them.
+- Sheets coerces numeric text and booleans to numbers where needed —
+  and errors when it can't.
+- Numbers are IEEE-754 doubles; round when presenting money.
+
+Next: [functions](/learn/functions) — named operations, 484 of them.

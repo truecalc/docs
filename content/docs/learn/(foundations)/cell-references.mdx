@@ -1,0 +1,130 @@
+---
+title: Cell references and ranges
+description: A1 notation, how formulas read values from other cells, how TrueCalc's stateless evaluator binds references today, and where ranges fit in.
+---
+
+So far every formula computed on literal values. Real spreadsheets are more
+interesting: formulas read **other cells**, and recompute automatically
+when those cells change. This chapter covers the notation — and exactly how
+much of it TrueCalc's stateless evaluator supports today.
+
+## The grid and A1 notation
+
+A spreadsheet is a grid. Columns are lettered `A, B, C, …`; rows are
+numbered `1, 2, 3, …`. A cell's address is its column letter plus its row
+number — the top-left cell is `A1`, the cell two to the right of it is
+`C1`, the cell below that is `C2`.
+
+A formula refers to a cell by writing its address:
+
+```
+=A1+B1
+```
+
+means "take whatever is in A1, add whatever is in B1."
+
+## Binding references in TrueCalc
+
+TrueCalc's core evaluator is **stateless** — there is no grid sitting in
+memory. Instead, you pass the values for the references your formula uses,
+as the second argument to `evaluate`:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// You supply the cell values; the formula reads them by name.
+// SUM behavior — fixture: google_sheets/math.tsv — "sum of individual arguments"
+const result = engine.evaluate('=SUM(A1, B1)', { A1: 100, B1: 200 });
+assert.deepEqual(result, { type: 'number', value: 300 });
+
+// Arithmetic over a bound reference works the same way.
+// MULTIPLY behavior — fixture: google_sheets/operator.tsv — "basic multiplication"
+assert.deepEqual(engine.evaluate('=B2*12', { B2: 95 }),
+  { type: 'number', value: 1140 });
+```
+
+Bindings accept numbers, strings, booleans, or `null` (the empty value).
+Passing `null` instead of an object means "no bindings at all."
+
+## Unbound references are empty
+
+If a formula mentions `A1` and you don't bind it, TrueCalc treats it as
+the **empty value** — the same value type an empty cell has (see
+[values and types](/learn/values-and-types)). Empty coerces to `0` in
+arithmetic:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// A1 was never bound — it evaluates as empty, which adds as 0.
+assert.deepEqual(engine.evaluate('=A1+1', null),
+  { type: 'number', value: 1 });
+```
+
+## Ranges: rectangles of cells
+
+A **range** names a whole rectangle of cells with `start:end` notation:
+
+- `A1:A10` — the first ten cells of column A
+- `A1:C1` — three cells across the top row
+- `A1:C10` — a 3-wide, 10-tall block
+
+Ranges are how you say "sum this whole column" without listing every cell:
+
+```
+=SUM(A1:A10)
+```
+
+TrueCalc's parser understands range syntax today:
+
+```ts test
+import { validate } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+assert.equal(validate('=SUM(A1:A10)').valid, true);
+```
+
+…but *evaluating* a range needs an actual grid to read from, and the
+stateless evaluator's bindings have no way to express one. Until the
+workbook ships (the **Workbooks** section of this guide, currently in
+development), a range evaluates as empty — `SUM` over it yields `0`:
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// Today: ranges parse but read as empty in the stateless evaluator.
+// Individual bindings are NOT consulted for ranges. This changes when
+// the workbook lands — these docs are re-tested against every release.
+assert.deepEqual(engine.evaluate('=SUM(A1:A3)', { A1: 1, A2: 2, A3: 3 }),
+  { type: 'number', value: 0 });
+```
+
+When you need a range-like computation today, list the cells:
+`=SUM(A1, A2, A3)` with each one bound.
+
+## A note on `$` (absolute references)
+
+In spreadsheet UIs you will see addresses like `$A$1`. The `$` pins the
+column and/or row when a formula is *copied* between cells — a
+grid-editing concern. Since the stateless evaluator has no copy-paste,
+this guide returns to absolute references in the Workbooks section.
+
+## What you learned
+
+- Cells are addressed in A1 notation: column letter + row number.
+- TrueCalc is stateless: you bind reference values per call —
+  `evaluate('=A1+B1', { A1: 1, B1: 2 })`.
+- Unbound references are the empty value (0 in arithmetic).
+- Ranges (`A1:A10`) parse today; evaluating them arrives with the workbook.
+
+Next: formulas that read across worksheets —
+[cross-sheet references](/learn/cross-sheet-references).
