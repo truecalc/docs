@@ -13,6 +13,8 @@ import {
 import { useDocsSearch } from 'fumadocs-core/search/client';
 import { create } from '@orama/orama';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
+import { useEffect, useRef } from 'react';
+import posthog from 'posthog-js';
 
 function initOrama() {
   return create({
@@ -31,6 +33,15 @@ export default function DefaultSearchDialog(props: SharedProps) {
     initOrama,
     locale,
   });
+
+  const lastTrackedQuery = useRef('');
+  useEffect(() => {
+    if (!query.isLoading && search.trim() && search !== lastTrackedQuery.current) {
+      lastTrackedQuery.current = search;
+      const results = query.data !== 'empty' ? (query.data?.length ?? 0) : 0;
+      posthog.capture('docs_searched', { query: search, results_count: results });
+    }
+  }, [search, query.isLoading, query.data]);
 
   return (
     <SearchDialog search={search} onSearchChange={setSearch} isLoading={query.isLoading} {...props}>
