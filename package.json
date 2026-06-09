@@ -18,13 +18,14 @@
     "fumadocs-ui": "^16.9.3",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
+    "posthog-js": "^1.383.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@truecalc/core": "0.6.4",
     "@tailwindcss/postcss": "^4.3.0",
+    "@truecalc/core": "0.6.4",
     "@types/mdx": "^2.0.13",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.16",
