@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use INT instead of ROUNDDOWN or TRUNC?"
+    a: "INT rounds down to the nearest whole number, so for negatives it moves away from zero (INT(-2.5) is -3). TRUNC and ROUNDDOWN simply drop the decimals toward zero (-2). Pick INT when you want a true mathematical floor."
+  - q: "Can I use INT to extract the whole-dollar part of an amount?"
+    a: "Yes. INT(amount) gives the whole units, and amount minus INT(amount) gives the fractional remainder, which is handy for splitting currency into dollars and cents."
+use_cases:
+  - title: "Drop the decimal part of a value"
+    formula: "=INT(7.9)"
+    industries: [operations, finance]
+  - title: "Floor a negative value away from zero"
+    formula: "=INT(-2.5)"
+    industries: [science, engineering]
+  - title: "Whole-dollar portion of a price"
+    formula: "=INT(1234.99)"
+    industries: [retail, personal-finance]
+industries: [finance, operations, retail, personal-finance]
+related: [ROUNDDOWN, TRUNC, FLOOR, MOD]

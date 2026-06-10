@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SMALL instead of MIN?"
+    a: "MIN gives only the single lowest value. SMALL returns the k-th smallest, so SMALL(range, 1) equals MIN, SMALL(range, 2) is the second lowest, and so on. Use it for bottom-N reporting."
+  - q: "How do I find the lowest few values?"
+    a: "Call SMALL with rank 1, 2, 3, and so on. SMALL(range, 2) returns the second smallest value, which is useful when you want to skip a single extreme low."
+use_cases:
+  - title: "Second-lowest value in a set"
+    formula: "=SMALL({3,1,4,1,5}, 2)"
+    industries: [operations, education]
+  - title: "Lowest score from a list of grades"
+    formula: "=SMALL({88, 92, 75, 99, 84}, 1)"
+    industries: [education, hr]
+  - title: "Second-cheapest measured value"
+    formula: "=SMALL({4.5, 2.1, 6.8, 3.3}, 2)"
+    industries: [retail, operations]
+industries: [retail, operations, education, science]
+related: [LARGE, MIN, RANK, MEDIAN]

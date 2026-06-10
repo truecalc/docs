@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use IRR instead of NPV?"
+    a: "Use IRR to find the discount rate that makes a project's net present value zero; use NPV to value cash flows at a rate you already know."
+use_cases:
+  - title: "Internal rate of return on a cash-flow series"
+    formula: "=IRR({-100, 30, 40, 50, 60})"
+    industries: [finance, operations]
+  - title: "Evaluate a real-estate investment's return"
+    formula: "=IRR({-50000, 12000, 15000, 18000, 25000})"
+    industries: [real-estate, finance]
+  - title: "Compare a startup's projected returns"
+    formula: "=IRR({-200000, 50000, 80000, 120000, 160000})"
+    industries: [finance, operations]
+industries: [finance, real-estate, operations]
+related: [NPV, RATE, FV, PV]

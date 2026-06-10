@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ISNUMBER?"
+    a: "Use ISNUMBER to test whether a cell holds a real number before doing math on it, often inside an IF to guard against text values."
+  - q: "Does ISNUMBER treat a number stored as text as a number?"
+    a: "No — a numeric string like the text 100 is not a number, so ISNUMBER returns FALSE until you convert it with VALUE."
+use_cases:
+  - title: "Check that a value is a real number"
+    formula: "=ISNUMBER(5)"
+    industries: [operations, finance]
+  - title: "Confirm text is not mistaken for a number"
+    formula: "=ISNUMBER("text")"
+    industries: [operations, education]
+  - title: "Verify a converted string is now numeric"
+    formula: "=ISNUMBER(VALUE("100"))"
+    industries: [finance, operations]
+industries: [operations, finance, education]
+related: [ISTEXT, ISBLANK, VALUE, IF]

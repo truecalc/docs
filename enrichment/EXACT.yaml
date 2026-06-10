@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use EXACT instead of the = operator?"
+    a: "Use EXACT for a case-sensitive text comparison; the = operator ignores case, so Apple = apple is TRUE but EXACT(Apple, apple) is FALSE."
+  - q: "Does EXACT compare case?"
+    a: "Yes — EXACT returns TRUE only when both strings match exactly, including upper and lower case."
+use_cases:
+  - title: "Case-sensitive check of two codes"
+    formula: "=EXACT("SKU-100","SKU-100")"
+    industries: [retail, operations]
+  - title: "Detect a case difference between two words"
+    formula: "=EXACT("Apple","apple")"
+    industries: [operations, education]
+  - title: "Confirm two single characters match exactly"
+    formula: "=EXACT("a","a")"
+    industries: [operations, engineering]
+industries: [retail, operations, education, engineering]
+related: [FIND, SEARCH, IF, ISTEXT]

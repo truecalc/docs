@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MODE instead of MEDIAN or AVERAGE?"
+    a: "Use MODE to find the most frequently occurring value, such as the most common order size, support ticket category code, or class score. MEDIAN and AVERAGE describe the center of the data, not its most repeated value."
+  - q: "What does MODE return when no value repeats?"
+    a: "If every value is unique, MODE returns the #N/A error because there is no most common value. Make sure your data contains at least one repeat."
+use_cases:
+  - title: "Most common value in a list"
+    formula: "=MODE(1, 2, 2, 3, 4)"
+    industries: [education, operations]
+  - title: "Most frequent rating in survey responses"
+    formula: "=MODE({3, 5, 5, 5, 7, 9})"
+    industries: [hr, sales]
+  - title: "Most common order quantity"
+    formula: "=MODE(10, 20, 20, 30, 30, 30)"
+    industries: [retail, operations]
+industries: [operations, retail, hr, education]
+related: [MEDIAN, AVERAGE, COUNTIF, MAX]

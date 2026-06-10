@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use REPLACE instead of SUBSTITUTE?"
+    a: "Use REPLACE when you know the position and length of the text to swap out; use SUBSTITUTE when you want to replace text by matching its content."
+  - q: "What do the numbers in REPLACE mean?"
+    a: "The second argument is the starting position and the third is how many characters to remove; the fourth argument is the new text to insert there."
+use_cases:
+  - title: "Mask a phone-number prefix"
+    formula: "=REPLACE("555-1234",1,3,"888")"
+    industries: [operations, sales]
+  - title: "Swap a slice of characters by position"
+    formula: "=REPLACE("abcdef",2,3,"XY")"
+    industries: [operations, engineering]
+  - title: "Rename a fixed-length label"
+    formula: "=REPLACE("PRODUCT",1,7,"ITEM")"
+    industries: [retail, operations]
+industries: [operations, sales, engineering, retail]
+related: [SUBSTITUTE, MID, LEFT, RIGHT, FIND]

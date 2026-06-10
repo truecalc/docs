@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use LARGE instead of MAX?"
+    a: "MAX gives only the single highest value. LARGE returns the k-th largest, so LARGE(range, 1) equals MAX, LARGE(range, 2) is the second highest, and so on. Use it for top-N reporting."
+  - q: "How do I find the top three values and add them?"
+    a: "Sum LARGE called for each rank: LARGE(range,1) plus LARGE(range,2) plus LARGE(range,3) gives the total of the three highest values."
+use_cases:
+  - title: "Second-highest value in a set"
+    formula: "=LARGE({3,1,4,1,5}, 2)"
+    industries: [operations, education]
+  - title: "Top score from a list of grades"
+    formula: "=LARGE({88, 92, 75, 99, 84}, 1)"
+    industries: [education, hr]
+  - title: "Third-largest deal in a sales pipeline"
+    formula: "=LARGE({120, 340, 90, 560, 230}, 3)"
+    industries: [sales, finance]
+industries: [sales, finance, education, operations]
+related: [SMALL, MAX, RANK, MEDIAN]

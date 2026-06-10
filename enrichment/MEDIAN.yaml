@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MEDIAN instead of AVERAGE?"
+    a: "Use MEDIAN when a few extreme values would distort the mean. For skewed data like salaries, home prices, or response times, the median better reflects the typical value because outliers do not pull it."
+  - q: "How does MEDIAN handle an even count of numbers?"
+    a: "With an even count there is no single middle value, so MEDIAN returns the average of the two middle numbers after sorting."
+use_cases:
+  - title: "Middle value of a small set"
+    formula: "=MEDIAN(1, 2, 3, 4, 5)"
+    industries: [education, operations]
+  - title: "Typical salary unaffected by one outlier"
+    formula: "=MEDIAN({45000, 52000, 48000, 61000, 250000})"
+    industries: [hr, finance]
+  - title: "Median of an even-count dataset"
+    formula: "=MEDIAN(3, 7, 8, 5, 12, 14, 21, 13, 18)"
+    industries: [science, operations]
+industries: [finance, hr, operations, science]
+related: [AVERAGE, MODE, LARGE, SMALL]

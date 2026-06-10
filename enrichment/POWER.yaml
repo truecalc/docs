@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use POWER instead of the ^ operator?"
+    a: "They compute the same result; POWER(base, exponent) is often easier to read inside long formulas, while ^ is more compact for quick exponents like squares."
+  - q: "How do I take a root with POWER?"
+    a: "Raise the value to a fractional exponent. POWER(27, 1/3) returns the cube root, and POWER(x, 0.5) is the square root."
+use_cases:
+  - title: "Square or cube a value"
+    formula: "=POWER(2, 10)"
+    industries: [engineering, science]
+  - title: "Compound a growth rate over many periods"
+    formula: "=POWER(1.05, 30)"
+    industries: [finance, personal-finance]
+  - title: "Take the cube root via a fractional exponent"
+    formula: "=POWER(1000000, 1/3)"
+    industries: [science, engineering]
+industries: [finance, personal-finance, science, engineering]
+related: [SQRT, PRODUCT, EXP, POW]

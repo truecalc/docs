@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use REPT?"
+    a: "Use REPT to repeat a piece of text a set number of times, for example to build a simple in-cell bar chart or a fixed-width separator."
+  - q: "Can REPT make a text-based progress bar?"
+    a: "Yes — repeating a block character a number of times proportional to a value produces a quick in-cell bar without any chart."
+use_cases:
+  - title: "Build a simple text bar chart"
+    formula: "=REPT("*",5)"
+    industries: [operations, sales]
+  - title: "Repeat a short string several times"
+    formula: "=REPT("ab",3)"
+    industries: [operations, education]
+  - title: "Create a fixed-width separator line"
+    formula: "=REPT("=",10)"
+    industries: [operations, engineering]
+industries: [operations, sales, education, engineering]
+related: [CONCATENATE, TEXTJOIN, LEN, TEXT]

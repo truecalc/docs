@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ISBLANK?"
+    a: "Use ISBLANK to test whether a cell is truly empty, typically inside an IF so you can flag or skip rows that have no data yet."
+  - q: "Is an empty string the same as blank to ISBLANK?"
+    a: "No — ISBLANK is strict: a cell holding an empty string ("") is not truly empty, so ISBLANK("") returns FALSE. Use COUNTBLANK if you want empty strings counted as blank."
+use_cases:
+  - title: "An empty string is not truly blank"
+    formula: "=ISBLANK("")"
+    industries: [operations, hr]
+  - title: "Text is never blank"
+    formula: "=ISBLANK("text")"
+    industries: [operations, education]
+  - title: "Zero is a value, not a blank"
+    formula: "=ISBLANK(0)"
+    industries: [finance, operations]
+industries: [operations, hr, education, finance]
+related: [COUNTBLANK, ISNUMBER, ISTEXT, IF]

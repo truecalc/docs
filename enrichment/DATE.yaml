@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use DATE instead of typing a date directly?"
+    a: "Use DATE to build a date from separate year, month, and day numbers, which is reliable across locales and lets you compute dates from calculated parts."
+  - q: "What happens if I pass a month greater than 12 to DATE?"
+    a: "DATE rolls the extra months into the year, so DATE(2024, 13, 1) becomes January 1, 2025."
+use_cases:
+  - title: "Build a date from year, month, and day"
+    formula: "=DATE(2024, 5, 15)"
+    industries: [operations, finance]
+  - title: "Roll forward one month using month overflow"
+    formula: "=DATE(2024, 12 + 1, 1)"
+    industries: [finance, operations]
+  - title: "Get the day-of-month from a constructed date"
+    formula: "=DAY(DATE(2024, 7, 4))"
+    industries: [operations, hr]
+industries: [finance, operations, hr]
+related: [DAY, MONTH, YEAR, EOMONTH, WORKDAY]

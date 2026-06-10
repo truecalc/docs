@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use CHOOSE instead of LOOKUP?"
+    a: "Use CHOOSE to pick one value from a fixed list by its position number; use LOOKUP to search a sorted vector for a matching value."
+  - q: "Can CHOOSE return text or only numbers?"
+    a: "CHOOSE can return any value type, including text, numbers, or the result of another formula, based on the index you pass."
+use_cases:
+  - title: "Pick a value by position number"
+    formula: "=CHOOSE(2, "a", "b", "c")"
+    industries: [operations, sales]
+  - title: "Convert a month number to a quarter label"
+    formula: "=CHOOSE(7, "Q1", "Q1", "Q1", "Q2", "Q2", "Q2", "Q3", "Q3", "Q3", "Q4", "Q4", "Q4")"
+    industries: [finance, operations]
+  - title: "Select a commission rate by tier number"
+    formula: "=CHOOSE(3, 0.02, 0.04, 0.06)"
+    industries: [sales, finance]
+industries: [operations, sales, finance]
+related: [LOOKUP, INDEX, MATCH, IF]

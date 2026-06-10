@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use FLOOR instead of ROUNDDOWN?"
+    a: "FLOOR rounds down to the nearest multiple of a factor you choose, such as the previous 25 or 0.05. ROUNDDOWN only rounds down to decimal places. Use FLOOR for packaging units, price bands, or time buckets."
+  - q: "How do I round a value down to the nearest 15 minutes expressed in hours?"
+    a: "Use FLOOR with the factor for 15 minutes. For decimal hours that is FLOOR(hours, 0.25), which snaps down to the previous quarter hour."
+use_cases:
+  - title: "Round down to the nearest whole unit"
+    formula: "=FLOOR(4.8, 1)"
+    industries: [operations, engineering]
+  - title: "Round a count down to full pallets of 25"
+    formula: "=FLOOR(127, 25)"
+    industries: [operations, retail]
+  - title: "Round a price down to the nearest 5 cents"
+    formula: "=FLOOR(7.27, 0.05)"
+    industries: [retail, sales]
+industries: [operations, retail, sales, engineering]
+related: [CEILING, ROUNDDOWN, MROUND, INT]

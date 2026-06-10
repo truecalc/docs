@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use PPMT instead of IPMT?"
+    a: "Use PPMT for the principal portion of a single payment; use IPMT for the interest portion of that same payment."
+use_cases:
+  - title: "Principal paid in the first loan payment"
+    formula: "=PPMT(0.05/12, 1, 60, -25000)"
+    industries: [lending, finance]
+  - title: "Principal portion of a mortgage payment"
+    formula: "=PPMT(0.04/12, 24, 360, -300000)"
+    industries: [real-estate, lending]
+  - title: "Reconstruct the full payment from principal and interest"
+    formula: "=PPMT(0.06/12, 12, 48, -15000) + IPMT(0.06/12, 12, 48, -15000)"
+    industries: [finance, lending]
+industries: [finance, lending, real-estate]
+related: [IPMT, PMT, RATE, NPER]

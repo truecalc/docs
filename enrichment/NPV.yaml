@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use NPV instead of PV?"
+    a: "Use NPV when cash flows vary period to period; use PV when the payments are equal and periodic."
+  - q: "Does NPV include the initial investment at time zero?"
+    a: "No. NPV discounts the first value as if it occurs one period from now, so subtract or add the upfront cost outside the function if it happens today."
+use_cases:
+  - title: "Net present value of a project's cash flows"
+    formula: "=NPV(0.1, -100, 50, 60, 70)"
+    industries: [finance, operations]
+  - title: "Discount uneven annual returns at 8 percent"
+    formula: "=NPV(0.08, 1000, 2000, 3000, 4000)"
+    industries: [finance, real-estate]
+  - title: "Account for an upfront cost paid today"
+    formula: "=-5000 + NPV(0.1, 2000, 2000, 2000)"
+    industries: [finance, engineering]
+industries: [finance, real-estate, operations]
+related: [IRR, PV, FV, PMT, RATE]

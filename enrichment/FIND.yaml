@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use FIND instead of SEARCH?"
+    a: "Use FIND for a case-sensitive match that does not allow wildcards; use SEARCH when you want a case-insensitive match or wildcard support."
+  - q: "What does FIND return if the text is not present?"
+    a: "FIND returns a #VALUE! error when the search text is not found, so wrap it in IFERROR if a missing match is expected."
+use_cases:
+  - title: "Locate a character within a code"
+    formula: "=FIND("-","US-12345")"
+    industries: [operations, retail]
+  - title: "Find the position of the @ in an email address"
+    formula: "=FIND("@","name@example.com")"
+    industries: [sales, hr]
+  - title: "Find a letter inside a short string"
+    formula: "=FIND("b","abc")"
+    industries: [operations, education]
+industries: [operations, retail, sales, hr]
+related: [SEARCH, LEFT, RIGHT, MID, LEN]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use VALUE?"
+    a: "Use VALUE to convert a number stored as text into a real number so it can be used in calculations."
+  - q: "What happens if VALUE gets text that is not a number?"
+    a: "VALUE returns a #VALUE! error when the text cannot be interpreted as a number, so clean or validate the input first if it may contain letters."
+use_cases:
+  - title: "Convert a number stored as text"
+    formula: "=VALUE("123")"
+    industries: [finance, operations]
+  - title: "Turn an imported numeric string into a number"
+    formula: "=VALUE("1500")"
+    industries: [finance, retail]
+  - title: "Coerce a text digit so it can be summed"
+    formula: "=VALUE("42")"
+    industries: [operations, education]
+industries: [finance, operations, retail, education]
+related: [TEXT, ISNUMBER, ISTEXT, ROUND]
