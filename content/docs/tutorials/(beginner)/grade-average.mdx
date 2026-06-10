@@ -1,0 +1,45 @@
+---
+title: Average a set of grades
+description: "Use AVERAGE to turn a list of test scores into a single grade."
+level: beginner
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the average of several test scores.
+
+**What you need:** Nothing but this page.
+
+**Why this matters:** `AVERAGE` is one of the most-used functions anywhere — and it
+introduces *functions*, which take inputs in parentheses.
+
+## Step 1 — Average three scores
+
+```formula test
+=AVERAGE(80, 90, 100) // => 90
+```
+
+<TryIt formula="=AVERAGE(80, 90, 100)" />
+
+**What just happened:** `AVERAGE(...)` adds the numbers and divides by how many there are.
+
+## Step 2 — Add more scores
+
+```formula test
+=AVERAGE(80, 90, 100, 70) // => 85
+```
+
+<TryIt formula="=AVERAGE(80, 90, 100, 70)" />
+
+**What just happened:** functions take as many inputs as you give them, separated by commas.
+
+## Try changing…
+
+- Your own scores. Add or remove numbers inside the parentheses.
+
+## You learned
+
+- A function name is followed by `(` inputs `)`.
+- `AVERAGE` adds the inputs and divides by the count.
+
+**Next:** [Percentage change](/tutorials/percentage-change)

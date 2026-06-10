@@ -44,3 +44,19 @@ Content lives in `content/docs/` — three root tabs: `learn/`, `reference/`, `a
   `git diff --exit-code -- content/docs/reference/functions`.
 - Deploy: GitHub Pages via `.github/workflows/deploy.yml`
   (`NEXT_PUBLIC_BASE_PATH=/docs`).
+
+## Content principles (ALWAYS — every page, every pillar)
+
+This site uses the **Diátaxis** model. Put each page in the right home by reader intent:
+- **Reference** (`reference/`) — "what does X do?" Lookup. Generated + enriched.
+- **Learn** (`learn/`) — "what *is* X / how does it work?" Concept explanation.
+- **Tutorials** (`tutorials/`) — "walk me through building X" (learning project) and
+  "how do I do X?" (task recipe).
+
+**Voice & structure (non-negotiable):**
+- Plain language. No unexplained jargon. If a term is new, define it in one short clause.
+- Every page follows **Learn → Try → Take value**: the reader understands the point in ~10s,
+  runs a real example inline (`<TryIt>`), and leaves with something usable.
+- One new idea per step (tutorials). If a step needs two concepts, make it two steps.
+- Never assert "Google Sheets / Excel does X" without a fixture ID from truecalc/core.
+- Every formula shown as `=FORMULA // => result` in a ` ```formula test ` block is CI-executed.

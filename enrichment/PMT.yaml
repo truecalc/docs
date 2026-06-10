@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PMT instead of IPMT?"
+    a: "Use PMT for the full periodic payment; IPMT for just the interest portion."
+use_cases:
+  - title: "Monthly car-loan payment"
+    formula: "=PMT(0.05/12, 60, -25000)"
+    industries: [personal-finance, lending]
+industries: [finance, lending, real-estate]
+related: [IPMT, PPMT, FV, RATE]

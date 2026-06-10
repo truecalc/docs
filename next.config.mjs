@@ -6,10 +6,12 @@ const withMDX = createMDX();
 const config = {
   output: 'export',
   reactStrictMode: true,
-  // Set NEXT_PUBLIC_BASE_PATH=/docs when deploying to GitHub Pages
-  // (site is served from https://truecalc.github.io/docs/).
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || undefined,
   images: { unoptimized: true },
+  webpack(config) {
+    config.experiments = { ...config.experiments, asyncWebAssembly: true };
+    return config;
+  },
 };
 
 export default withMDX(config);

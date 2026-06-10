@@ -1,0 +1,59 @@
+---
+title: Split a bill with tip
+description: "Work out each person's share of a restaurant bill including tip."
+level: beginner
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the amount each person owes for a shared meal, tip included.
+
+**What you need:** Nothing but this page.
+
+**Why this matters:** it's the fastest way to learn multiplication, division, and
+order of operations — the backbone of every spreadsheet.
+
+## Step 1 — Add a tip
+
+A 20% tip on a $80 bill is the bill times `0.20`.
+
+```formula test
+=80*0.20 // => 16
+```
+
+<TryIt formula="=80*0.20" />
+
+**What just happened:** `*` multiplies. 80 × 0.20 = 16.
+
+## Step 2 — The total with tip
+
+```formula test
+=80*1.20 // => 96
+```
+
+<TryIt formula="=80*1.20" />
+
+**What just happened:** multiplying by `1.20` adds the 20% in one step.
+
+## Step 3 — Each person's share
+
+Split the $96 total between 4 people.
+
+```formula test
+=80*1.20/4 // => 24
+```
+
+<TryIt formula="=80*1.20/4" />
+
+**What just happened:** `/` divides. TrueCalc does `*` and `/` left to right.
+
+## Try changing…
+
+- Your own bill amount, tip rate, and number of people.
+
+## You learned
+
+- `*` multiplies, `/` divides.
+- Multiplying by `1.20` adds 20% in one step.
+
+**Next:** [Grade average](/tutorials/grade-average)

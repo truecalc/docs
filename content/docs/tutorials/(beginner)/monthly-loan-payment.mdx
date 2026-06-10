@@ -1,0 +1,38 @@
+---
+title: Work out a monthly loan payment
+description: "Use PMT to find the fixed monthly payment on a loan."
+level: beginner
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the fixed monthly payment for a car loan.
+
+**What you need:** Nothing but this page.
+
+**Why this matters:** `PMT` is the function behind every loan and mortgage calculator.
+
+## Step 1 — The three things PMT needs
+
+A $25,000 loan, 5% annual rate, over 5 years (60 months). The rate must be *per month*
+(`0.05/12`), and the loan is entered as negative because it's money you receive.
+
+```formula test
+=PMT(0.05/12, 60, -25000) // => 471.7808411002748
+```
+
+<TryIt formula="=PMT(0.05/12, 60, -25000)" />
+
+**What just happened:** `PMT(rate_per_period, number_of_periods, present_value)` returns the
+payment. The result is positive — the amount you pay each month.
+
+## Try changing…
+
+- A different loan amount, rate, or number of months.
+
+## You learned
+
+- Convert an annual rate to monthly by dividing by 12.
+- Enter the loan amount as a negative number.
+
+**Next:** Explore the [Beginner learning path](/paths/beginner) for what to learn next.

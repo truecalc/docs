@@ -28,6 +28,9 @@ jobs:
       - name: test-docs (Learn examples)
         run: node scripts/test-docs.mjs
 
+      - name: lint:enrichment (curated content + formula execution)
+        run: npm run lint:enrichment
+
       - name: Build (static export)
         run: npm run build
         env:
