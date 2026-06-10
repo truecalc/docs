@@ -66,7 +66,7 @@ export async function generateMetadata(props: PageProps<'/[[...slug]]'>): Promis
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   const title = (data.seoTitle as string | undefined) ?? page.data.title
   const description = (data.seoDescription as string | undefined) ?? page.data.description
   const image = getPageImage(page).url

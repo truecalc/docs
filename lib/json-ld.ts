@@ -28,7 +28,7 @@ function buildOrganization() {
 }
 
 function buildTechArticle(page: Page, baseUrl: string) {
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   return {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
@@ -42,7 +42,7 @@ function buildTechArticle(page: Page, baseUrl: string) {
 }
 
 function buildDefinedTerm(page: Page, baseUrl: string) {
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   return {
     '@context': 'https://schema.org',
     '@type': 'DefinedTerm',
@@ -59,7 +59,7 @@ function buildDefinedTerm(page: Page, baseUrl: string) {
 }
 
 function buildWebAPI(page: Page, baseUrl: string) {
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   return {
     '@context': 'https://schema.org',
     '@type': 'WebAPI',
@@ -84,7 +84,7 @@ function buildFAQPage(items: Array<{ question: string; answer: string }>) {
 }
 
 function buildHowTo(page: Page, steps: Array<{ name: string; text: string }>) {
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   return {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
@@ -95,7 +95,7 @@ function buildHowTo(page: Page, steps: Array<{ name: string; text: string }>) {
 }
 
 function buildBreadcrumb(page: Page, baseUrl: string) {
-  const slugs = (page.slugs as string[] | undefined) ?? []
+  const slugs = (page.slugs as unknown as string[] | undefined) ?? []
   const items: Array<{ '@type': 'ListItem'; position: number; name: string; item: string }> = []
 
   for (let i = 1; i <= slugs.length; i++) {
@@ -119,9 +119,9 @@ function buildBreadcrumb(page: Page, baseUrl: string) {
 }
 
 export function generateJsonLd(page: Page, baseUrl: string): object[] {
-  const slugs = page.slugs as string[] | undefined
+  const slugs = page.slugs as unknown as string[] | undefined
   const type = detectPageType(slugs)
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   const faqItems = data.jsonLdFaq as Array<{ question: string; answer: string }> | undefined
   const howToSteps = data.jsonLdHowTo as Array<{ name: string; text: string }> | undefined
 

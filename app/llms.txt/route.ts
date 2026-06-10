@@ -7,7 +7,7 @@ export const revalidate = false
 type Page = InferPageType<typeof source>
 
 function getDesc(page: Page): string {
-  const data = page.data as Record<string, unknown>
+  const data = page.data as unknown as Record<string, unknown>
   return (data.llmsDescription as string | undefined) ?? page.data.description ?? page.data.title
 }
 
