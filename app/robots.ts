@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import type { MetadataRoute } from 'next'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://docs.truecalc.app'
