@@ -1,0 +1,18 @@
+{
+  "title": "By industry",
+  "root": true,
+  "pages": [
+    "index",
+    "education",
+    "engineering",
+    "finance",
+    "hr",
+    "lending",
+    "operations",
+    "personal-finance",
+    "real-estate",
+    "retail",
+    "sales",
+    "science"
+  ]
+}
