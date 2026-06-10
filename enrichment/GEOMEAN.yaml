@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GEOMEAN instead of AVERAGE?"
+    a: "Use GEOMEAN when averaging growth rates, ratios, or percentages where the values compound multiplicatively, such as annual investment returns or population growth rates."
+use_cases:
+  - title: "Average compound annual growth rate"
+    formula: "=GEOMEAN(1,2,3,4,5,6,7,8,9,10)"
+    industries: [finance, science]
+industries: [finance, science]
+related: [HARMEAN, AVERAGE, TRIMMEAN]

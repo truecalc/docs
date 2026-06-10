@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SQRTPI?"
+    a: "Use SQRTPI when you need the square root of a value multiplied by pi, which appears in formulas involving circular areas or normal distribution calculations."
+use_cases:
+  - title: "Square root of 9 times pi"
+    formula: "=SQRTPI(9)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SQRT, PI, POWER]

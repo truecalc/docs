@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COMBINA instead of COMBIN?"
+    a: "Use COMBINA when repetition is allowed; it counts combinations where items can be selected more than once, unlike COMBIN."
+use_cases:
+  - title: "Combinations with repetition"
+    formula: "=COMBINA(5,3)"
+    industries: [science, education]
+industries: [science, education]
+related: [COMBIN, PERMUT, FACT]

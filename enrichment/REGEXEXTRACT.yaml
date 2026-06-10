@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use REGEXEXTRACT?"
+    a: "Use REGEXEXTRACT to pull out the first substring that matches a regular expression pattern, such as extracting a product code or phone number from unstructured text."
+use_cases:
+  - title: "Extract digits from a mixed string"
+    formula: "=REGEXEXTRACT("Order 4521", "[0-9]+")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [REGEXMATCH, REGEXREPLACE, FIND, MID]

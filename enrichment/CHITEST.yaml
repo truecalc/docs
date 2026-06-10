@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHITEST?"
+    a: "Use CHITEST to compute the p-value for a chi-squared goodness-of-fit test — it is the legacy equivalent of CHISQ.TEST, retained for compatibility with older spreadsheets."
+use_cases:
+  - title: "p-value for chi-squared test of uniform fit over 6 categories (legacy)"
+    formula: "=CHITEST({11;15;8;10;2;14},{10;10;10;10;10;10})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHISQ.TEST, CHISQ.DIST.RT, CHIDIST]

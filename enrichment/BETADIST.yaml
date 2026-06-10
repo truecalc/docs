@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BETADIST?"
+    a: "Use BETADIST to evaluate the cumulative beta distribution CDF for a value x given shape parameters alpha and beta, optionally rescaled to a [lo, hi] interval — a legacy equivalent of BETA.DIST with cumulative=TRUE."
+use_cases:
+  - title: "Probability that project completion is at most 30% of the way through a scaled range"
+    formula: "=BETADIST(0.3,5,1,-1,1)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [BETAINV, BETA.DIST, BETA.INV]

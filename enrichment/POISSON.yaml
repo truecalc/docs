@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use POISSON?"
+    a: "Use POISSON (legacy) to compute the Poisson probability mass or cumulative distribution for the number of events in a fixed interval — for example, predicting how often a server receives exactly 2 requests per second given an average rate of 1."
+use_cases:
+  - title: "Probability of exactly 2 events given mean 1"
+    formula: "=POISSON(2,1,FALSE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [POISSON.DIST, NORM.DIST, BINOM.DIST]

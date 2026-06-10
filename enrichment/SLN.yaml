@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SLN?"
+    a: "Use SLN to compute the straight-line depreciation of an asset for a single period — the simplest depreciation method that spreads cost evenly over the asset's useful life."
+use_cases:
+  - title: "Annual depreciation on a $100 asset with $50 salvage over 10 years"
+    formula: "=SLN(100,50,10)"
+    industries: [finance, operations]
+industries: [finance, operations]
+related: [SYD, DB, DDB, VDB]

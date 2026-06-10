@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EXP?"
+    a: "Use EXP to raise the mathematical constant e to a given power; commonly used in growth, decay, and probability models."
+use_cases:
+  - title: "Compute e squared"
+    formula: "=EXP(2)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [LN, LOG, POWER]

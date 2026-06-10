@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FINDB instead of FIND?"
+    a: "Use FINDB when working with multibyte character sets (CJK text) and you need a byte-position rather than a character-position, or when conforming to byte-indexed string operations."
+use_cases:
+  - title: "Find byte position of a character in ASCII text"
+    formula: "=FINDB("n", "printing")"
+    industries: [operations]
+industries: [operations]
+related: [FIND, SEARCHB, SEARCH]

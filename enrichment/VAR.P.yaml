@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VAR.P instead of VAR.S?"
+    a: "Use VAR.P when your data represents the entire population (divides by n), not a sample — for example, calculating variance across all products in a catalog or all students in a class rather than a random subset."
+use_cases:
+  - title: "Population variance of a complete dataset"
+    formula: "=VAR.P(2,4,4,4,5,5,7,9)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [VAR.S, VARP, STDEV.P, VAR]

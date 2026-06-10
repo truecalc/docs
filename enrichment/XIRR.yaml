@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use XIRR instead of IRR?"
+    a: "Use XIRR when your cash flows occur on irregular (non-periodic) dates — XIRR takes an explicit dates array so each cash flow is discounted by its exact time distance, whereas IRR assumes equally spaced periods."
+use_cases:
+  - title: "IRR for irregular cash flows with initial investment"
+    formula: "=XIRR({-4000,200,250,300},{DATE(2012,1,1),DATE(2012,6,23),DATE(2013,5,12),DATE(2014,2,9)},0.09)"
+    industries: [finance]
+industries: [finance]
+related: [IRR, XNPV, NPV]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use RANK.AVG instead of RANK.EQ?"
+    a: "Use RANK.AVG when your dataset contains ties and you want tied values to share the average of the positions they would have occupied, which avoids gaps in the ranking sequence and is required in many statistical tests."
+use_cases:
+  - title: "Rank a value in ascending order"
+    formula: "=RANK.AVG(5,{1,2,3,4,5,6,7,8,9,10},TRUE)"
+    industries: [science, hr]
+industries: [science, hr]
+related: [RANK.EQ, PERCENTRANK.INC, LARGE, SMALL]

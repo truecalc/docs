@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I use AMORLINC?"
+    a: "Use AMORLINC to calculate straight-line depreciation under the French accounting system, where assets are depreciated by a fixed annual rate with a pro-rated first period based on the purchase date."
+use_cases:
+  - title: "Linear depreciation for a fixed asset (French system)"
+    formula: "=AMORLINC(1000,DATE(1969,7,20),DATE(1969,8,20),100,6,0.15)"
+    industries: [finance, real-estate]
+industries: [finance, real-estate]
+related: [AMORDEGRC, SLN, DB, DDB]

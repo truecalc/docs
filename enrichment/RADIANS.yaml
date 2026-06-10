@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I need RADIANS?"
+    a: "Use RADIANS to convert degree values to radians before passing them to trigonometric functions like SIN, COS, or TAN, which expect radian inputs."
+use_cases:
+  - title: "Convert 180 degrees to radians"
+    formula: "=RADIANS(180)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [DEGREES, PI, SIN, COS]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BETAINV?"
+    a: "Use BETAINV to find the value x at which the beta CDF equals a given probability p — useful for inverting beta distribution probabilities in project risk or Bayesian analysis; it is the legacy equivalent of BETA.INV."
+use_cases:
+  - title: "Find the 13th-percentile point of a beta distribution scaled to [-1, 1]"
+    formula: "=BETAINV(0.13,5,1,-1,1)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [BETADIST, BETA.DIST, BETA.INV]

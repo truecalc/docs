@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TINV?"
+    a: "TINV is the legacy two-tailed inverse t-distribution function; it is equivalent to T.INV.2T and should only be used when maintaining older spreadsheets — for new models use T.INV or T.INV.2T for clarity."
+use_cases:
+  - title: "Legacy two-tailed critical t-value"
+    formula: "=TINV(0.05,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.INV.2T, T.INV, TDIST]

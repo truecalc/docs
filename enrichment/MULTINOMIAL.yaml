@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When would I use MULTINOMIAL in a spreadsheet?"
+    a: "Use MULTINOMIAL to compute the number of ways to partition a set into ordered groups — useful in combinatorics, probability models, and quality-control sampling scenarios."
+use_cases:
+  - title: "Multinomial coefficient for three groups of sizes 1, 2, 3"
+    formula: "=MULTINOMIAL(1,2,3)"
+    industries: [science, education]
+industries: [science, education]
+related: [COMBIN, PERMUT]

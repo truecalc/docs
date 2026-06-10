@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PERCENTILE.INC?"
+    a: "Use PERCENTILE.INC when you want the inclusive percentile where k=0 returns the minimum and k=1 returns the maximum. It is identical to PERCENTILE and is the modern preferred name — use it in new work instead of the bare PERCENTILE alias."
+use_cases:
+  - title: "50th percentile (median) inclusive"
+    formula: "=PERCENTILE.INC({1,2,3,4,5,6,7,8,9,10},0.5)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [PERCENTILE, PERCENTILE.EXC, QUARTILE.INC, MEDIAN]

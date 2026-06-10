@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use UNICHAR?"
+    a: "Use UNICHAR to insert a Unicode character by its code point number, useful for adding special symbols, currency signs, or emoji in formulas."
+use_cases:
+  - title: "Get the letter A from its Unicode code point"
+    formula: "=UNICHAR(65)"
+    industries: [operations, education]
+industries: [operations, education]
+related: [UNICODE, CHAR, CODE]

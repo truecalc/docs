@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TO_PURE_NUMBER?"
+    a: "Use TO_PURE_NUMBER to strip any currency, percentage, or date formatting from a value and return a plain number you can use in arithmetic."
+use_cases:
+  - title: "Strip formatting from a number"
+    formula: "=TO_PURE_NUMBER(42)"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [TO_DATE, TO_DOLLARS, TO_PERCENT, VALUE]

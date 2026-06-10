@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMLOG instead of IMLOG10 or IMLOG2?"
+    a: "Use IMLOG when you need the logarithm of a complex number at an arbitrary base; use IMLOG10 or IMLOG2 as shortcuts for the common bases 10 and 2."
+industries: [engineering, science]
+related: [IMLOG10, IMLOG2, IMLN, COMPLEX]

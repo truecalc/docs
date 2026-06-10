@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use QUARTILE.EXC instead of QUARTILE.INC?"
+    a: "Use QUARTILE.EXC when you want quartiles calculated using an exclusive method that excludes the minimum and maximum, which is preferred in some statistical disciplines and box-plot standards."
+use_cases:
+  - title: "Exclusive Q1 of a dataset"
+    formula: "=QUARTILE.EXC({6,7,15,36,39,40,41,42,43,47,49},1)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [QUARTILE.INC, QUARTILE, PERCENTILE.EXC, MEDIAN]

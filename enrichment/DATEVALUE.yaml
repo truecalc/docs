@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DATEVALUE?"
+    a: "Use DATEVALUE to convert a date stored as text into a numeric serial number — useful when dates imported from external systems arrive as strings and you need to perform arithmetic or comparisons on them."
+use_cases:
+  - title: "Convert an ISO date string to a serial number"
+    formula: "=DATEVALUE("2026-06-07")"
+    industries: [operations]
+industries: [operations]
+related: [DATE, DAYS, DATEIF]

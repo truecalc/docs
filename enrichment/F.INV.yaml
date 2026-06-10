@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use F.INV?"
+    a: "Use F.INV to find the critical value of the F-distribution for a given left-tail probability, useful for setting significance thresholds in ANOVA tests."
+use_cases:
+  - title: "Critical F-value at 95% confidence"
+    formula: "=F.INV(0.95,4,5)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [F.INV.RT, F.DIST, F.TEST]

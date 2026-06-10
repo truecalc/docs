@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DMAX?"
+    a: "Use DMAX to find the highest value in a field among only the rows that match your criteria — useful for finding the top score, highest sale, or maximum reading within a filtered subset of a database table."
+use_cases:
+  - title: "Highest score among students above 75"
+    formula: "=DMAX({"Name","Score";"Alice",90;"Bob",80;"Carol",70},"Score",{"Score";">75"})"
+    industries: [education, operations]
+industries: [operations, education]
+related: [DMIN, DSUM, MAXIFS]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DVARP instead of DVAR?"
+    a: "Use DVARP when the rows matching your criteria represent the entire population — it divides by N rather than N−1 and gives a lower (population) variance."
+use_cases:
+  - title: "Population variance for a category"
+    formula: "=DVARP({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [DVAR, DSTDEVP, VARP]

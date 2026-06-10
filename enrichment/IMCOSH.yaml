@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMCOSH?"
+    a: "Use IMCOSH to compute the hyperbolic cosine of a complex number, which appears in solutions involving transmission lines, catenary curves, and complex analysis."
+use_cases:
+  - title: "Hyperbolic cosine of complex number 1+i"
+    formula: "=IMCOSH("1+i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMCOS, IMSINH, IMEXP]

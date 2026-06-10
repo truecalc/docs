@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MINUTE?"
+    a: "Use MINUTE to extract the minute component (0–59) from a time serial number or time string, useful when computing elapsed time or grouping events into hourly bins."
+use_cases:
+  - title: "Extract the minute from a constructed time"
+    formula: "=MINUTE(TIME(11,40,59))"
+    industries: [operations, engineering]
+industries: [operations, engineering]
+related: [HOUR, SECOND, TIME, TIMEVALUE]

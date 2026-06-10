@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DELTA?"
+    a: "Use DELTA to test whether two numbers are equal, returning 1 if they are and 0 if they are not — useful for counting matches or building conditional sums without IF."
+use_cases:
+  - title: "Test whether two values are equal"
+    formula: "=DELTA(2,2)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [GESTEP, IF, EXACT]

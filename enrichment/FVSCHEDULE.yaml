@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FVSCHEDULE instead of FV?"
+    a: "Use FVSCHEDULE when interest rates vary period by period — for example, an investment earning different rates each year — whereas FV assumes a single constant rate."
+use_cases:
+  - title: "Future value with variable annual rates"
+    formula: "=FVSCHEDULE(10000,{0.1,0.95,0.9,0.85})"
+    industries: [finance, personal-finance]
+industries: [finance, personal-finance]
+related: [FV, NPV, XNPV]

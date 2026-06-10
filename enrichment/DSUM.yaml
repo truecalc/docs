@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DSUM?"
+    a: "Use DSUM to total a field across only the rows that match one or more criteria in a database table — it is the database-style equivalent of SUMIF but works with header-named criteria ranges."
+use_cases:
+  - title: "Total revenue for a specific product"
+    formula: "=DSUM({"Product","Revenue";"Apple",100;"Banana",200;"Apple",150},"Revenue",{"Product";"Apple"})"
+    industries: [sales, operations]
+industries: [operations, sales]
+related: [DAVERAGE, DCOUNT, SUMIF]

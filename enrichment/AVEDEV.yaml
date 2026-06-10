@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use AVEDEV instead of STDEV?"
+    a: "Use AVEDEV to measure variability as the average absolute deviation from the mean; it is less sensitive to outliers than standard deviation and easier to interpret in plain terms."
+use_cases:
+  - title: "Average absolute deviation of a dataset"
+    formula: "=AVEDEV(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [STDEV, AVERAGE, VAR]

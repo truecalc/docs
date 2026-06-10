@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SUMX2MY2?"
+    a: "Use SUMX2MY2 to compute the sum of differences of squares (x squared minus y squared) across two arrays, useful in statistical comparisons and difference-of-squares calculations."
+use_cases:
+  - title: "Sum of squared differences between two equal arrays"
+    formula: "=SUMX2MY2({1,2,3},{1,2,3})"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SUMX2PY2, SUMXMY2, SUMPRODUCT]

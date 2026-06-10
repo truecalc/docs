@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VSTACK?"
+    a: "Use VSTACK to combine two or more arrays vertically into a single array — useful for merging data from separate table sections or combining monthly datasets into one continuous block."
+use_cases:
+  - title: "Combine two row arrays into one column"
+    formula: "=VSTACK({1,2},{3,4})"
+    industries: [operations]
+industries: [operations]
+related: [HSTACK, TOCOL, TRANSPOSE]

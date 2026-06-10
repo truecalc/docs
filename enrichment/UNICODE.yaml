@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use UNICODE instead of CODE?"
+    a: "Use UNICODE when you need the full Unicode code point of the first character, including characters outside the basic ASCII range such as accented letters, CJK characters, or emoji."
+use_cases:
+  - title: "Get the Unicode code point of the first character"
+    formula: "=UNICODE("Alphabet")"
+    industries: [operations, education]
+industries: [operations, education]
+related: [UNICHAR, CODE, CHAR]

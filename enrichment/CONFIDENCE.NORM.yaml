@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CONFIDENCE.NORM?"
+    a: "Use CONFIDENCE.NORM to compute the half-width of a confidence interval when the population standard deviation is known and the sampling distribution is normal — the modern replacement for CONFIDENCE."
+use_cases:
+  - title: "95% confidence interval half-width with stdev 1.6 and sample size 250"
+    formula: "=CONFIDENCE.NORM(0.05,1.6,250)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CONFIDENCE, CONFIDENCE.T, NORM.INV]

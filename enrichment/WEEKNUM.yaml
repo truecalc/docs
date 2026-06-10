@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use WEEKNUM instead of ISOWEEKNUM?"
+    a: "Use WEEKNUM for US-style week numbers where week 1 begins on January 1 (configurable start day); use ISOWEEKNUM for ISO 8601 European-style weeks."
+use_cases:
+  - title: "US-style week number starting on Sunday"
+    formula: "=WEEKNUM(DATE(1969,7,20),1)"
+    industries: [operations, retail]
+industries: [operations, retail]
+related: [ISOWEEKNUM, WEEKDAY, DATE, DAY]

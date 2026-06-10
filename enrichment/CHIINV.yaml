@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHIINV?"
+    a: "Use CHIINV to find the chi-squared critical value whose right-tail probability equals p — the legacy equivalent of CHISQ.INV.RT, used to determine rejection thresholds in hypothesis tests."
+use_cases:
+  - title: "Chi-squared critical value at 5% significance with 4 degrees of freedom"
+    formula: "=CHIINV(0.05,4)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHIDIST, CHISQ.INV.RT, CHISQ.TEST]

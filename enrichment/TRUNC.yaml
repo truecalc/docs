@@ -1,0 +1,12 @@
+when_to_use:
+  - q: "When should I use TRUNC instead of INT or FLOOR?"
+    a: "Use TRUNC when you want to drop decimal places without rounding, especially for negative numbers — unlike INT, TRUNC always truncates toward zero."
+use_cases:
+  - title: "Truncate pi to 2 decimal places"
+    formula: "=TRUNC(3.141592654,2)"
+    industries: [science, engineering]
+  - title: "Drop fractional part of a positive number"
+    formula: "=TRUNC(1.23)"
+    industries: [finance, operations]
+industries: [finance, operations, science, engineering]
+related: [INT, FLOOR, ROUND, ROUNDDOWN]

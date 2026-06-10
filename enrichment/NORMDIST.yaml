@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORMDIST?"
+    a: "NORMDIST is the legacy form of NORM.DIST; it takes the same four arguments. Use it only when maintaining old spreadsheets. For new work, prefer NORM.DIST which is more clearly named and consistent with other modern statistical functions."
+use_cases:
+  - title: "Cumulative normal probability at x=2.4"
+    formula: "=NORMDIST(2.4,1,4,TRUE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [NORM.DIST, NORM.INV, NORMINV]

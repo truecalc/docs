@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSIN?"
+    a: "Use IMSIN to compute the sine of a complex number, for example when evaluating complex Fourier series terms or solving differential equations with complex boundary conditions."
+industries: [engineering, science]
+related: [IMCOS, IMTAN, IMSINH, COMPLEX]

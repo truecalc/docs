@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NOMINAL?"
+    a: "Use NOMINAL to convert an effective annual rate back to the equivalent nominal rate compounded at a given frequency — the reverse of EFFECT, useful when comparing loan products quoted differently."
+use_cases:
+  - title: "Nominal rate equivalent to an 85% effective rate"
+    formula: "=NOMINAL(0.85,12)"
+    industries: [finance, lending, personal-finance]
+industries: [finance, lending, personal-finance]
+related: [EFFECT, RATE]

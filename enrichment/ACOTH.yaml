@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ACOTH?"
+    a: "Use ACOTH to compute the inverse hyperbolic cotangent of a value; the input must have absolute value greater than 1."
+use_cases:
+  - title: "Inverse hyperbolic cotangent of a value"
+    formula: "=ACOTH(4)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COTH, ATANH, ACOSH]

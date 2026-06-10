@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VARA instead of VAR.S?"
+    a: "Use VARA when your dataset may include text strings (counted as 0) or logical values (TRUE=1, FALSE=0) that should be included in the variance calculation — VAR.S ignores non-numeric cells entirely, while VARA counts them."
+use_cases:
+  - title: "Sample variance of a numeric dataset"
+    formula: "=VARA(2,4,4,4,5,5,7,9)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [VAR.S, VARPA, STDEV.S]

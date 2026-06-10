@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CUMIPMT instead of IPMT?"
+    a: "Use CUMIPMT when you need the total interest paid over a range of periods — for example, the interest cost in year one of a mortgage — rather than a single period's interest."
+use_cases:
+  - title: "Total interest paid over first 5 periods"
+    formula: "=CUMIPMT(0.12,12,100,1,5,0)"
+    industries: [finance, lending]
+industries: [finance, lending, real-estate]
+related: [IPMT, CUMPRINC, PMT]

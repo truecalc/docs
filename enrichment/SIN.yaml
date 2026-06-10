@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SIN?"
+    a: "Use SIN when you need the sine of an angle expressed in radians, such as for wave calculations, geometry, or physics simulations."
+use_cases:
+  - title: "Sine of 1 radian"
+    formula: "=SIN(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COS, TAN, ASIN, PI]

@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use HYPERLINK?"
+    a: "Use HYPERLINK to create a clickable link in a cell, displaying a friendly label while pointing to a URL; in formula evaluation contexts it returns the label or URL string."
+industries: [operations, sales]
+related: [ENCODEURL, ISURL]

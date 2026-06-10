@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SINH?"
+    a: "Use SINH to compute the hyperbolic sine of a number, which appears in physics, engineering, and certain financial growth models."
+use_cases:
+  - title: "Hyperbolic sine of 1"
+    formula: "=SINH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COSH, TANH, SIN]

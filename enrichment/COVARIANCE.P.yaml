@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COVARIANCE.P?"
+    a: "Use COVARIANCE.P to compute population covariance when your data represents the entire population, not a sample — it divides by n rather than n-1."
+use_cases:
+  - title: "Population covariance between two variables across all observations"
+    formula: "=COVARIANCE.P({2,5,7,1,8},{4,3,6,1,5})"
+    industries: [finance, science]
+industries: [finance, science]
+related: [COVARIANCE.S, COVAR, CORREL]

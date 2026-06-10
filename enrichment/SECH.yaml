@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When would I use SECH in a spreadsheet?"
+    a: "Use SECH (hyperbolic secant) in physics and engineering models involving hyperbolic functions, such as wave mechanics, catenary curves, or neural-network activation functions."
+use_cases:
+  - title: "Hyperbolic secant of 1"
+    formula: "=SECH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SEC, COSH, TANH]

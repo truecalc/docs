@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TIME?"
+    a: "Use TIME to build a time serial number from individual hour, minute, and second components so you can add it to a date serial or compare times programmatically."
+use_cases:
+  - title: "Create a time serial from hour, minute, second"
+    formula: "=TIME(11,40,59)"
+    industries: [operations, engineering]
+industries: [operations, engineering]
+related: [HOUR, MINUTE, SECOND, TIMEVALUE, NOW]

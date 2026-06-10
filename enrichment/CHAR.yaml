@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use CHAR?"
+    a: "Use CHAR when you need to insert a special character — such as a line break (CHAR(10)), tab (CHAR(9)), or any ASCII/Unicode symbol — into a formula result without typing the character directly."
+industries: [operations]
+related: [CODE, UNICHAR, CLEAN]

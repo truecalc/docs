@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PRICE?"
+    a: "Use PRICE to calculate the fair market price per $100 face value of a coupon-bearing bond given its yield — the standard formula for bond valuation and mark-to-market reporting."
+use_cases:
+  - title: "Price of a coupon bond per $100 face value"
+    formula: "=PRICE(DATE(2010,1,2),DATE(2039,12,31),0.03,1.2,100,2,0)"
+    industries: [finance]
+industries: [finance]
+related: [YIELD, DURATION, MDURATION]

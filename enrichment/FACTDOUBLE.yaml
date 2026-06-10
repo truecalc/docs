@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FACTDOUBLE?"
+    a: "Use FACTDOUBLE to compute the double factorial (product of all integers of the same parity up to n); used in combinatorics and physics."
+use_cases:
+  - title: "Double factorial of 7"
+    formula: "=FACTDOUBLE(7)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [FACT, COMBIN, PERMUT]

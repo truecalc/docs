@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORMINV?"
+    a: "NORMINV is the legacy form of NORM.INV. Use it only when maintaining old spreadsheets; for new work prefer NORM.INV. Both return the value below which a given cumulative probability falls in a normal distribution."
+use_cases:
+  - title: "75th percentile of normal distribution (mean=1, stdev=4)"
+    formula: "=NORMINV(0.75,1,4)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [NORM.INV, NORM.DIST, NORMDIST]

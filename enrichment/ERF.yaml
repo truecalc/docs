@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ERF?"
+    a: "Use ERF to compute the error function integrated from a lower limit (and optionally to an upper limit) — it appears in probability, statistics, and diffusion/heat-transfer calculations."
+use_cases:
+  - title: "Error function value at x=1"
+    formula: "=ERF(1)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [ERFC, ERF.PRECISE, ERFC.PRECISE]

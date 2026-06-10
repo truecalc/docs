@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use TOROW?"
+    a: "Use TOROW to flatten a 2-D array or multi-column range into a single row — useful when building horizontal lookup tables or feeding data into HSTACK and other row-oriented functions."
+industries: [operations]
+related: [TOCOL, TRANSPOSE, HSTACK]

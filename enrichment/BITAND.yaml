@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BITAND?"
+    a: "Use BITAND to apply a bitwise AND mask to two integers, for example to test whether a specific bit flag is set in a status value."
+use_cases:
+  - title: "Test whether a bit flag is set using bitwise AND"
+    formula: "=BITAND(14,4)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BITOR, BITXOR, BITLSHIFT, BITRSHIFT]

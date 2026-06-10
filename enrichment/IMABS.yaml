@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMABS?"
+    a: "Use IMABS to compute the modulus (absolute value) of a complex number, i.e. the distance from the origin in the complex plane — essential in AC circuit analysis and signal processing."
+use_cases:
+  - title: "Magnitude of a 3-4i complex number"
+    formula: "=IMABS("3+4i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMARGUMENT, COMPLEX, IMAGINARY]

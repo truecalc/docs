@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COUPPCD?"
+    a: "Use COUPPCD to find the coupon date immediately before the settlement date — typically needed to calculate how much interest has accrued since the last payment."
+use_cases:
+  - title: "Previous coupon date before settlement"
+    formula: "=COUPPCD(DATE(2010,2,1),DATE(2019,12,31),4)"
+    industries: [finance]
+industries: [finance]
+related: [COUPNCD, COUPDAYBS, COUPNUM]

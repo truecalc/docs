@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use TO_TEXT?"
+    a: "Use TO_TEXT to convert any value — number, date, boolean — to its text representation, which is required when concatenating with strings or passing to text functions."
+industries: [operations, finance]
+related: [TEXT, TO_PURE_NUMBER, VALUE, CONCATENATE]

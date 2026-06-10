@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ATAN instead of ATAN2?"
+    a: "Use ATAN when you have a single ratio value; use ATAN2 when you have separate x and y coordinates and need the correct quadrant."
+use_cases:
+  - title: "Arctangent of a value"
+    formula: "=ATAN(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [ATAN2, ASIN, ACOS, DEGREES]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GROWTH?"
+    a: "Use GROWTH to project future values along an exponential trend fitted to known data points, suitable for modeling compound-growth scenarios."
+use_cases:
+  - title: "Fit an exponential curve to doubling data"
+    formula: "=GROWTH({2,4,8,16,32})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [LOGEST, TREND, LINEST]

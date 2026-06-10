@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T?"
+    a: "Use T to safely extract the text value from a cell or expression that may contain either text or numbers; it returns the text as-is or an empty string for non-text values."
+use_cases:
+  - title: "Return text from a text value"
+    formula: "=T("hello")"
+    industries: [operations]
+industries: [operations]
+related: [TEXT, N, ISTEXT]

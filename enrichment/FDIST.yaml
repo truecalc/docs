@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use FDIST instead of F.DIST.RT?"
+    a: "FDIST is the legacy equivalent of F.DIST.RT; use F.DIST.RT in new work. FDIST is retained for compatibility with older spreadsheets."
+industries: [science, operations]
+related: [F.DIST.RT, F.DIST, FINV]

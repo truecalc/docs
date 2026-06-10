@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BIN2OCT?"
+    a: "Use BIN2OCT to convert a binary (base-2) string to its octal representation, which is useful in Unix file-permission calculations and low-level systems work."
+use_cases:
+  - title: "Convert a binary string to octal"
+    formula: "=BIN2OCT("1000")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BIN2DEC, BIN2HEX, OCT2DEC, OCT2BIN]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PERCENTRANK.INC?"
+    a: "Use PERCENTRANK.INC when you need an inclusive percentile rank that can return 0 for the minimum value and 1 for the maximum value in the dataset, which is standard for grading on a curve or comparing scores within a fixed range."
+use_cases:
+  - title: "Inclusive percentile rank of a score in a dataset"
+    formula: "=PERCENTRANK.INC({1,2,3,4,5,6,7,8,9,10},5)"
+    industries: [science, education]
+industries: [science, education]
+related: [PERCENTRANK.EXC, PERCENTILE.INC, RANK.EQ]

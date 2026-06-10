@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COLUMNS?"
+    a: "Use COLUMNS to count the number of columns in an array or range, often used in dynamic formulas to adapt to variable-width data."
+use_cases:
+  - title: "Count columns in a literal array"
+    formula: "=COLUMNS({1,2,3})"
+    industries: [operations, science]
+industries: [operations, science]
+related: [ROWS, ARRAY_CONSTRAIN, CHOOSECOLS]

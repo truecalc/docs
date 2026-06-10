@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LOGEST?"
+    a: "Use LOGEST to fit an exponential regression curve to data and return the base and coefficient, useful when growth is multiplicative rather than additive."
+use_cases:
+  - title: "Exponential growth base for doubling data"
+    formula: "=LOGEST({2,4,8,16},{1,2,3,4})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [LINEST, GROWTH, TREND]

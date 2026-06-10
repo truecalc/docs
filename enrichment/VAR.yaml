@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VAR?"
+    a: "Use VAR to compute the sample variance of a set of values — it divides by n-1 (Bessel's correction) to give an unbiased estimate of the population variance when working with a sample rather than an entire population."
+use_cases:
+  - title: "Sample variance of a dataset"
+    formula: "=VAR(2,4,4,4,5,5,7,9)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [VAR.S, VAR.P, STDEV, VARA]

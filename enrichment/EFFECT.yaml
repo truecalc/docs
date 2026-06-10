@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EFFECT instead of the stated nominal rate?"
+    a: "Use EFFECT to find the true annual cost of a loan or yield of an investment once compounding is accounted for — always higher than the nominal rate when compounding is more frequent than annual."
+use_cases:
+  - title: "Effective annual rate with monthly compounding"
+    formula: "=EFFECT(0.99,12)"
+    industries: [finance, lending, personal-finance]
+industries: [finance, lending, personal-finance]
+related: [NOMINAL, RATE, APR]

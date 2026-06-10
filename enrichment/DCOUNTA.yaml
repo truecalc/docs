@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DCOUNTA instead of DCOUNT?"
+    a: "Use DCOUNTA when the field you are counting contains text or mixed values, not just numbers — DCOUNTA counts all non-empty cells that match the criteria, while DCOUNT only counts numeric cells."
+use_cases:
+  - title: "Count employees in a department"
+    formula: "=DCOUNTA({"Name","Dept";"Alice","HR";"Bob","IT";"Carol","HR"},"Dept",{"Dept";"HR"})"
+    industries: [hr, operations]
+industries: [hr, operations]
+related: [DCOUNT, DSUM, COUNTA]

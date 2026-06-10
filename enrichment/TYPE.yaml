@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TYPE?"
+    a: "Use TYPE to inspect what kind of value occupies a cell — it returns 1 for numbers, 2 for text, 4 for booleans, 16 for errors, and 64 for arrays, letting you branch logic based on data kind."
+use_cases:
+  - title: "Check that a value is numeric"
+    formula: "=TYPE(42)"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [ISNUMBER, ISTEXT, ISLOGICAL]

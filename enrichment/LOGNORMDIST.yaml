@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use LOGNORMDIST?"
+    a: "LOGNORMDIST is the legacy three-argument form of LOGNORM.DIST that always returns the cumulative probability. Use it only when maintaining old spreadsheets; for new work prefer LOGNORM.DIST with the explicit cumulative argument."
+industries: [science, finance]
+related: [LOGNORM.DIST, LOGNORM.INV, LOGINV]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMCSC?"
+    a: "Use IMCSC to compute the cosecant (reciprocal of sine) of a complex number, which appears in advanced signal processing and complex analysis identities."
+use_cases:
+  - title: "Cosecant of complex number 1+i"
+    formula: "=IMCSC("1+i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMSIN, IMSEC, IMCOT]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ERF.PRECISE instead of ERF?"
+    a: "Use ERF.PRECISE when you need a single-argument error function evaluated from 0 to x with full precision; it is identical to ERF(x) but does not accept an upper_limit argument."
+use_cases:
+  - title: "Precise error function at x=2"
+    formula: "=ERF.PRECISE(2)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [ERF, ERFC, ERFC.PRECISE]

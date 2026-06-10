@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TREND?"
+    a: "Use TREND to project values along a least-squares linear fit — useful for forecasting sales, costs, or any metric that grows or shrinks at a roughly constant rate over time."
+use_cases:
+  - title: "Forecast next value in a linear series"
+    formula: "=TREND({2,4,6,8},{1,2,3,4},{5})"
+    industries: [operations, science]
+industries: [operations, science]
+related: [FORECAST, LINEST, GROWTH]

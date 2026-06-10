@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISERROR?"
+    a: "Use ISERROR to test whether any formula result is an error of any kind — useful in conjunction with IF to substitute a fallback value whenever a calculation fails, including #N/A."
+use_cases:
+  - title: "Catch any error from a division operation"
+    formula: "=ISERROR(1/0)"
+    industries: [operations]
+industries: [operations]
+related: [ISERR, ISNA, IFERROR, ERROR.TYPE]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISO.CEILING instead of CEILING?"
+    a: "Use ISO.CEILING when you want the sign of the significance argument to be ignored — it always rounds toward positive infinity, matching the ISO standard behaviour."
+use_cases:
+  - title: "Round up a negative price to the nearest 0.1"
+    formula: "=ISO.CEILING(-23.25,0.1)"
+    industries: [finance, retail]
+industries: [finance, retail]
+related: [CEILING, FLOOR.PRECISE, FLOOR.MATH]

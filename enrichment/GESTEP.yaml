@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GESTEP?"
+    a: "Use GESTEP to test whether a number is greater than or equal to a threshold, returning 1 (true) or 0 (false) — useful for counting values that meet or exceed a step without an IF formula."
+use_cases:
+  - title: "Test whether a value meets a threshold"
+    formula: "=GESTEP(5,2)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [DELTA, IF]

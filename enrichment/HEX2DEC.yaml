@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use HEX2DEC?"
+    a: "Use HEX2DEC to convert a hexadecimal string (e.g. a color code or hardware address) to a decimal integer for arithmetic or comparison."
+use_cases:
+  - title: "Convert hex FF to decimal"
+    formula: "=HEX2DEC("F3")"
+    industries: [engineering]
+industries: [engineering]
+related: [DEC2HEX, HEX2BIN, HEX2OCT]

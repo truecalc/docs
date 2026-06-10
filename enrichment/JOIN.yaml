@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use JOIN instead of CONCATENATE or TEXTJOIN?"
+    a: "Use JOIN when you want to combine multiple values or an array into a single string separated by a delimiter; it is simpler than TEXTJOIN for flat lists without blank-filtering needs."
+industries: [operations, sales]
+related: [TEXTJOIN, CONCATENATE, SPLIT]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BYROW?"
+    a: "Use BYROW to apply a LAMBDA function to each row of an array individually, returning a single aggregated result per row."
+use_cases:
+  - title: "Sum each row of a 2x2 matrix"
+    formula: "=BYROW({1,2;3,4},LAMBDA(row,SUM(row)))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BYCOL, MAP, REDUCE]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LOG instead of LOG10 or LN?"
+    a: "Use LOG when you need a logarithm in an arbitrary base — for example base 2 for information-theoretic calculations or any other custom base."
+use_cases:
+  - title: "Number of bits needed to represent 128 values"
+    formula: "=LOG(128,2)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [LOG10, LN]

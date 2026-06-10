@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COUPDAYSNC?"
+    a: "Use COUPDAYSNC to find the number of days from the settlement date to the next coupon payment — useful for pricing bonds between coupon dates."
+use_cases:
+  - title: "Days remaining until next coupon"
+    formula: "=COUPDAYSNC(DATE(2010,2,1),DATE(2019,12,31),4)"
+    industries: [finance]
+industries: [finance]
+related: [COUPDAYBS, COUPDAYS, COUPNCD]

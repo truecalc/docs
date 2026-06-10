@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use FINV instead of F.INV.RT?"
+    a: "FINV is the legacy version of F.INV.RT; use F.INV.RT in new work. FINV exists for backward compatibility with older spreadsheets."
+industries: [science, operations]
+related: [F.INV.RT, F.INV, FDIST]

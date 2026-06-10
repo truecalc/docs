@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LN instead of LOG?"
+    a: "Use LN when you need the natural logarithm (base e), common in continuous growth models, compound interest formulas, and scientific calculations."
+use_cases:
+  - title: "Natural log of 100"
+    formula: "=LN(100)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [LOG, LOG10, EXP]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ERFC.PRECISE instead of ERFC?"
+    a: "Use ERFC.PRECISE for a precise single-argument complementary error function; it behaves identically to ERFC(x) but was introduced for compatibility with the ISO-standard function naming."
+use_cases:
+  - title: "Complementary error function (precise) at x=1"
+    formula: "=ERFC.PRECISE(1)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [ERFC, ERF, ERF.PRECISE]

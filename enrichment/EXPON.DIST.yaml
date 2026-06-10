@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EXPON.DIST?"
+    a: "Use EXPON.DIST to compute the exponential distribution PDF (cumulative=FALSE) or CDF (cumulative=TRUE) — modeling the time between events in a Poisson process, such as waiting times or equipment failure intervals."
+use_cases:
+  - title: "Probability that a service time exceeds 4 units given average rate 0.5 per unit"
+    formula: "=EXPON.DIST(4,0.5,TRUE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [EXPONDIST, POISSON.DIST, GAMMA.DIST]

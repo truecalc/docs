@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SECOND?"
+    a: "Use SECOND to extract the seconds component (0–59) from a time serial number or time string, useful when you need sub-minute precision from a timestamp."
+use_cases:
+  - title: "Extract the seconds from a constructed time"
+    formula: "=SECOND(TIME(11,40,59))"
+    industries: [operations, engineering]
+industries: [operations, engineering]
+related: [HOUR, MINUTE, TIME, TIMEVALUE]

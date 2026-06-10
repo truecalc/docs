@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FLOOR.MATH instead of FLOOR?"
+    a: "Use FLOOR.MATH when you need configurable rounding direction for negative numbers — the mode argument lets you round toward zero instead of away from it."
+use_cases:
+  - title: "Round down a measurement to the nearest 0.5"
+    formula: "=FLOOR.MATH(7.7,0.5)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [FLOOR, CEILING, MROUND]

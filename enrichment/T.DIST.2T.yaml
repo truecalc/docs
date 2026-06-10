@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T.DIST.2T?"
+    a: "Use T.DIST.2T when you need the two-tailed p-value for a Student's t-test — it returns the probability that a t-statistic is at least as extreme as x in absolute value, which is the standard output for symmetric hypothesis tests."
+use_cases:
+  - title: "Two-tailed p-value for a t-statistic"
+    formula: "=T.DIST.2T(1.96,60)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.DIST, T.DIST.RT, T.TEST, TDIST]

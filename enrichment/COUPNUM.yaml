@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COUPNUM?"
+    a: "Use COUPNUM to count the total number of coupon payments remaining between the settlement date and maturity — useful for bond cash-flow analysis."
+use_cases:
+  - title: "Remaining coupon payments on a bond"
+    formula: "=COUPNUM(DATE(2010,2,1),DATE(2019,12,31),4)"
+    industries: [finance]
+industries: [finance]
+related: [COUPNCD, COUPPCD, DURATION]

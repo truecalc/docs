@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GAMMA.DIST?"
+    a: "Use GAMMA.DIST to model wait times, failure rates, or skewed positive-value phenomena by computing the gamma distribution CDF or PDF for reliability and queuing analysis."
+use_cases:
+  - title: "Gamma CDF for a reliability model"
+    formula: "=GAMMA.DIST(4.79,1.234,7,TRUE)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [GAMMA.INV, GAMMA, GAMMADIST]

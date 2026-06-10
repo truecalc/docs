@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use CLEAN?"
+    a: "Use CLEAN when you have imported text from external sources — databases, web scrapes, or legacy files — that may contain non-printable control characters (ASCII 0–31) causing display or parsing issues."
+industries: [operations]
+related: [TRIM, SUBSTITUTE, CHAR]

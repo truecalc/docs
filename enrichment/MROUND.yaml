@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MROUND instead of ROUND?"
+    a: "Use MROUND when you need to round to a specific multiple rather than a number of decimal places — for example rounding prices to the nearest 0.05 or time values to the nearest 15 minutes."
+use_cases:
+  - title: "Round a quantity to the nearest case size of 14 units"
+    formula: "=MROUND(21,14)"
+    industries: [operations, retail]
+industries: [operations, retail]
+related: [ROUND, FLOOR, CEILING]

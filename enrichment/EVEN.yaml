@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EVEN?"
+    a: "Use EVEN to round a number up to the nearest even integer; useful when items must be packed or grouped in pairs."
+use_cases:
+  - title: "Round up to nearest even integer"
+    formula: "=EVEN(3)"
+    industries: [operations, retail]
+industries: [operations, retail]
+related: [ODD, CEILING, FLOOR, ROUND]

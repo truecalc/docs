@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CRITBINOM?"
+    a: "Use CRITBINOM to find the smallest integer k such that the binomial CDF is at least alpha — a legacy equivalent of BINOM.INV used for determining acceptance numbers in quality control sampling plans."
+use_cases:
+  - title: "Minimum acceptance number for 80% cumulative probability in a 100-trial binomial"
+    formula: "=CRITBINOM(100,0.005,0.8)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BINOM.INV, BINOM.DIST, BINOMDIST]

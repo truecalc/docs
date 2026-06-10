@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PERMUTATIONA instead of PERMUT?"
+    a: "Use PERMUTATIONA when repetition is allowed — for example, counting how many 2-digit codes can be formed from 3 digits where the same digit may appear twice."
+use_cases:
+  - title: "Permutations with repetition allowed"
+    formula: "=PERMUTATIONA(5,3)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [PERMUT, COMBIN, COMBINA]

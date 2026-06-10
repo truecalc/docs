@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use BASE?"
+    a: "Use BASE to convert a decimal integer into its string representation in another number base such as binary (base 2) or hexadecimal (base 16)."
+industries: [engineering, operations]
+related: [DECIMAL]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GAMMA?"
+    a: "Use GAMMA to compute the gamma function value for a given number, which is a generalization of factorial used in probability distributions and combinatorial analysis."
+use_cases:
+  - title: "Gamma function of a non-integer value"
+    formula: "=GAMMA(4.5)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [GAMMA.DIST, GAMMA.INV, GAMMALN]

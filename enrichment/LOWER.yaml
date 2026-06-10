@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LOWER?"
+    a: "Use LOWER to normalize text to lowercase before comparisons or before displaying user-facing strings in a consistent format."
+use_cases:
+  - title: "Normalize a name to lowercase"
+    formula: "=LOWER("Hello World")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [UPPER, PROPER, TRIM]

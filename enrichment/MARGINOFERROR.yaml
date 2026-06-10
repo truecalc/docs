@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use MARGINOFERROR?"
+    a: "Use MARGINOFERROR when you have a sample of numeric measurements and need to report the ± range of a confidence interval — for example, summarising survey responses, A/B test metrics, or quality-control sample results."
+industries: [science, operations]
+related: [CONFIDENCE.T, CONFIDENCE.NORM, STDEV.S, AVERAGE]

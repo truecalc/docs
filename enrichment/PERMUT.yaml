@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PERMUT?"
+    a: "Use PERMUT to count ordered arrangements of k items chosen from n distinct items without repetition, such as calculating how many ways a podium of 3 can be filled from 10 competitors."
+use_cases:
+  - title: "Ordered arrangements from a pool"
+    formula: "=PERMUT(10,3)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [COMBIN, PERMUTATIONA, FACT]

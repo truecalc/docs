@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BITRSHIFT?"
+    a: "Use BITRSHIFT to divide an integer by a power of two by shifting its bits right, which is useful for extracting upper bit fields or fast integer division."
+use_cases:
+  - title: "Right-shift to divide by a power of two"
+    formula: "=BITRSHIFT(16,4)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BITLSHIFT, BITAND, BITOR, BITXOR]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COVARIANCE.S?"
+    a: "Use COVARIANCE.S to compute sample covariance when your data is a sample drawn from a larger population — it divides by n-1 (Bessel's correction) for an unbiased estimate."
+use_cases:
+  - title: "Sample covariance between two variables from a subset of observations"
+    formula: "=COVARIANCE.S({2,5,7,1,8},{4,3,6,1,5})"
+    industries: [finance, science]
+industries: [finance, science]
+related: [COVARIANCE.P, COVAR, CORREL]

@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use OCT2BIN?"
+    a: "Use OCT2BIN to convert an octal number to its binary representation, useful in embedded systems or digital electronics work where register values are documented in octal but need to be compared against binary bit patterns."
+industries: [engineering, science]
+related: [OCT2DEC, OCT2HEX, BIN2OCT, DEC2BIN]

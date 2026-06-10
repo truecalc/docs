@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use UPPER?"
+    a: "Use UPPER to normalize text to uppercase for display purposes or case-insensitive comparisons where you want a consistent format."
+use_cases:
+  - title: "Convert a string to uppercase"
+    formula: "=UPPER("hello world")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [LOWER, PROPER, TRIM]

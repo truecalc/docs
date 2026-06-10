@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ADDRESS?"
+    a: "Use ADDRESS to build a cell-address string from row and column numbers — typically to construct a reference that is then passed to INDIRECT for a fully dynamic lookup."
+industries: [operations, finance]
+related: [INDIRECT, ROW, COLUMN]

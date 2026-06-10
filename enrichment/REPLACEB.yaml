@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use REPLACEB instead of REPLACE?"
+    a: "Use REPLACEB when you need to replace a portion of a string specified by byte position and byte length, which matters when working with multibyte character sets."
+industries: [operations]
+related: [REPLACE, MIDB, LEFTB, RIGHTB]

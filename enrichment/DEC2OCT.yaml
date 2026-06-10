@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DEC2OCT?"
+    a: "Use DEC2OCT to convert a decimal integer to its octal (base-8) string representation, optionally zero-padded to a specified number of digits."
+use_cases:
+  - title: "Convert decimal 8 to octal with padding"
+    formula: "=DEC2OCT(8, 3)"
+    industries: [engineering]
+industries: [engineering]
+related: [OCT2DEC, DEC2BIN, DEC2HEX]

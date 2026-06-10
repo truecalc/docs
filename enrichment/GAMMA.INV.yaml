@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use GAMMA.INV?"
+    a: "Use GAMMA.INV to find the gamma distribution quantile for a given probability, useful for determining threshold values in reliability or queuing models."
+use_cases:
+  - title: "Gamma quantile for a given probability"
+    formula: "=GAMMA.INV(0.3,5,1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [GAMMA.DIST, GAMMA, GAMMAINV]

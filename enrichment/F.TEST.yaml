@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use F.TEST?"
+    a: "Use F.TEST to get the two-tailed p-value for an F-test comparing the variances of two data arrays, helping determine if variance is significantly different between two groups."
+use_cases:
+  - title: "Compare variance between two sample groups"
+    formula: "=F.TEST({92,75,97,85,87,82,79},{84,89,87,95,82,71})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [F.DIST, F.DIST.RT, FTEST]

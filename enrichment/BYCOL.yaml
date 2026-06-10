@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BYCOL?"
+    a: "Use BYCOL to apply a LAMBDA function to each column of an array individually, returning a single aggregated result per column."
+use_cases:
+  - title: "Sum each column of a 2x2 matrix"
+    formula: "=BYCOL({1,2;3,4},LAMBDA(col,SUM(col)))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BYROW, MAP, REDUCE]

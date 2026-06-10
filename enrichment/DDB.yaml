@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DDB instead of DB?"
+    a: "Use DDB (double-declining balance) when tax rules or accounting policy require an accelerated depreciation method that charges the most expense in the earliest periods."
+use_cases:
+  - title: "Year-2 double-declining depreciation"
+    formula: "=DDB(100,50,10,2)"
+    industries: [finance]
+industries: [finance]
+related: [DB, SLN, SYD]

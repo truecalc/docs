@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I use ACCRINTM instead of ACCRINT?"
+    a: "Use ACCRINTM for discount instruments or bonds that pay all interest at maturity (no interim coupon payments); use ACCRINT when the bond pays periodic coupons."
+use_cases:
+  - title: "Accrued interest at maturity for a long-held instrument"
+    formula: "=ACCRINTM(DATE(1969,12,31),DATE(1999,12,31),0.05,100,0)"
+    industries: [finance, lending]
+industries: [finance, lending]
+related: [ACCRINT, TBILLEQ, YIELDMAT, DISC]

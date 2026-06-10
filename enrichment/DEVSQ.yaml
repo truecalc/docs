@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DEVSQ?"
+    a: "Use DEVSQ to compute the sum of squared deviations of values from their mean — a building block for variance and standard deviation calculations, or for manually computing regression sums."
+use_cases:
+  - title: "Sum of squared deviations for values 1 through 10"
+    formula: "=DEVSQ(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [VAR.S, VAR.P, STDEV.S]

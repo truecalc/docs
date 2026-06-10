@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use POISSON.DIST?"
+    a: "Use POISSON.DIST to model the probability of a given number of rare, independent events occurring in a fixed interval of time or space when the average rate is known — for example, predicting call-center volume or defect counts in manufacturing."
+use_cases:
+  - title: "Cumulative Poisson probability for up to 2 events"
+    formula: "=POISSON.DIST(2,1,TRUE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [POISSON, BINOM.DIST, NORM.DIST]

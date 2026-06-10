@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use CELL?"
+    a: "Use CELL to retrieve metadata about a cell such as its address, column, row, format, or content type — helpful for dynamic references or debugging spreadsheet structure."
+industries: [operations]
+related: [INFO, TYPE, ADDRESS]

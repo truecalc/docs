@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When is LCM useful in a spreadsheet?"
+    a: "Use LCM to find the smallest interval that satisfies multiple repeating cycles, such as synchronized maintenance schedules or the least common billing period across subscriptions."
+use_cases:
+  - title: "Find the sync interval for two recurring events"
+    formula: "=LCM(4,6)"
+    industries: [operations, engineering]
+industries: [operations, engineering]
+related: [GCD]

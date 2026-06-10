@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use N?"
+    a: "Use N to coerce a value to its numeric equivalent — it converts TRUE to 1, FALSE to 0, numbers unchanged, and text or errors to 0, which is handy when feeding logical results into arithmetic."
+use_cases:
+  - title: "Convert a boolean flag to a number"
+    formula: "=N(TRUE)"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [VALUE, IF, ISNUMBER]

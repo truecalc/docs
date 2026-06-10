@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DOLLAR instead of TEXT or FIXED?"
+    a: "Use DOLLAR when you want a number formatted as a currency string with a dollar sign and optional decimal places, without needing a custom format string."
+use_cases:
+  - title: "Format a price with 2 decimal places"
+    formula: "=DOLLAR(1234.567, 2)"
+    industries: [retail, sales]
+industries: [retail, sales]
+related: [FIXED, TEXT, VALUE]

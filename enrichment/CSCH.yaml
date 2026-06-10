@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CSCH?"
+    a: "Use CSCH to compute the hyperbolic cosecant of a number; it is the reciprocal of SINH and is undefined at zero."
+use_cases:
+  - title: "Hyperbolic cosecant of a value"
+    formula: "=CSCH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SINH, CSC, COTH, ASINH]

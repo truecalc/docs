@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LOGNORM.INV?"
+    a: "Use LOGNORM.INV to find the value at which the lognormal cumulative distribution equals a given probability p — for example, the 90th-percentile expected return or the latency threshold that 95% of requests fall under."
+use_cases:
+  - title: "Lognormal inverse at 40th percentile"
+    formula: "=LOGNORM.INV(0.4,4,6)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [LOGNORM.DIST, LOGINV, NORM.INV]

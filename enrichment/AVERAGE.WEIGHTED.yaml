@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use AVERAGE.WEIGHTED instead of AVERAGE?"
+    a: "Use AVERAGE.WEIGHTED when different values should contribute unequally to the mean, such as combining scores from assessments with different credit hours or combining prices for different quantities."
+use_cases:
+  - title: "Weighted average of two values with different weights"
+    formula: "=AVERAGE.WEIGHTED({2,4},{1,3})"
+    industries: [education, finance]
+industries: [education, finance, operations]
+related: [AVERAGE, SUMPRODUCT, SUM]

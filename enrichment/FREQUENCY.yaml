@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use FREQUENCY?"
+    a: "Use FREQUENCY to calculate how many values fall within each bin interval of a distribution, useful for building histograms and analyzing data spread."
+industries: [operations, science]
+related: [SORT, COUNTIF, PERCENTILE]

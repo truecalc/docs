@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMCONJUGATE?"
+    a: "Use IMCONJUGATE to compute the complex conjugate of a number (negating its imaginary part), which is required when rationalising the denominator in complex division or computing power in AC circuits."
+use_cases:
+  - title: "Complex conjugate of 3+4i"
+    formula: "=IMCONJUGATE("3+4i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMDIV, IMABS, COMPLEX]

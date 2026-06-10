@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ARABIC?"
+    a: "Use ARABIC when you need to convert a Roman numeral string into an integer — for example, to process historical data, catalog numbering, or chapter identifiers that use Roman numerals."
+use_cases:
+  - title: "Convert a Roman numeral to an integer"
+    formula: "=ARABIC("XIV")"
+    industries: [operations, education]
+industries: [operations, education]
+related: [ROMAN, TEXT]

@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use COLUMN?"
+    a: "Use COLUMN to obtain the column number of a cell reference — useful when building dynamic array formulas that need to offset or iterate by column position."
+industries: [operations, finance]
+related: [ROW, ADDRESS, INDIRECT]

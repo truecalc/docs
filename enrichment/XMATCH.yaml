@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use XMATCH instead of MATCH?"
+    a: "Use XMATCH when you need advanced match modes (exact, approximate, wildcard, or regular-expression) or reverse/binary search order — it is the modern replacement for MATCH with greater flexibility."
+use_cases:
+  - title: "Find position of a value in an inline array"
+    formula: "=XMATCH(3,{1,2,3,4,5})"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [MATCH, XLOOKUP, INDEX]

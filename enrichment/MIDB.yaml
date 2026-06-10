@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use MIDB instead of MID?"
+    a: "Use MIDB when extracting a substring using byte offsets rather than character positions, which is essential for multibyte text such as CJK where byte and character positions differ."
+industries: [operations]
+related: [MID, LEFTB, RIGHTB, LENB]

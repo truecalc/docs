@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use QUOTIENT instead of regular division?"
+    a: "Use QUOTIENT when you need only the whole-number part of a division — for example calculating how many full boxes fit into a shipment, discarding any remainder."
+use_cases:
+  - title: "How many full pairs can be made from 9 items"
+    formula: "=QUOTIENT(9,2)"
+    industries: [operations, retail]
+industries: [operations, retail]
+related: [MOD, INT]

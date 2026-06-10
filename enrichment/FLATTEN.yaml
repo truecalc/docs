@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FLATTEN?"
+    a: "Use FLATTEN to collapse a multi-dimensional array into a single column, useful before passing data to functions that expect a flat list."
+use_cases:
+  - title: "Flatten a 2x2 matrix to a single column"
+    formula: "=FLATTEN({1,2;3,4})"
+    industries: [operations, science]
+industries: [operations, science]
+related: [TOCOL, TOROW, TRANSPOSE]

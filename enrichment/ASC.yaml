@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ASC?"
+    a: "Use ASC when working with Japanese or other double-byte character set (DBCS) text that contains full-width characters — it converts them to their half-width equivalents, which is useful for normalizing mixed-width strings before comparison or storage."
+industries: [operations]
+related: [JIS, TRIM, CLEAN]

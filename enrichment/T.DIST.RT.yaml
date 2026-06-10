@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T.DIST.RT?"
+    a: "Use T.DIST.RT when you need the right-tail probability of the Student's t distribution — the probability that a t-statistic exceeds x, which is useful for one-tailed tests where larger values are significant."
+use_cases:
+  - title: "Right-tail probability for a t-statistic"
+    formula: "=T.DIST.RT(1.96,60)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.DIST, T.DIST.2T, T.INV, TDIST]

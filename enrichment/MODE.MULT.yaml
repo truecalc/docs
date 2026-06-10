@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use MODE.MULT instead of MODE.SNGL?"
+    a: "Use MODE.MULT when your data may have multiple values that all tie for the highest frequency and you want all of them returned as an array — for example, when two products sell equally often. MODE.SNGL returns only the first such value."
+industries: [operations, science]
+related: [MODE.SNGL, MODE, MEDIAN, AVERAGE]

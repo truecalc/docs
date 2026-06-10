@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BIN2HEX?"
+    a: "Use BIN2HEX to convert a binary (base-2) string to its hexadecimal representation, commonly needed when translating raw bit patterns to hex notation used in hardware and protocols."
+use_cases:
+  - title: "Convert a binary string to hexadecimal"
+    formula: "=BIN2HEX("1111")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BIN2DEC, BIN2OCT, HEX2DEC, HEX2BIN]

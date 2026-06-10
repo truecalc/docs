@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FIXED instead of TEXT?"
+    a: "Use FIXED when you need a number formatted as text with a specific number of decimal places and optional comma separators, without needing a full custom format string."
+use_cases:
+  - title: "Format a number to 2 decimal places as text"
+    formula: "=FIXED(1234.5678, 2)"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [DOLLAR, TEXT, VALUE]

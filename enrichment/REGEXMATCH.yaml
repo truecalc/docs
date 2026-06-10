@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use REGEXMATCH?"
+    a: "Use REGEXMATCH when you need a TRUE/FALSE answer about whether a string contains or matches a pattern, such as validating email formats or checking for specific keywords."
+use_cases:
+  - title: "Check if a string contains only digits"
+    formula: "=REGEXMATCH("12345", "^[0-9]+$")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [REGEXEXTRACT, REGEXREPLACE, SEARCH, ISNUMBER]

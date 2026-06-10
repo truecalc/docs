@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use XOR?"
+    a: "Use XOR when you need to confirm that an odd number of conditions are true — it returns TRUE when exactly one (or any odd count) of the supplied arguments is true, making it ideal for exclusive-or logic."
+industries: [operations, engineering]
+related: [AND, OR, NOT]

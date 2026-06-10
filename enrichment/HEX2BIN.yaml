@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use HEX2BIN?"
+    a: "Use HEX2BIN to convert a hexadecimal string to its binary (base-2) string representation, optionally zero-padded — useful when decoding bitmasks or hardware register values stored in hex."
+use_cases:
+  - title: "Convert hex nibble to binary"
+    formula: "=HEX2BIN("A")"
+    industries: [engineering]
+industries: [engineering]
+related: [BIN2HEX, HEX2DEC, HEX2OCT]

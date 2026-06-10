@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHIDIST?"
+    a: "Use CHIDIST to compute the right-tail probability of a chi-squared distribution for a given test statistic and degrees of freedom — a legacy equivalent of CHISQ.DIST.RT used in goodness-of-fit and independence tests."
+use_cases:
+  - title: "Right-tail p-value for chi-squared statistic 12.3 with 5 degrees of freedom"
+    formula: "=CHIDIST(12.3,5)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHIINV, CHISQ.DIST.RT, CHISQ.TEST]

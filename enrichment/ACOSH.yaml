@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ACOSH?"
+    a: "Use ACOSH to compute the inverse hyperbolic cosine of a value >= 1 — used in engineering and physics problems involving hyperbolic curves or catenary shapes."
+use_cases:
+  - title: "Inverse hyperbolic cosine of 2"
+    formula: "=ACOSH(2)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COSH, ACOS, ASINH]

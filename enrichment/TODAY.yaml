@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use TODAY instead of NOW?"
+    a: "Use TODAY when you only need the current date as an integer serial number with no time component; use NOW when you also need the current time."
+industries: [operations, finance]
+related: [NOW, DATE, DATEDIF, DAYS360]

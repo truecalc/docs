@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMPRODUCT?"
+    a: "Use IMPRODUCT to multiply two or more complex numbers together, such as when combining impedances in series in AC circuit analysis or chaining complex transformations."
+industries: [engineering, science]
+related: [IMSUM, IMSUB, IMDIV, IMPOWER]

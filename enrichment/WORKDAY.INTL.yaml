@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use WORKDAY.INTL instead of WORKDAY?"
+    a: "Use WORKDAY.INTL when your working week differs from the standard Monday-Friday schedule, letting you specify custom weekend days via a weekend code or bitmask string."
+use_cases:
+  - title: "Find the date 4 working days later with Mon-Tue weekend"
+    formula: "=WORKDAY.INTL(DATE(1969,7,21),4,1)"
+    industries: [operations, hr]
+industries: [operations, hr]
+related: [WORKDAY, NETWORKDAYS, NETWORKDAYS.INTL, DATE]

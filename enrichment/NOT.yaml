@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use NOT?"
+    a: "Use NOT to invert a logical condition — when you need to act only when something is false, wrapping the test in NOT is cleaner than rewriting the condition."
+industries: [operations, finance]
+related: [AND, OR, IF]

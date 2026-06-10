@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DECIMAL?"
+    a: "Use DECIMAL to convert a number string expressed in a given base (e.g. binary or hex) back into a base-10 decimal integer."
+use_cases:
+  - title: "Convert binary string to decimal"
+    formula: "=DECIMAL("101",2)"
+    industries: [engineering, operations]
+industries: [engineering, operations]
+related: [BASE]

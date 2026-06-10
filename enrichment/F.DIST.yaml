@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use F.DIST?"
+    a: "Use F.DIST to compute the F-distribution cumulative probability (TRUE) or probability density (FALSE) when comparing the variance ratio of two data sets, such as in ANOVA or regression analysis."
+use_cases:
+  - title: "F-distribution CDF at a test statistic"
+    formula: "=F.DIST(15.35,7,6,TRUE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [F.DIST.RT, F.INV, F.TEST]

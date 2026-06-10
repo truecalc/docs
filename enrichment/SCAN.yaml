@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SCAN?"
+    a: "Use SCAN to compute running accumulations across an array using a LAMBDA, returning an array of intermediate accumulated values rather than just the final result."
+use_cases:
+  - title: "Running sum of an array"
+    formula: "=SCAN(0,{1,2,3},LAMBDA(acc,x,acc+x))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [REDUCE, MAP, BYCOL, BYROW]

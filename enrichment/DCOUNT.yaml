@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DCOUNT?"
+    a: "Use DCOUNT to count rows in a database table where a numeric field matches given criteria — useful for counting how many records meet a condition in a structured table."
+use_cases:
+  - title: "Count students with score above 75"
+    formula: "=DCOUNT({"Name","Score";"Alice",90;"Bob",80;"Carol",70},"Score",{"Score";">75"})"
+    industries: [education, operations]
+industries: [operations, education]
+related: [DCOUNTA, DSUM, COUNTIF]

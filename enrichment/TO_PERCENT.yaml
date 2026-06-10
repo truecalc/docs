@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TO_PERCENT?"
+    a: "Use TO_PERCENT to apply percentage formatting to a numeric value, which is useful when presenting ratios or rates in financial or operational reports."
+use_cases:
+  - title: "Format a decimal as a percentage"
+    formula: "=TO_PERCENT(0.5)"
+    industries: [finance, operations]
+industries: [finance, operations]
+related: [TO_DOLLARS, TO_TEXT, TEXT]

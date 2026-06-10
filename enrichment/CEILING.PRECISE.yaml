@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CEILING.PRECISE?"
+    a: "Use CEILING.PRECISE when you want ceiling rounding and the sign of the significance argument should not affect the direction; it always rounds toward positive infinity."
+use_cases:
+  - title: "Round value up to next multiple of 10"
+    formula: "=CEILING.PRECISE(96,10)"
+    industries: [finance, operations]
+industries: [finance, operations]
+related: [CEILING.MATH, CEILING, FLOOR.MATH]

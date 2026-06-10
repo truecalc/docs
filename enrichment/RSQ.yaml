@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use RSQ?"
+    a: "Use RSQ to measure how well a linear regression model fits your data; it returns the square of the Pearson correlation coefficient so you can assess the proportion of variance in y explained by x."
+use_cases:
+  - title: "R-squared of a small regression dataset"
+    formula: "=RSQ({2,3,9,1,8,7,5},{6,5,11,7,5,4,4})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [SLOPE, INTERCEPT, STEYX, CORREL]

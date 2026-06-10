@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ENCODEURL?"
+    a: "Use ENCODEURL to percent-encode a string per RFC 3986, making it safe to embed as a query parameter in a URL by escaping spaces and special characters."
+use_cases:
+  - title: "Encode a string with spaces for use in a URL"
+    formula: "=ENCODEURL("hello world")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [HYPERLINK, ISURL]

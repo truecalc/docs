@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use BETA.DIST?"
+    a: "Use BETA.DIST to evaluate the beta distribution CDF or PDF, which models probabilities for proportions and rates, commonly used in Bayesian analysis and project completion modeling."
+industries: [science, operations]
+related: [BETA.INV, NORM.DIST, BINOM.DIST]

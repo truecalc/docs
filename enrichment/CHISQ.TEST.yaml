@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHISQ.TEST?"
+    a: "Use CHISQ.TEST to obtain the p-value for a chi-squared goodness-of-fit or independence test, comparing observed counts to expected counts — the modern replacement for CHITEST."
+use_cases:
+  - title: "p-value testing whether observed category counts fit a uniform expected distribution"
+    formula: "=CHISQ.TEST({11;15;8;10;2;14},{10;10;10;10;10;10})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHITEST, CHISQ.DIST.RT, CHISQ.INV.RT]

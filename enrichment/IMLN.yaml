@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMLN?"
+    a: "Use IMLN to compute the natural logarithm of a complex number, which arises in electrical engineering when analyzing impedance or in signal processing where logarithmic operations on complex amplitudes are needed."
+industries: [engineering, science]
+related: [IMLOG10, IMLOG2, IMEXP, COMPLEX]

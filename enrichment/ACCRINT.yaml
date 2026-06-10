@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I use ACCRINT instead of ACCRINTM?"
+    a: "Use ACCRINT for bonds that pay periodic coupons (interest before maturity); use ACCRINTM for instruments that pay all interest at maturity such as T-bills or zero-coupon notes."
+use_cases:
+  - title: "Accrued interest on a quarterly coupon bond"
+    formula: "=ACCRINT(DATE(2010,1,1),DATE(2010,2,1),DATE(2012,12,31),0.05,100,4)"
+    industries: [finance, lending]
+industries: [finance, lending]
+related: [ACCRINTM, COUPDAYBS, COUPDAYS, YIELDMAT]

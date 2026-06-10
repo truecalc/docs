@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CORREL?"
+    a: "Use CORREL to compute the Pearson correlation coefficient between two data sets — a value between -1 and 1 indicating the strength and direction of a linear relationship, useful in regression preparation and data analysis."
+use_cases:
+  - title: "Pearson correlation between advertising spend and sales revenue"
+    formula: "=CORREL({3,2,4,5,6},{9,7,12,15,17})"
+    industries: [finance, science]
+industries: [finance, science]
+related: [COVARIANCE.P, COVARIANCE.S, SLOPE, RSQ]

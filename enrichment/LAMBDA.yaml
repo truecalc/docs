@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LAMBDA?"
+    a: "Use LAMBDA to define a reusable custom function inline — wrap a calculation in LAMBDA so you can call it multiple times within the same workbook without repeating the formula."
+use_cases:
+  - title: "Inline tax calculation on a salary"
+    formula: "=LAMBDA(salary,salary*0.3)(1000)"
+    industries: [hr, finance]
+industries: [finance, hr]
+related: [LET, MAP, REDUCE]

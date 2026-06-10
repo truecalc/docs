@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EPOCHTODATE?"
+    a: "Use EPOCHTODATE to convert a Unix timestamp (seconds or milliseconds since 1970-01-01) into a spreadsheet date serial number for display or further date calculations."
+use_cases:
+  - title: "Convert a Unix millisecond timestamp to a date serial"
+    formula: "=EPOCHTODATE(1655906568893,2)"
+    industries: [engineering, operations]
+industries: [engineering, operations]
+related: [DATE, DATEVALUE, NOW, TODAY]
