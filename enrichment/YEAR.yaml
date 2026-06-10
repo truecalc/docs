@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "What does YEAR return?"
+    a: "YEAR takes a date and returns its four-digit year as a number, which you can use in comparisons, grouping, or further calculations."
+  - q: "How do I group records by year?"
+    a: "Apply YEAR to each date to get the year number, then use it as the key in a SUMIF, COUNTIF, or pivot to roll figures up by year."
+use_cases:
+  - title: "Get the year from a date"
+    formula: "=YEAR(DATE(2024, 5, 15))"
+    industries: [finance, operations]
+  - title: "Find the year a contract started"
+    formula: "=YEAR(DATE(2021, 11, 1))"
+    industries: [real-estate, lending]
+  - title: "Extract the reporting year"
+    formula: "=YEAR(DATE(2023, 12, 31))"
+    industries: [finance, operations]
+industries: [finance, operations, real-estate, lending]
+related: [MONTH, DAY, EOMONTH, DATE]

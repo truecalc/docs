@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ROUND instead of ROUNDUP or ROUNDDOWN?"
+    a: "Use ROUND to round to the nearest value by the usual rules; use ROUNDUP or ROUNDDOWN to always force the result up or down."
+  - q: "What does the second argument of ROUND control?"
+    a: "It sets the number of decimal places; a negative value rounds to tens, hundreds, and so on."
+use_cases:
+  - title: "Round to two decimal places"
+    formula: "=ROUND(3.14159, 2)"
+    industries: [finance, science]
+  - title: "Round a price to the nearest cent"
+    formula: "=ROUND(19.997, 2)"
+    industries: [retail, finance]
+  - title: "Round to the nearest hundred"
+    formula: "=ROUND(1278, -2)"
+    industries: [operations, finance]
+industries: [finance, science, retail, operations]
+related: [ROUNDUP, ROUNDDOWN, MOD, INT]

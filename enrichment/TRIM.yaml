@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "What does TRIM remove?"
+    a: "TRIM strips leading and trailing spaces and collapses repeated internal spaces down to a single space. It does not remove other whitespace such as line breaks."
+  - q: "Why do my lookups fail even when the text looks identical?"
+    a: "Stray spaces from imports or copy-paste are a common cause. Wrap both sides in TRIM so an extra trailing space does not break an exact match."
+use_cases:
+  - title: "Clean up an imported name with extra spaces"
+    formula: "=TRIM("  Jane   Doe  ")"
+    industries: [hr, operations]
+  - title: "Normalize a product label before matching"
+    formula: "=TRIM("  Red Widget ")"
+    industries: [retail, sales]
+  - title: "Strip padding from a code"
+    formula: "=TRIM("  ABC-123  ")"
+    industries: [operations, engineering]
+industries: [hr, operations, retail, engineering]
+related: [LEN, SUBSTITUTE, LEFT, RIGHT]

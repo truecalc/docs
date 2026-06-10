@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "What does LEN count?"
+    a: "LEN returns the number of characters in a piece of text, including spaces and punctuation. Numbers are counted by their displayed digits."
+  - q: "How can I check that an ID is the right length?"
+    a: "Wrap LEN in a comparison, for example LEN(id) = 8, to flag values that are too short or too long for a fixed-format code."
+use_cases:
+  - title: "Count characters in a product name"
+    formula: "=LEN("Wireless Mouse")"
+    industries: [retail, operations]
+  - title: "Validate a five-character postal code length"
+    formula: "=LEN("94105")"
+    industries: [real-estate, operations]
+  - title: "Measure the length of a serial number"
+    formula: "=LEN("SN-2024-0042")"
+    industries: [engineering, operations]
+industries: [retail, operations, real-estate, engineering]
+related: [LEFT, RIGHT, MID, TRIM]

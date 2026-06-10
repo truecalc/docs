@@ -1,0 +1,7 @@
+when_to_use:
+  - q: "When should I use SUMIFS instead of SUMIF?"
+    a: "Use SUMIFS to total values that meet several conditions at once; use SUMIF when you only have one condition."
+  - q: "Which argument does SUMIFS actually add up?"
+    a: "The first argument is the sum range; every range/criteria pair after it filters which of those values get added."
+industries: [finance, operations, sales, retail]
+related: [SUMIF, COUNTIFS, SUM, AVERAGEIF]

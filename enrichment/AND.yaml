@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use AND instead of OR?"
+    a: "Use AND when every condition must be true; use OR when any single condition being true is enough."
+  - q: "How do I combine AND with IF?"
+    a: "Wrap AND in the IF test, so the IF returns its true result only when all the AND conditions hold."
+use_cases:
+  - title: "Require two conditions to both hold"
+    formula: "=AND(TRUE, 5 > 3)"
+    industries: [operations, finance]
+  - title: "Check a value falls within a range"
+    formula: "=AND(7 >= 5, 7 <= 10)"
+    industries: [engineering, science]
+  - title: "Gate an outcome on all rules passing"
+    formula: "=IF(AND(8 > 5, 8 < 12), "ok", "no")"
+    industries: [operations, hr]
+industries: [operations, finance, engineering, hr]
+related: [OR, NOT, IF, IFS]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use LEFT instead of MID?"
+    a: "Use LEFT when you want characters starting from the beginning of the text. Use MID when the slice you want starts somewhere in the middle."
+  - q: "How do I get the part of a code before a separator?"
+    a: "Combine LEFT with FIND to grab everything up to a character, or pass a fixed length to LEFT when the prefix is always the same size."
+use_cases:
+  - title: "Take a fixed-length region prefix from a code"
+    formula: "=LEFT("US-12345", 2)"
+    industries: [operations, retail]
+  - title: "Pull the first three letters of a name"
+    formula: "=LEFT("Engineering", 3)"
+    industries: [hr, education]
+  - title: "Extract a leading area code"
+    formula: "=LEFT("415-555-0100", 3)"
+    industries: [sales, operations]
+industries: [operations, retail, hr, sales]
+related: [RIGHT, MID, LEN, FIND]

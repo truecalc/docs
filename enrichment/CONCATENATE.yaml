@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use CONCATENATE instead of the & operator?"
+    a: "They produce the same result for joining text. Use & for short, inline joins; CONCATENATE reads more clearly when you are stitching together many separate pieces."
+  - q: "How is CONCATENATE different from TEXTJOIN?"
+    a: "CONCATENATE glues its arguments together with no separator and ignores empty handling. TEXTJOIN lets you set a delimiter and skip blanks, which is better for building lists."
+use_cases:
+  - title: "Build a full name from first and last"
+    formula: "=CONCATENATE("Jane", " ", "Doe")"
+    industries: [hr, operations]
+  - title: "Compose a SKU from parts"
+    formula: "=CONCATENATE("SKU-", "RED", "-", "42")"
+    industries: [retail, operations]
+  - title: "Join a label with a number"
+    formula: "=CONCATENATE("Total: ", 1500)"
+    industries: [finance, sales]
+industries: [hr, operations, retail, finance]
+related: [TEXTJOIN, LEFT, RIGHT, TEXT]

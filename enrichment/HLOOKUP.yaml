@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use HLOOKUP instead of VLOOKUP?"
+    a: "Use HLOOKUP when your data is laid out in rows, so the lookup runs across the top row and pulls a value from a row below. Use VLOOKUP when the data is in columns."
+  - q: "Why does my HLOOKUP return the wrong column?"
+    a: "Usually because the last argument defaults to approximate match. Pass FALSE as the fourth argument to force an exact match unless your top row is sorted and you want the nearest value."
+use_cases:
+  - title: "Look up a price by product label across a row"
+    formula: "=HLOOKUP("b", {"a", "b", "c"; 1, 2, 3}, 2, FALSE)"
+    industries: [retail, sales]
+  - title: "Find a quarter's revenue from a row header"
+    formula: "=HLOOKUP("Q2", {"Q1", "Q2", "Q3"; 100, 250, 175}, 2, FALSE)"
+    industries: [finance, operations]
+  - title: "Map a tier to its discount across a row"
+    formula: "=HLOOKUP(2, {1, 2, 3; 0.05, 0.1, 0.15}, 2, FALSE)"
+    industries: [finance, retail]
+industries: [retail, sales, finance, operations]
+related: [VLOOKUP, INDEX, MATCH, XLOOKUP]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MID instead of LEFT or RIGHT?"
+    a: "Use MID when the characters you want start somewhere in the middle of the text rather than at the very start or end."
+  - q: "How do I pull a slice between two known positions?"
+    a: "Give MID the start position and how many characters to take. Combine it with FIND when the positions depend on a separator instead of being fixed."
+use_cases:
+  - title: "Pull the middle segment of a code"
+    formula: "=MID("US-CA-94105", 4, 2)"
+    industries: [operations, real-estate]
+  - title: "Extract the month digits from a date string"
+    formula: "=MID("2024-05-15", 6, 2)"
+    industries: [finance, operations]
+  - title: "Read a batch number out of a serial"
+    formula: "=MID("SN-2024-0042", 4, 4)"
+    industries: [engineering, retail]
+industries: [operations, real-estate, finance, engineering]
+related: [LEFT, RIGHT, LEN, FIND]

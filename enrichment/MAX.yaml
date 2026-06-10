@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MAX instead of LARGE?"
+    a: "Use MAX for the single highest value; use LARGE when you need the second-highest, third-highest, and so on."
+  - q: "Does MAX ignore text and blanks?"
+    a: "Yes. MAX considers only numeric values and skips text and empty cells."
+use_cases:
+  - title: "Find the highest of several numbers"
+    formula: "=MAX(3, 7, 2)"
+    industries: [operations, sales]
+  - title: "Get the peak value from a list"
+    formula: "=MAX({12, 45, 23, 8})"
+    industries: [science, engineering]
+  - title: "Identify the top revenue figure"
+    formula: "=MAX(1500, 2300, 1800, 2100)"
+    industries: [finance, sales]
+industries: [operations, sales, science, finance]
+related: [MIN, LARGE, MAXIFS, AVERAGE]

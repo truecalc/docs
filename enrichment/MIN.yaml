@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MIN instead of SMALL?"
+    a: "Use MIN for the single lowest value; use SMALL when you need the second-lowest, third-lowest, and so on."
+  - q: "Does MIN ignore text and blanks?"
+    a: "Yes. MIN considers only numeric values and skips text and empty cells."
+use_cases:
+  - title: "Find the lowest of several numbers"
+    formula: "=MIN(3, 7, 2)"
+    industries: [operations, sales]
+  - title: "Get the smallest value from a list"
+    formula: "=MIN({12, 45, 23, 8})"
+    industries: [science, engineering]
+  - title: "Identify the lowest quoted price"
+    formula: "=MIN(1500, 2300, 1800, 2100)"
+    industries: [retail, finance]
+industries: [operations, sales, science, retail]
+related: [MAX, SMALL, MINIFS, AVERAGE]
