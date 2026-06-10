@@ -79,8 +79,10 @@ function isSelfContained(formula) {
       const letterRun = i - j;
       let k = i;
       while (k < f.length && /[0-9]/.test(f[k])) k += 1;
-      const isFunctionName = k < f.length && f[k] === '(';
-      if (prevOk && !isFunctionName && letterRun >= 1 && letterRun <= 3) return false;
+      // A digit-run followed by '(' or a letter is part of an identifier
+      // (a function name like LOG10 or BIN2DEC), not an A1-style cell reference.
+      const isIdentifier = k < f.length && (f[k] === '(' || /[A-Za-z]/.test(f[k]));
+      if (prevOk && !isIdentifier && letterRun >= 1 && letterRun <= 3) return false;
     }
   }
   return true;
