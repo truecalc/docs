@@ -1,0 +1,39 @@
+---
+title: Performance
+description: Live benchmark results for truecalc-workbook — recalculation throughput and serialization timing, measured on CI.
+---
+
+import { PerfTable } from '@/components/perf-table';
+
+## Overview
+
+truecalc-workbook is benchmarked with [Criterion](https://bheisler.github.io/criterion.rs/book/) on every merge to `main`.
+Results are compared against a fixed baseline recorded on GitHub Actions ubuntu-latest.
+CI blocks merges when any benchmark regresses more than 25% from baseline.
+
+## Benchmark groups
+
+| Group | What it measures |
+|---|---|
+| `full_recalc/chain/N` | Recalculate a linear chain of N formula cells from scratch |
+| `incremental_recalc/edit_root/N` | Dirty one root cell and recalculate a chain of N cells |
+| `from_json/500rows` | Deserialize a 500-row workbook from JSON |
+| `to_json/500rows` | Serialize a 500-row workbook to JSON |
+
+## Live benchmark results
+
+<PerfTable />
+
+Values shown are mean wall-clock time per iteration.
+**vs baseline** is the percent change from the recorded baseline — green means faster, red means slower (>10% shown in red).
+
+## Regression policy
+
+The 25% threshold is intentionally generous: micro-benchmarks on shared CI hardware have
+natural variance of ±5–15%. A tighter threshold would produce false positives on every
+unrelated PR. The goal is catching architectural regressions, not chasing noise.
+
+If a benchmark regresses beyond 25%, CI fails the `Criterion benchmarks + regression gate` check
+and the merge is blocked. The fix is either to optimize the code or — if the regression is
+intentional (e.g. trading speed for correctness) — update `crates/workbook/benches/baselines.json`
+with a documented rationale and new baseline values.
