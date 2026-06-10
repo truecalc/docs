@@ -22,12 +22,6 @@ import { TryIt } from '@/components/try-it';
 
 Use BYCOL to apply a LAMBDA function to each column of an array individually, returning a single aggregated result per column.
 
-## Use cases
-
-**Sum each column of a 2x2 matrix**
-
-<TryIt formula={"=BYCOL({1,2;3,4},LAMBDA(col,SUM(col)))"} />
-
 ## Used in
 
 [operations](/industries/operations) · [science](/industries/science)
@@ -36,13 +30,5 @@ Use BYCOL to apply a LAMBDA function to each column of an array individually, re
 
 ```
 BYCOL(array, lambda)
-```
-
-## Examples
-
-```formula
-=BYCOL({1,2;3,4},LAMBDA(col,SUM(col))) // => 4
-=BYCOL({1,2,3;4,5,6},LAMBDA(col,AVERAGE(col))) // => 2.5
-=BYCOL({3,1;4,2;5,3},LAMBDA(col,MAX(col))) // => 5
 ```
 

@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use LET?"
     a: "Use LET to assign intermediate results to named variables inside a formula, making complex calculations easier to read and avoiding redundant computation."
-industries: [finance, operations]
+industries: [operations]
 related: [LAMBDA, IF, SWITCH]

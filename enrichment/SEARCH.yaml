@@ -13,5 +13,5 @@ use_cases:
   - title: "Detect a term in a log line regardless of case"
     formula: "=SEARCH("error","System Error log")"
     industries: [engineering, operations]
-industries: [operations, education, real-estate, sales, engineering]
+industries: [operations, sales]
 related: [FIND, LEFT, RIGHT, MID, SUBSTITUTE]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Natural log of 100"
     formula: "=LN(100)"
     industries: [science, finance]
-industries: [science, finance]
+industries: [science]
 related: [LOG, LOG10, EXP]

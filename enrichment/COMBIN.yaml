@@ -5,5 +5,5 @@ use_cases:
   - title: "Number of ways to choose 3 items from 10"
     formula: "=COMBIN(10,3)"
     industries: [science, education]
-industries: [science, education]
+industries: [science]
 related: [COMBINA, PERMUT, FACT]

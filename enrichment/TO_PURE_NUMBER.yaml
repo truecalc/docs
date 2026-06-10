@@ -5,5 +5,5 @@ use_cases:
   - title: "Strip formatting from a number"
     formula: "=TO_PURE_NUMBER(42)"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [TO_DATE, TO_DOLLARS, TO_PERCENT, VALUE]

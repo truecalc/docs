@@ -5,5 +5,5 @@ use_cases:
   - title: "Sample variance for a category"
     formula: "=DVAR({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
     industries: [science, operations]
-industries: [science, operations]
+industries: [operations]
 related: [DVARP, DSTDEV, VAR]

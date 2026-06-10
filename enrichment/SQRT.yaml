@@ -13,5 +13,5 @@ use_cases:
   - title: "Hypotenuse length from two legs"
     formula: "=SQRT(POWER(3,2) + POWER(4,2))"
     industries: [engineering, real-estate]
-industries: [education, science, engineering, real-estate]
+industries: [science, engineering]
 related: [POWER, ABS, SUMSQ, SUMPRODUCT]

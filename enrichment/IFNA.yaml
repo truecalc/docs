@@ -13,5 +13,5 @@ use_cases:
   - title: "Default a missing lookup to zero"
     formula: "=IFNA(NA(),0)"
     industries: [finance, operations]
-industries: [sales, retail, operations, finance, education]
+industries: [operations]
 related: [IFERROR, VLOOKUP, XLOOKUP, MATCH]

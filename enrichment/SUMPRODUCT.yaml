@@ -13,5 +13,5 @@ use_cases:
   - title: "Portfolio value from positions and weights"
     formula: "=SUMPRODUCT({100,200,150}, {0.1,0.2,0.15})"
     industries: [finance, real-estate]
-industries: [finance, retail, sales, operations]
+industries: [operations]
 related: [SUM, PRODUCT, SUMIF, AVERAGE]

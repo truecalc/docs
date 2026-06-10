@@ -5,5 +5,5 @@ use_cases:
   - title: "Count distinct values in an inline array"
     formula: "=COUNTUNIQUE({1,1,2,3,5,8,13})"
     industries: [operations, sales]
-industries: [operations, sales]
+industries: [operations]
 related: [COUNTA, COUNT, COUNTIF]

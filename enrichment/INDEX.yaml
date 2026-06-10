@@ -13,5 +13,5 @@ use_cases:
   - title: "Combine INDEX and MATCH for a left lookup"
     formula: "=INDEX({"Sales", "Finance", "Ops"}, MATCH(102, {101, 102, 103}, 0))"
     industries: [hr, operations]
-industries: [operations, finance, hr, engineering]
+industries: [operations]
 related: [MATCH, VLOOKUP, XLOOKUP]

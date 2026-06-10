@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use GAMMAINV instead of GAMMA.INV?"
     a: "GAMMAINV is the legacy version of GAMMA.INV; use GAMMA.INV in new spreadsheets. GAMMAINV is kept for compatibility with older models."
-industries: [science, engineering]
+industries: [science]
 related: [GAMMA.INV, GAMMA.DIST, GAMMADIST]

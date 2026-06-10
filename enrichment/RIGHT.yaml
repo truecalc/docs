@@ -13,5 +13,5 @@ use_cases:
   - title: "Extract a two-letter currency suffix"
     formula: "=RIGHT("1500USD", 3)"
     industries: [finance, sales]
-industries: [finance, retail, operations, engineering]
+industries: [retail, operations]
 related: [LEFT, MID, LEN, SUBSTITUTE]

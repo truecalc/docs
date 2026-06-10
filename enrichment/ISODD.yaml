@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use ISODD?"
     a: "Use ISODD to test whether a value is odd, for example to flag odd-numbered weeks, validate item counts, or route alternating records to different processes."
-industries: [operations, finance]
+industries: [operations]
 related: [ISEVEN, MOD]

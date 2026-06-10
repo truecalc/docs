@@ -13,5 +13,5 @@ use_cases:
   - title: "Find a tier price from sorted quantity breaks"
     formula: "=LOOKUP(150, {1, 100, 500}, {9.99, 8.49, 6.99})"
     industries: [retail, sales]
-industries: [operations, sales, education, retail]
+industries: [operations, sales, retail]
 related: [VLOOKUP, HLOOKUP, INDEX, MATCH, CHOOSE]

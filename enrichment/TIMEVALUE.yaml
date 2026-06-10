@@ -5,5 +5,5 @@ use_cases:
   - title: "Parse an afternoon time string to a serial number"
     formula: "=TIMEVALUE("2:15 PM")"
     industries: [operations, engineering]
-industries: [operations, engineering]
+industries: [operations]
 related: [TIME, HOUR, MINUTE, SECOND, DATEVALUE]

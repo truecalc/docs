@@ -5,5 +5,5 @@ use_cases:
   - title: "Round a quantity to the nearest case size of 14 units"
     formula: "=MROUND(21,14)"
     industries: [operations, retail]
-industries: [operations, retail]
+industries: [operations]
 related: [ROUND, FLOOR, CEILING]

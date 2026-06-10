@@ -5,5 +5,5 @@ when_to_use:
     a: "If no rows satisfy all the criteria, MAXIFS returns 0 rather than an error, so check your conditions if you unexpectedly see 0."
   - q: "What is the argument order for MAXIFS?"
     a: "It starts with the range to take the maximum of, then pairs of criteria range and criterion: MAXIFS(max_range, criteria_range1, criterion1, criteria_range2, criterion2, ...). MINIFS follows the same pattern for the smallest value."
-industries: [sales, finance, operations, retail, hr]
+industries: [finance, operations]
 related: [MINIFS, MAX, SUMIFS, AVERAGEIFS]

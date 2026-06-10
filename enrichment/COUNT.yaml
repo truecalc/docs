@@ -13,5 +13,5 @@ use_cases:
   - title: "Count completed numeric readings"
     formula: "=COUNT(98.6, 99.1, "skip", 97.9)"
     industries: [science, engineering]
-industries: [operations, finance, hr, education]
+industries: [operations, finance, education]
 related: [COUNTA, COUNTIF, COUNTIFS, SUM]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Round a figure down to the nearest hundred"
     formula: "=ROUNDDOWN(1789, -2)"
     industries: [finance, operations]
-industries: [finance, science, operations, retail]
+industries: [science, operations]
 related: [ROUND, ROUNDUP, MOD, INT]

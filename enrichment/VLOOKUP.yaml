@@ -13,5 +13,5 @@ use_cases:
   - title: "Map a tier number to a discount rate"
     formula: "=VLOOKUP(2, {1, 0.05; 2, 0.1; 3, 0.15}, 2, FALSE)"
     industries: [finance, retail]
-industries: [retail, sales, finance, hr]
+industries: [retail, sales]
 related: [XLOOKUP, INDEX, MATCH, IFERROR]

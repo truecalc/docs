@@ -5,5 +5,5 @@ use_cases:
   - title: "Log-gamma of a positive integer"
     formula: "=GAMMALN(4)"
     industries: [science, education]
-industries: [science, education]
+industries: [science]
 related: [GAMMALN.PRECISE, LN]

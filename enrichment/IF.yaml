@@ -13,5 +13,5 @@ use_cases:
   - title: "Flag whether a budget is over or under"
     formula: "=IF(950 > 1000, "Over budget", "Within budget")"
     industries: [finance, operations]
-industries: [finance, operations, education, sales]
+industries: [operations]
 related: [IFERROR, COUNTIF, SUMIF]

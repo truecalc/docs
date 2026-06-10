@@ -13,5 +13,5 @@ use_cases:
   - title: "Verify a converted string is now numeric"
     formula: "=ISNUMBER(VALUE("100"))"
     industries: [finance, operations]
-industries: [operations, finance, education]
+industries: [operations]
 related: [ISTEXT, ISBLANK, VALUE, IF]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Extract a leading area code"
     formula: "=LEFT("415-555-0100", 3)"
     industries: [sales, operations]
-industries: [operations, retail, hr, sales]
+industries: [operations, retail, sales]
 related: [RIGHT, MID, LEN, FIND]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Sum of squared array magnitudes"
     formula: "=SUMX2PY2({1,2,3},{4,5,6})"
     industries: [science, engineering]
-industries: [science, engineering]
+industries: [science]
 related: [SUMXMY2, SUMX2MY2, SUMSQ]

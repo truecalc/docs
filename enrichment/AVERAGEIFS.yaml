@@ -5,5 +5,5 @@ when_to_use:
     a: "AVERAGEIFS averages a cell only when every criteria range matches its criterion for that row. A row that satisfies some but not all conditions is excluded, and if no rows match it returns the #DIV/0! error."
   - q: "What is the argument order for AVERAGEIFS?"
     a: "It starts with the average range, then pairs of criteria range and criterion: AVERAGEIFS(average_range, criteria_range1, criterion1, criteria_range2, criterion2, ...). This differs from AVERAGEIF, where the range to average comes last."
-industries: [finance, hr, sales, operations, retail]
+industries: [finance, operations]
 related: [AVERAGEIF, SUMIFS, COUNTIFS, AVERAGE]

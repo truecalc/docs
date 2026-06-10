@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert a Unix millisecond timestamp to a date serial"
     formula: "=EPOCHTODATE(1655906568893,2)"
     industries: [engineering, operations]
-industries: [engineering, operations]
+industries: [operations]
 related: [DATE, DATEVALUE, NOW, TODAY]

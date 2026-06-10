@@ -5,5 +5,5 @@ use_cases:
   - title: "Multinomial coefficient for three groups of sizes 1, 2, 3"
     formula: "=MULTINOMIAL(1,2,3)"
     industries: [science, education]
-industries: [science, education]
+industries: [science]
 related: [COMBIN, PERMUT]

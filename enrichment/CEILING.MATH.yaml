@@ -5,5 +5,5 @@ use_cases:
   - title: "Round up to next whole number"
     formula: "=CEILING.MATH(11.2)"
     industries: [operations, finance]
-industries: [finance, operations]
+industries: [operations]
 related: [CEILING, FLOOR.MATH, CEILING.PRECISE, MROUND]

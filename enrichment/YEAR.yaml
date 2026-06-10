@@ -13,5 +13,5 @@ use_cases:
   - title: "Extract the reporting year"
     formula: "=YEAR(DATE(2023, 12, 31))"
     industries: [finance, operations]
-industries: [finance, operations, real-estate, lending]
+industries: [finance, operations]
 related: [MONTH, DAY, EOMONTH, DATE]

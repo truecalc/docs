@@ -13,5 +13,5 @@ use_cases:
   - title: "Take the cube root via a fractional exponent"
     formula: "=POWER(1000000, 1/3)"
     industries: [science, engineering]
-industries: [finance, personal-finance, science, engineering]
+industries: [science, engineering]
 related: [SQRT, PRODUCT, EXP, POW]

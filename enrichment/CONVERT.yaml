@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert 1000 grams to kilograms"
     formula: "=CONVERT(1000,"g","kg")"
     industries: [science, engineering]
-industries: [science, engineering, operations]
+industries: [operations]
 related: [ROUND, TRUNC]

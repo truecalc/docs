@@ -5,5 +5,5 @@ use_cases:
   - title: "Double-declining balance depreciation for period 10-11, no switch"
     formula: "=VDB(100,10,20,10,11,2,TRUE)"
     industries: [finance, operations]
-industries: [finance, operations]
+industries: [finance]
 related: [DB, DDB, SLN, SYD]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Extract the hour from a constructed time"
     formula: "=HOUR(TIME(11,40,59))"
     industries: [operations, engineering]
-industries: [operations, engineering]
+industries: [operations]
 related: [MINUTE, SECOND, TIME, TIMEVALUE]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Inverse of an identity matrix"
     formula: "=MINVERSE({1,0;0,1})"
     industries: [engineering, science]
-industries: [engineering, science]
+industries: [science]
 related: [MDETERM, MMULT]

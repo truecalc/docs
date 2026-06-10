@@ -5,5 +5,5 @@ use_cases:
   - title: "Date 6 months after a start date"
     formula: "=EDATE(DATE(2023,1,15),6)"
     industries: [finance, operations]
-industries: [finance, lending, real-estate]
+industries: [finance]
 related: [EOMONTH, DATE, DATEDIF, DAYS360]

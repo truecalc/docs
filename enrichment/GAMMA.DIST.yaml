@@ -5,5 +5,5 @@ use_cases:
   - title: "Gamma CDF for a reliability model"
     formula: "=GAMMA.DIST(4.79,1.234,7,TRUE)"
     industries: [science, engineering]
-industries: [science, engineering]
+industries: [science]
 related: [GAMMA.INV, GAMMA, GAMMADIST]

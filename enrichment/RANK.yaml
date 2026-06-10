@@ -13,5 +13,5 @@ use_cases:
   - title: "Rank a cost ascending so cheapest is first"
     formula: "=RANK(150, {200, 150, 300, 100}, 1)"
     industries: [finance, operations]
-industries: [sales, education, finance, operations]
+industries: [education, finance, operations]
 related: [LARGE, SMALL, MAX, MEDIAN]

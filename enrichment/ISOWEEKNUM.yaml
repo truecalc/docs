@@ -5,5 +5,5 @@ use_cases:
   - title: "ISO week number for a specific date"
     formula: "=ISOWEEKNUM(DATE(2002,6,14))"
     industries: [operations, science]
-industries: [operations, engineering]
+industries: [operations]
 related: [WEEKNUM, WEEKDAY, DATE, ISOWEEKNUM]

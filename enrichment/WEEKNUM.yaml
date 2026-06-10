@@ -5,5 +5,5 @@ use_cases:
   - title: "US-style week number starting on Sunday"
     formula: "=WEEKNUM(DATE(1969,7,20),1)"
     industries: [operations, retail]
-industries: [operations, retail]
+industries: [operations]
 related: [ISOWEEKNUM, WEEKDAY, DATE, DAY]

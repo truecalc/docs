@@ -13,5 +13,5 @@ use_cases:
   - title: "Create a fixed-width separator line"
     formula: "=REPT("=",10)"
     industries: [operations, engineering]
-industries: [operations, sales, education, engineering]
+industries: [operations, sales]
 related: [CONCATENATE, TEXTJOIN, LEN, TEXT]

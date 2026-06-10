@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert a number to a Roman numeral"
     formula: "=ROMAN(2024)"
     industries: [education, operations]
-industries: [education, operations]
+industries: [operations]
 related: [TEXT, ARABIC]

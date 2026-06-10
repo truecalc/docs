@@ -13,5 +13,5 @@ use_cases:
   - title: "Identify the lowest quoted price"
     formula: "=MIN(1500, 2300, 1800, 2100)"
     industries: [retail, finance]
-industries: [operations, sales, science, retail]
+industries: [operations, science]
 related: [MAX, SMALL, MINIFS, AVERAGE]

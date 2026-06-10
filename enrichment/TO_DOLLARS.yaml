@@ -5,5 +5,4 @@ use_cases:
   - title: "Format a number as a dollar amount"
     formula: "=TO_DOLLARS(3.14)"
     industries: [finance, personal-finance]
-industries: [finance, personal-finance]
 related: [TO_PERCENT, TO_TEXT, TEXT]

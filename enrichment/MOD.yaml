@@ -13,5 +13,5 @@ use_cases:
   - title: "Find position within a repeating cycle"
     formula: "=MOD(17, 12)"
     industries: [operations, engineering]
-industries: [operations, engineering, education, science]
+industries: [operations, engineering, science]
 related: [ROUND, ROUNDDOWN, INT, QUOTIENT]

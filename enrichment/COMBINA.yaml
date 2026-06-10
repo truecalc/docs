@@ -5,5 +5,5 @@ use_cases:
   - title: "Combinations with repetition"
     formula: "=COMBINA(5,3)"
     industries: [science, education]
-industries: [science, education]
+industries: [science]
 related: [COMBIN, PERMUT, FACT]

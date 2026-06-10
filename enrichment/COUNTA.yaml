@@ -13,5 +13,5 @@ use_cases:
   - title: "Tally any kind of recorded value"
     formula: "=COUNTA({1, "ok", FALSE, 9})"
     industries: [operations, science]
-industries: [operations, hr, sales, science]
+industries: [operations, science]
 related: [COUNT, COUNTIF, COUNTIFS, SUM]

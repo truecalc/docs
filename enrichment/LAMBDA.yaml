@@ -5,5 +5,4 @@ use_cases:
   - title: "Inline tax calculation on a salary"
     formula: "=LAMBDA(salary,salary*0.3)(1000)"
     industries: [hr, finance]
-industries: [finance, hr]
 related: [LET, MAP, REDUCE]

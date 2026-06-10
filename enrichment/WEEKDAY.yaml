@@ -13,5 +13,5 @@ use_cases:
   - title: "Flag whether a date is a weekend"
     formula: "=IF(WEEKDAY(DATE(2024, 3, 16), 2) > 5, "weekend", "weekday")"
     industries: [hr, operations]
-industries: [operations, hr, retail]
+industries: [operations, hr]
 related: [DAY, WORKDAY, NETWORKDAYS, DATE]

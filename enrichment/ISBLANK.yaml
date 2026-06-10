@@ -13,5 +13,5 @@ use_cases:
   - title: "Zero is a value, not a blank"
     formula: "=ISBLANK(0)"
     industries: [finance, operations]
-industries: [operations, hr, education, finance]
+industries: [operations]
 related: [COUNTBLANK, ISNUMBER, ISTEXT, IF]

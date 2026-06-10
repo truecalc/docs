@@ -8,5 +8,5 @@ use_cases:
   - title: "Drop fractional part of a positive number"
     formula: "=TRUNC(1.23)"
     industries: [finance, operations]
-industries: [finance, operations, science, engineering]
+industries: [operations, science, engineering]
 related: [INT, FLOOR, ROUND, ROUNDDOWN]

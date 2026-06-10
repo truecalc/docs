@@ -5,5 +5,5 @@ use_cases:
   - title: "Average score for students above 75"
     formula: "=DAVERAGE({"Name","Score";"Alice",80;"Bob",90;"Carol",70},"Score",{"Score";">75"})"
     industries: [education, operations]
-industries: [operations, education]
+industries: [operations]
 related: [DSUM, DCOUNT, AVERAGEIF]

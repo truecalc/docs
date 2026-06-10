@@ -11,5 +11,5 @@ use_cases:
   - title: "Compare a startup's projected returns"
     formula: "=IRR({-200000, 50000, 80000, 120000, 160000})"
     industries: [finance, operations]
-industries: [finance, real-estate, operations]
+industries: [finance, real-estate]
 related: [NPV, RATE, FV, PV]

@@ -11,5 +11,5 @@ use_cases:
   - title: "Skip a holiday when scheduling a deadline"
     formula: "=WORKDAY(DATE(2024, 12, 20), 3, {DATE(2024,12,25)})"
     industries: [operations, hr]
-industries: [operations, retail, hr]
+industries: [operations, hr]
 related: [NETWORKDAYS, WEEKDAY, DATE, DAY]

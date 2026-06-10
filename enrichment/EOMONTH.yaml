@@ -13,5 +13,5 @@ use_cases:
   - title: "Get the end of the prior month for a closing period"
     formula: "=EOMONTH(DATE(2024, 6, 30), -1)"
     industries: [finance, real-estate]
-industries: [finance, operations, lending, real-estate]
+industries: [finance, operations]
 related: [YEAR, MONTH, DAY, DATE]

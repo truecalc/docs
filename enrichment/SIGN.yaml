@@ -5,5 +5,5 @@ use_cases:
   - title: "Check the sign of a profit/loss figure"
     formula: "=SIGN(-42)"
     industries: [finance, operations]
-industries: [finance, operations, science]
+industries: [operations, science]
 related: [ABS, IF, MOD]

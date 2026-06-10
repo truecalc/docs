@@ -5,5 +5,5 @@ use_cases:
   - title: "First quartile of a dataset"
     formula: "=QUARTILE({1,3,5,7,9},1)"
     industries: [science, hr]
-industries: [science, hr]
+industries: [science]
 related: [QUARTILE.INC, QUARTILE.EXC, PERCENTILE, MEDIAN]

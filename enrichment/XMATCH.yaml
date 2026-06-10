@@ -5,5 +5,5 @@ use_cases:
   - title: "Find position of a value in an inline array"
     formula: "=XMATCH(3,{1,2,3,4,5})"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [MATCH, XLOOKUP, INDEX]

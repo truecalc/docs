@@ -5,5 +5,5 @@ use_cases:
   - title: "Year fraction between two dates using 30/360 basis"
     formula: "=YEARFRAC(DATE(2012,1,1),DATE(2012,7,30))"
     industries: [finance, lending]
-industries: [finance, lending]
+industries: [finance]
 related: [DAYS360, DATEDIF, DATE, EDATE]

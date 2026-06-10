@@ -13,5 +13,5 @@ use_cases:
   - title: "Whole-dollar portion of a price"
     formula: "=INT(1234.99)"
     industries: [retail, personal-finance]
-industries: [finance, operations, retail, personal-finance]
+industries: [operations]
 related: [ROUNDDOWN, TRUNC, FLOOR, MOD]

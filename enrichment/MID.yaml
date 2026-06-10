@@ -13,5 +13,5 @@ use_cases:
   - title: "Read a batch number out of a serial"
     formula: "=MID("SN-2024-0042", 4, 4)"
     industries: [engineering, retail]
-industries: [operations, real-estate, finance, engineering]
+industries: [operations]
 related: [LEFT, RIGHT, LEN, FIND]

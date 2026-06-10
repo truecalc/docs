@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use NOW instead of TODAY?"
     a: "Use NOW when you need the current date and time as a serial number (fractional day); use TODAY when only the date (no time) is needed."
-industries: [operations, engineering]
+industries: [operations]
 related: [TODAY, DATE, TIME, HOUR]

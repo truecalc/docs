@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use GETPIVOTDATA?"
     a: "Use GETPIVOTDATA to pull a specific value out of a PivotTable by naming the data field and filter criteria, so the reference stays stable even when the pivot layout changes."
-industries: [finance, sales]
+industries: [sales]
 related: [VLOOKUP, INDEX, MATCH]

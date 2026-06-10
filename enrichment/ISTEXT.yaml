@@ -13,5 +13,5 @@ use_cases:
   - title: "Check a single character is text"
     formula: "=ISTEXT("x")"
     industries: [operations, engineering]
-industries: [operations, education, finance, engineering]
+industries: [operations]
 related: [ISNUMBER, ISBLANK, VALUE, EXACT]

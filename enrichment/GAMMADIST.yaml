@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use GAMMADIST instead of GAMMA.DIST?"
     a: "GAMMADIST is the legacy version of GAMMA.DIST; use GAMMA.DIST in new spreadsheets. GAMMADIST is retained for backward compatibility."
-industries: [science, engineering]
+industries: [science]
 related: [GAMMA.DIST, GAMMA.INV, GAMMAINV]

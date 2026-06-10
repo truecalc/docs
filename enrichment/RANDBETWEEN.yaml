@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use RANDBETWEEN instead of RAND?"
     a: "Use RANDBETWEEN when you need a random integer within a specific range, such as simulating dice rolls, randomly assigning survey participants, or generating test IDs."
-industries: [science, education]
+industries: [science]
 related: [RAND, RANDARRAY]

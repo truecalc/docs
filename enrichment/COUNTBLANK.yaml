@@ -13,5 +13,5 @@ use_cases:
   - title: "Count missing values where most entries are empty"
     formula: "=COUNTBLANK({"a","",""})"
     industries: [hr, sales]
-industries: [operations, hr, education, sales]
+industries: [operations, education]
 related: [COUNTA, COUNT, COUNTIF, ISBLANK]

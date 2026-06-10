@@ -13,5 +13,5 @@ use_cases:
   - title: "Compound a series of growth factors"
     formula: "=PRODUCT({1.05, 1.03, 1.07, 1.02})"
     industries: [finance, operations]
-industries: [finance, operations, retail, engineering]
+industries: [operations, engineering]
 related: [SUMPRODUCT, POWER, SUM, MULTIPLY]

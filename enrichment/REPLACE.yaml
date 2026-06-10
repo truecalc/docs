@@ -13,5 +13,5 @@ use_cases:
   - title: "Rename a fixed-length label"
     formula: "=REPLACE("PRODUCT",1,7,"ITEM")"
     industries: [retail, operations]
-industries: [operations, sales, engineering, retail]
+industries: [operations, sales, retail]
 related: [SUBSTITUTE, MID, LEFT, RIGHT, FIND]
