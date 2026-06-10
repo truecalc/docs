@@ -1,5 +1,5 @@
 {
   "title": "Reference",
   "root": true,
-  "pages": ["index", "errors", "dialects", "schema", "functions"]
+  "pages": ["index", "testing", "errors", "dialects", "schema", "functions"]
 }
