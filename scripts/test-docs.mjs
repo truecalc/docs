@@ -13,12 +13,12 @@
  *
  * Blocks WITHOUT the `test` marker are ignored (illustrative snippets).
  */
-import { readdirSync, readFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const learnDir = join(root, 'content', 'docs', 'learn');
+const SCAN_DIRS = ['learn', 'tutorials'].map((d) => join(root, 'content', 'docs', d));
 const workDir = join(root, '.docs-test');
 
 const NODE_FLAGS = ['--experimental-wasm-modules', '--experimental-strip-types', '--no-warnings'];
@@ -28,6 +28,12 @@ function* mdxFiles(dir) {
     const p = join(dir, entry.name);
     if (entry.isDirectory()) yield* mdxFiles(p);
     else if (entry.name.endsWith('.mdx')) yield p;
+  }
+}
+
+function* allMdxFiles() {
+  for (const dir of SCAN_DIRS) {
+    if (existsSync(dir)) yield* mdxFiles(dir);
   }
 }
 
@@ -88,7 +94,7 @@ async function main() {
   let failed = 0;
   let i = 0;
 
-  for (const file of mdxFiles(learnDir)) {
+  for (const file of allMdxFiles()) {
     const rel = relative(root, file);
     for (const block of extractBlocks(readFileSync(file, 'utf8'))) {
       let filename;
