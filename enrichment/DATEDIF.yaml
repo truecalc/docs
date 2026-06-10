@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use DATEDIF?"
+    a: "Use DATEDIF to measure the gap between two dates in whole years, months, or days — handy for ages, tenure, and durations."
+  - q: "What does the unit argument in DATEDIF mean?"
+    a: "It sets the unit of the result: Y for full years, M for full months, and D for total days between the two dates."
+use_cases:
+  - title: "Years between two dates (e.g. age)"
+    formula: "=DATEDIF(DATE(1990, 1, 1), DATE(2020, 1, 1), "Y")"
+    industries: [hr, personal-finance]
+  - title: "Months of employee tenure"
+    formula: "=DATEDIF(DATE(2022, 1, 1), DATE(2023, 7, 1), "M")"
+    industries: [hr, operations]
+  - title: "Total days in a project window"
+    formula: "=DATEDIF(DATE(2024, 1, 1), DATE(2024, 3, 1), "D")"
+    industries: [operations, engineering]
+industries: [hr, operations, personal-finance, engineering]
+related: [DATE, IF]

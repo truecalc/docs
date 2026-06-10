@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use VLOOKUP instead of XLOOKUP?"
+    a: "Use XLOOKUP when it is available — it can look left, returns a clean result when nothing is found, and does not break when columns move. Reach for VLOOKUP mainly for compatibility with older sheets."
+  - q: "Why does my VLOOKUP return the wrong value?"
+    a: "Usually because the last argument is left as approximate match. Pass FALSE as the fourth argument to force an exact match unless your lookup column is sorted and you truly want the nearest value."
+use_cases:
+  - title: "Look up a product code's price"
+    formula: "=VLOOKUP("b", {"a", 1; "b", 2; "c", 3}, 2, FALSE)"
+    industries: [retail, sales]
+  - title: "Find an employee's department by ID"
+    formula: "=VLOOKUP(102, {101, "Sales"; 102, "Finance"; 103, "Ops"}, 2, FALSE)"
+    industries: [hr, operations]
+  - title: "Map a tier number to a discount rate"
+    formula: "=VLOOKUP(2, {1, 0.05; 2, 0.1; 3, 0.15}, 2, FALSE)"
+    industries: [finance, retail]
+industries: [retail, sales, finance, hr]
+related: [XLOOKUP, INDEX, MATCH, IFERROR]

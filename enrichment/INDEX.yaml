@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use INDEX instead of VLOOKUP?"
+    a: "Use INDEX (usually paired with MATCH) when the value you want sits to the left of your lookup column, or when you want to grab a cell by its row and column position directly."
+  - q: "How do I pick a specific row from a list with INDEX?"
+    a: "Pass the array and the row number, e.g. INDEX(array, 2) returns the second item."
+use_cases:
+  - title: "Return the second item in a column list"
+    formula: "=INDEX({"a"; "b"; "c"}, 2)"
+    industries: [operations, sales]
+  - title: "Pick a cell by row and column"
+    formula: "=INDEX({10, 20; 30, 40}, 2, 1)"
+    industries: [finance, engineering]
+  - title: "Combine INDEX and MATCH for a left lookup"
+    formula: "=INDEX({"Sales", "Finance", "Ops"}, MATCH(102, {101, 102, 103}, 0))"
+    industries: [hr, operations]
+industries: [operations, finance, hr, engineering]
+related: [MATCH, VLOOKUP, XLOOKUP]

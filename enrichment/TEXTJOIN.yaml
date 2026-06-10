@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use TEXTJOIN instead of the & operator?"
+    a: "Use TEXTJOIN when you are joining many values with the same separator and want to skip blanks automatically; use & for quick one-off concatenations."
+  - q: "How do I make TEXTJOIN skip empty values?"
+    a: "Set the second argument (ignore_empty) to TRUE and blank cells are left out, so you do not get doubled-up separators."
+use_cases:
+  - title: "Join words with a comma and space"
+    formula: "=TEXTJOIN(", ", TRUE, "a", "b", "c")"
+    industries: [operations, sales]
+  - title: "Build a full name from parts"
+    formula: "=TEXTJOIN(" ", TRUE, "Ada", "Lovelace")"
+    industries: [hr, operations]
+  - title: "Combine tags while skipping blanks"
+    formula: "=TEXTJOIN(" | ", TRUE, "red", "", "blue", "green")"
+    industries: [retail, operations]
+industries: [operations, sales, hr, retail]
+related: [IF, IFERROR]

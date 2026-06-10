@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use AVERAGE instead of SUM?"
+    a: "Use AVERAGE to find the typical (mean) value of a set of numbers; use SUM when you just want the total."
+  - q: "Does AVERAGE count blank or text cells?"
+    a: "No. AVERAGE ignores blanks and text and divides only by the count of numeric values, so empty cells never drag the result toward zero."
+use_cases:
+  - title: "Average of three test scores"
+    formula: "=AVERAGE(80, 90, 100)"
+    industries: [education, hr]
+  - title: "Average monthly revenue from an inline array"
+    formula: "=AVERAGE({1200, 1500, 1100, 1400})"
+    industries: [finance, sales]
+  - title: "Average temperature reading"
+    formula: "=AVERAGE(21.5, 22.0, 20.8)"
+    industries: [science, engineering]
+industries: [finance, education, sales, science]
+related: [SUM, COUNTIF, SUMIF]

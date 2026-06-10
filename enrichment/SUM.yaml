@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SUM instead of SUMIF?"
+    a: "Use SUM to total every value in a range; use SUMIF when you only want to total cells that meet a condition."
+  - q: "Can SUM add up numbers from several ranges at once?"
+    a: "Yes. Pass each range or value as a separate argument, e.g. SUM(range1, range2, 10), and SUM adds them all together."
+use_cases:
+  - title: "Total a short list of numbers"
+    formula: "=SUM(1, 2, 3, 4)"
+    industries: [finance, operations]
+  - title: "Add up a column of values from an inline array"
+    formula: "=SUM({10; 20; 30; 40})"
+    industries: [finance, sales, retail]
+  - title: "Combine several subtotals into a grand total"
+    formula: "=SUM(100, 250, 75)"
+    industries: [operations, retail]
+industries: [finance, operations, sales, retail]
+related: [SUMIF, AVERAGE, COUNTIF]

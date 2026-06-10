@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SUMIF instead of SUM?"
+    a: "Use SUMIF to total only the cells that meet a condition; use plain SUM when you want to add everything."
+  - q: "When should I use SUMIF instead of COUNTIF?"
+    a: "Use SUMIF to add up the values that match a condition; use COUNTIF when you only want the number of matching cells."
+use_cases:
+  - title: "Total only values above a threshold"
+    formula: "=SUMIF({1, 2, 3, 4}, ">2")"
+    industries: [finance, operations]
+  - title: "Sum amounts that meet a minimum"
+    formula: "=SUMIF({100, 250, 75, 400}, ">=200")"
+    industries: [finance, sales]
+  - title: "Total values equal to a target"
+    formula: "=SUMIF({5, 10, 5, 20}, 5)"
+    industries: [operations, retail]
+industries: [finance, operations, sales, retail]
+related: [SUM, COUNTIF, AVERAGE, IF]

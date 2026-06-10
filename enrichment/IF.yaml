@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use IF instead of IFERROR?"
+    a: "Use IF to choose between two outcomes based on a condition you write; use IFERROR only to catch and replace a formula that returns an error."
+  - q: "How do I check more than one condition with IF?"
+    a: "Nest IF statements or combine them with AND/OR inside the test, e.g. IF(AND(x>0, y>0), both, not both)."
+use_cases:
+  - title: "Label a value as high or low"
+    formula: "=IF(5 > 3, "yes", "no")"
+    industries: [operations, sales]
+  - title: "Pass or fail based on a score"
+    formula: "=IF(72 >= 60, "Pass", "Fail")"
+    industries: [education, hr]
+  - title: "Flag whether a budget is over or under"
+    formula: "=IF(950 > 1000, "Over budget", "Within budget")"
+    industries: [finance, operations]
+industries: [finance, operations, education, sales]
+related: [IFERROR, COUNTIF, SUMIF]
