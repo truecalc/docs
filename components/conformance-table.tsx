@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 interface CategoryEntry {
-  category: string;
+  name: string;
   passed: number;
   total: number;
   blocking: boolean;
@@ -13,6 +13,7 @@ interface ConformanceSummary {
   version: string;
   generated: string;
   categories: CategoryEntry[];
+  overall: { passed: number; total: number };
 }
 
 export function ConformanceTable() {
@@ -78,11 +79,11 @@ export function ConformanceTable() {
             const pct = row.total > 0 ? Math.round((row.passed / row.total) * 100) : 0;
             return (
               <tr
-                key={row.category}
+                key={row.name}
                 style={{ borderBottom: '1px solid var(--color-fd-border)' }}
               >
                 <td style={{ padding: '0.5rem 0.75rem', fontFamily: 'var(--font-mono, monospace)' }}>
-                  {row.category}
+                  {row.name}
                 </td>
                 <td style={{ textAlign: 'right', padding: '0.5rem 0.75rem' }}>{row.passed}</td>
                 <td style={{ textAlign: 'right', padding: '0.5rem 0.75rem' }}>{row.total}</td>
@@ -119,6 +120,21 @@ export function ConformanceTable() {
             );
           })}
         </tbody>
+        <tfoot>
+          <tr style={{ borderTop: '2px solid var(--color-fd-border)', fontWeight: 600 }}>
+            <td style={{ padding: '0.5rem 0.75rem' }}>Total</td>
+            <td style={{ textAlign: 'right', padding: '0.5rem 0.75rem' }}>{data.overall.passed}</td>
+            <td style={{ textAlign: 'right', padding: '0.5rem 0.75rem' }}>{data.overall.total}</td>
+            <td style={{ padding: '0.5rem 0.75rem' }}>
+              <span style={{ fontSize: '0.75rem' }}>
+                {data.overall.total > 0
+                  ? Math.round((data.overall.passed / data.overall.total) * 100)
+                  : 0}%
+              </span>
+            </td>
+            <td />
+          </tr>
+        </tfoot>
       </table>
       <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--color-fd-muted-foreground)' }}>
         Last updated: {data.generated} &nbsp;·&nbsp; Version: {data.version}

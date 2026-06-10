@@ -17,6 +17,7 @@
     "fumadocs-mdx": "^15.0.11",
     "fumadocs-ui": "^16.9.3",
     "lucide-react": "^1.17.0",
+    "mermaid": "^11.15.0",
     "next": "16.2.7",
     "posthog-js": "^1.383.1",
     "react": "^19.2.7",
