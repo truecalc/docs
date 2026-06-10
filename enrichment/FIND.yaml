@@ -13,5 +13,5 @@ use_cases:
   - title: "Find a letter inside a short string"
     formula: "=FIND("b","abc")"
     industries: [operations, education]
-industries: [operations, retail, sales, hr]
+industries: [operations, retail, sales]
 related: [SEARCH, LEFT, RIGHT, MID, LEN]

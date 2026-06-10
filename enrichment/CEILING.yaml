@@ -13,5 +13,5 @@ use_cases:
   - title: "Round a price up to the nearest 5 cents"
     formula: "=CEILING(7.27, 0.05)"
     industries: [retail, sales]
-industries: [operations, retail, sales, finance]
+industries: [operations]
 related: [FLOOR, ROUNDUP, MROUND, INT]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Count scores at or above a passing mark"
     formula: "=COUNTIF({55, 62, 70, 48}, ">=60")"
     industries: [education, hr]
-industries: [operations, sales, education, hr]
+industries: [operations]
 related: [SUMIF, SUM, AVERAGE, IF]

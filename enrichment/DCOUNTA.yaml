@@ -5,5 +5,5 @@ use_cases:
   - title: "Count employees in a department"
     formula: "=DCOUNTA({"Name","Dept";"Alice","HR";"Bob","IT";"Carol","HR"},"Dept",{"Dept";"HR"})"
     industries: [hr, operations]
-industries: [hr, operations]
+industries: [operations]
 related: [DCOUNT, DSUM, COUNTA]

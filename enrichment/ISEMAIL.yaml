@@ -5,5 +5,5 @@ use_cases:
   - title: "Validate a well-formed email address"
     formula: "=ISEMAIL("user@example.com")"
     industries: [operations, sales]
-industries: [operations, sales]
+industries: [operations]
 related: [ISURL, ISTEXT, REGEXMATCH]

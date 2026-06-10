@@ -5,5 +5,5 @@ use_cases:
   - title: "Check that a value is numeric"
     formula: "=TYPE(42)"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [ISNUMBER, ISTEXT, ISLOGICAL]

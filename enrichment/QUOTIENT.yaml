@@ -5,5 +5,5 @@ use_cases:
   - title: "How many full pairs can be made from 9 items"
     formula: "=QUOTIENT(9,2)"
     industries: [operations, retail]
-industries: [operations, retail]
+industries: [operations]
 related: [MOD, INT]

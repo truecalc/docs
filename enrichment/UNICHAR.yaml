@@ -5,5 +5,5 @@ use_cases:
   - title: "Get the letter A from its Unicode code point"
     formula: "=UNICHAR(65)"
     industries: [operations, education]
-industries: [operations, education]
+industries: [operations]
 related: [UNICODE, CHAR, CODE]

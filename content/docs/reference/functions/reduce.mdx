@@ -22,12 +22,6 @@ import { TryIt } from '@/components/try-it';
 
 Use REDUCE to fold an array down to a single accumulated value using a LAMBDA, useful for custom summations, products, or running aggregations.
 
-## Use cases
-
-**Sum an array using accumulator**
-
-<TryIt formula={"=REDUCE(0,{1,2,3},LAMBDA(acc,x,acc+x))"} />
-
 ## Used in
 
 [operations](/industries/operations) · [science](/industries/science)
@@ -36,13 +30,5 @@ Use REDUCE to fold an array down to a single accumulated value using a LAMBDA, u
 
 ```
 REDUCE(initial_value, array, lambda)
-```
-
-## Examples
-
-```formula
-=REDUCE(0,{1,2,3},LAMBDA(acc,x,acc+x)) // => 6
-=REDUCE(1,{1,2,3,4},LAMBDA(acc,x,acc*x)) // => 24
-=REDUCE(0,{3,1,4,1,5},LAMBDA(acc,x,MAX(acc,x))) // => 5
 ```
 

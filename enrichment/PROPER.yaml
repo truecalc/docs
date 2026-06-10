@@ -13,5 +13,5 @@ use_cases:
   - title: "Capitalize a street address"
     formula: "=PROPER("123 main street")"
     industries: [real-estate, operations]
-industries: [hr, sales, operations, real-estate, education]
+industries: [sales, operations]
 related: [UPPER, LOWER, TRIM, SUBSTITUTE]

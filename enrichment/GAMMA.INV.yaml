@@ -5,5 +5,5 @@ use_cases:
   - title: "Gamma quantile for a given probability"
     formula: "=GAMMA.INV(0.3,5,1)"
     industries: [science, engineering]
-industries: [science, engineering]
+industries: [science]
 related: [GAMMA.DIST, GAMMA, GAMMAINV]

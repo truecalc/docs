@@ -5,5 +5,5 @@ use_cases:
   - title: "Cumulative Weibull failure probability (legacy)"
     formula: "=WEIBULL(2.4,2,3,TRUE)"
     industries: [engineering, operations]
-industries: [engineering, operations]
+industries: [operations]
 related: [WEIBULL.DIST, EXPON.DIST]

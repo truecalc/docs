@@ -13,5 +13,5 @@ use_cases:
   - title: "Consistency of process measurements"
     formula: "=STDEV(12.1, 12.5, 11.8, 12.3, 12.0)"
     industries: [engineering, operations]
-industries: [finance, science, engineering, operations]
+industries: [finance, science, operations]
 related: [AVERAGE, MEDIAN, VAR, STDEVP]

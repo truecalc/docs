@@ -5,5 +5,5 @@ use_cases:
   - title: "Get the Unicode code point of the first character"
     formula: "=UNICODE("Alphabet")"
     industries: [operations, education]
-industries: [operations, education]
+industries: [operations]
 related: [UNICHAR, CODE, CHAR]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Strip padding from a code"
     formula: "=TRIM("  ABC-123  ")"
     industries: [operations, engineering]
-industries: [hr, operations, retail, engineering]
+industries: [operations, retail]
 related: [LEN, SUBSTITUTE, LEFT, RIGHT]

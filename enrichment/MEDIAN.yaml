@@ -13,5 +13,5 @@ use_cases:
   - title: "Median of an even-count dataset"
     formula: "=MEDIAN(3, 7, 8, 5, 12, 14, 21, 13, 18)"
     industries: [science, operations]
-industries: [finance, hr, operations, science]
+industries: [finance, operations, science]
 related: [AVERAGE, MODE, LARGE, SMALL]

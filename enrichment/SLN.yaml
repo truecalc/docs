@@ -5,5 +5,5 @@ use_cases:
   - title: "Annual depreciation on a $100 asset with $50 salvage over 10 years"
     formula: "=SLN(100,50,10)"
     industries: [finance, operations]
-industries: [finance, operations]
+industries: [finance]
 related: [SYD, DB, DDB, VDB]

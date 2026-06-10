@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use OFFSET?"
     a: "Use OFFSET to return a range that is shifted a given number of rows and columns from a starting reference — ideal for building dynamic named ranges or sliding-window aggregations."
-industries: [operations, finance]
+industries: [operations]
 related: [INDIRECT, INDEX, ADDRESS]

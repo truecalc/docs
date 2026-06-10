@@ -13,5 +13,5 @@ use_cases:
   - title: "Round a cost up to the nearest ten"
     formula: "=ROUNDUP(123, -1)"
     industries: [finance, operations]
-industries: [retail, finance, operations, engineering]
+industries: [operations, engineering]
 related: [ROUND, ROUNDDOWN, MOD, INT]

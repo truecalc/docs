@@ -5,5 +5,5 @@ use_cases:
   - title: "Predict a y-value from a linear trend"
     formula: "=FORECAST(5,{2,4,6,8,10},{1,2,3,4,5})"
     industries: [sales, operations]
-industries: [sales, operations]
+industries: [operations]
 related: [FORECAST.LINEAR, SLOPE, INTERCEPT, TREND]

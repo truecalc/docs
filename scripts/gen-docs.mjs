@@ -88,6 +88,28 @@ function isSelfContained(formula) {
   return true;
 }
 
+/**
+ * A registry example is "reproducible" on a reference page only if a reader can
+ * run it as-is: self-contained (no cell/sheet refs) AND containing no bare
+ * identifier (a named range like `PRICES`). A bare identifier is any name token
+ * that is not a function call (`NAME(`) and not a boolean literal — these come
+ * from fixtures built on named ranges (`=SUM(PRICES) // => 60`) and are opaque.
+ */
+function isReproducibleExample(formula) {
+  if (!isSelfContained(formula)) return false;
+  // Blank out string literals so identifiers inside text aren't inspected.
+  const noStrings = String(formula).replace(/"[^"]*"/g, '""');
+  const idRe = /[A-Za-z_][A-Za-z0-9_.]*/g;
+  let m;
+  while ((m = idRe.exec(noStrings)) !== null) {
+    const after = noStrings[m.index + m[0].length];
+    if (after === '(') continue; // function call
+    if (/^(TRUE|FALSE)$/i.test(m[0])) continue; // boolean literal
+    return false; // a bare name → named range / external reference
+  }
+  return true;
+}
+
 function functionPage(fn, enrich) {
   const e = enrich ?? {};
   const useCases = Array.isArray(e.use_cases) ? e.use_cases : [];
@@ -119,13 +141,17 @@ function functionPage(fn, enrich) {
   );
   lines.push('');
   // Headline widget: prefer a curated, runnable use-case formula; else the first
-  // self-contained registry example.
-  const curatedRunnable = useCases.find((u) => u.formula && isSelfContained(u.formula));
+  // self-contained registry example. The use-case promoted to the headline is
+  // not repeated in the "Use cases" section below (avoids a duplicate widget).
+  const headlineUseCase = useCases.find((u) => u.formula && isSelfContained(u.formula));
   const exampleRunnable = Array.isArray(fn.examples)
     ? fn.examples.find((ex) => isSelfContained(ex.formula))
     : undefined;
-  const headline = curatedRunnable?.formula ?? exampleRunnable?.formula;
-  if (headline || useCases.length > 0) {
+  const headline = headlineUseCase?.formula ?? exampleRunnable?.formula;
+  const useCasesToShow = headlineUseCase
+    ? useCases.filter((u) => u !== headlineUseCase)
+    : useCases;
+  if (headline || useCasesToShow.length > 0) {
     lines.push("import { TryIt } from '@/components/try-it';");
     lines.push('');
   }
@@ -145,10 +171,10 @@ function functionPage(fn, enrich) {
       lines.push('');
     }
   }
-  if (useCases.length > 0) {
+  if (useCasesToShow.length > 0) {
     lines.push('## Use cases');
     lines.push('');
-    for (const u of useCases) {
+    for (const u of useCasesToShow) {
       if (u.title) lines.push(`**${mdxEscape(String(u.title))}**`);
       lines.push('');
       if (u.formula) {
@@ -197,11 +223,17 @@ function functionPage(fn, enrich) {
     lines.push(`${mdxEscape(fn.returns.type)} — ${mdxEscape(fn.returns.description)}`);
     lines.push('');
   }
-  if (Array.isArray(fn.examples) && fn.examples.length > 0) {
+  // Only show self-contained examples: fixture examples that reference named
+  // ranges or cells (e.g. `=SUM(PRICES)`) are opaque and non-reproducible on a
+  // reference page, so they are filtered out. If none remain, omit the section.
+  const shownExamples = Array.isArray(fn.examples)
+    ? fn.examples.filter((ex) => isReproducibleExample(ex.formula))
+    : [];
+  if (shownExamples.length > 0) {
     lines.push('## Examples');
     lines.push('');
     lines.push('```formula');
-    for (const ex of fn.examples) {
+    for (const ex of shownExamples) {
       lines.push(`${ex.formula} // => ${ex.result}`);
     }
     lines.push('```');

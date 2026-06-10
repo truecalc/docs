@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use FORMULATEXT?"
     a: "Use FORMULATEXT to display the formula stored in another cell as a text string — handy for documentation, auditing, or creating self-describing worksheets."
-industries: [operations, education]
+industries: [operations]
 related: [INDIRECT, ISFORMULA, TEXT]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Total values equal to a target"
     formula: "=SUMIF({5, 10, 5, 20}, 5)"
     industries: [operations, retail]
-industries: [finance, operations, sales, retail]
+industries: [operations]
 related: [SUM, COUNTIF, AVERAGE, IF]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert a Roman numeral to an integer"
     formula: "=ARABIC("XIV")"
     industries: [operations, education]
-industries: [operations, education]
+industries: [operations]
 related: [ROMAN, TEXT]

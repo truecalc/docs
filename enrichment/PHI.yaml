@@ -5,5 +5,5 @@ use_cases:
   - title: "Standard normal PDF at a z-score"
     formula: "=PHI(1)"
     industries: [science, engineering]
-industries: [science, engineering]
+industries: [science]
 related: [NORM.DIST, NORM.S.DIST, NORM.INV]

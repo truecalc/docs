@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use SHEET?"
     a: "Use SHEET to retrieve the sheet index number of the current sheet or a named sheet, which is useful when you need to identify which sheet a formula is on or reference sheets by position."
-industries: [operations, finance]
+industries: [operations]
 related: [SHEETS, INDIRECT, ADDRESS]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Create a time serial from hour, minute, second"
     formula: "=TIME(11,40,59)"
     industries: [operations, engineering]
-industries: [operations, engineering]
+industries: [operations]
 related: [HOUR, MINUTE, SECOND, TIMEVALUE, NOW]

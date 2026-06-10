@@ -13,5 +13,5 @@ use_cases:
   - title: "Approve when at least one rule passes"
     formula: "=IF(OR(4 > 5, 4 < 12), "yes", "no")"
     industries: [hr, finance]
-industries: [operations, sales, engineering, finance]
+industries: [operations]
 related: [AND, NOT, IF, IFS]

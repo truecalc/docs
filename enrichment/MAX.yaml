@@ -13,5 +13,5 @@ use_cases:
   - title: "Identify the top revenue figure"
     formula: "=MAX(1500, 2300, 1800, 2100)"
     industries: [finance, sales]
-industries: [operations, sales, science, finance]
+industries: [operations, science, finance]
 related: [MIN, LARGE, MAXIFS, AVERAGE]

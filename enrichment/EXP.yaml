@@ -5,5 +5,5 @@ use_cases:
   - title: "Compute e squared"
     formula: "=EXP(2)"
     industries: [science, finance]
-industries: [science, finance]
+industries: [science]
 related: [LN, LOG, POWER]

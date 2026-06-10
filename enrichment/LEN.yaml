@@ -13,5 +13,5 @@ use_cases:
   - title: "Measure the length of a serial number"
     formula: "=LEN("SN-2024-0042")"
     industries: [engineering, operations]
-industries: [retail, operations, real-estate, engineering]
+industries: [retail, operations]
 related: [LEFT, RIGHT, MID, TRIM]

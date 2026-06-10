@@ -13,5 +13,5 @@ use_cases:
   - title: "Use a TRUE catch-all as the default"
     formula: "=IFS(FALSE,"x",TRUE,"y")"
     industries: [operations, sales]
-industries: [education, hr, operations, sales, engineering]
+industries: [operations]
 related: [IF, SWITCH, IFERROR, AND, OR]

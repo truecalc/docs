@@ -13,5 +13,5 @@ use_cases:
   - title: "Combine several subtotals into a grand total"
     formula: "=SUM(100, 250, 75)"
     industries: [operations, retail]
-industries: [finance, operations, sales, retail]
+industries: [operations]
 related: [SUMIF, AVERAGE, COUNTIF]

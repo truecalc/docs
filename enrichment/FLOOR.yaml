@@ -13,5 +13,5 @@ use_cases:
   - title: "Round a price down to the nearest 5 cents"
     formula: "=FLOOR(7.27, 0.05)"
     industries: [retail, sales]
-industries: [operations, retail, sales, engineering]
+industries: [operations, engineering]
 related: [CEILING, ROUNDDOWN, MROUND, INT]

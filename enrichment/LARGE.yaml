@@ -13,5 +13,5 @@ use_cases:
   - title: "Third-largest deal in a sales pipeline"
     formula: "=LARGE({120, 340, 90, 560, 230}, 3)"
     industries: [sales, finance]
-industries: [sales, finance, education, operations]
+industries: [finance, education, operations]
 related: [SMALL, MAX, RANK, MEDIAN]

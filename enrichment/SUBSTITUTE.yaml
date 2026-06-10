@@ -13,5 +13,5 @@ use_cases:
   - title: "Replace only the first dash"
     formula: "=SUBSTITUTE("a-b-c", "-", "+", 1)"
     industries: [operations, engineering]
-industries: [operations, finance, sales, engineering]
+industries: [operations, sales]
 related: [TRIM, LEFT, RIGHT, TEXT]

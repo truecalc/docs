@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use NA?"
     a: "Use NA to deliberately return a #N/A error as a sentinel value, signalling that a required input is missing or a lookup intentionally found no result."
-industries: [operations, finance]
+industries: [operations]
 related: [IFERROR, IFNA, ISNA]

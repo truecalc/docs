@@ -13,5 +13,5 @@ use_cases:
   - title: "Format a large number with thousands separators"
     formula: "=TEXT(2500000, "#,##0")"
     industries: [operations, engineering]
-industries: [finance, retail, lending, operations]
+industries: [retail, operations]
 related: [CONCATENATE, SUBSTITUTE, LEFT, RIGHT]

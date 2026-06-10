@@ -13,5 +13,5 @@ use_cases:
   - title: "Map a tier to its discount across a row"
     formula: "=HLOOKUP(2, {1, 2, 3; 0.05, 0.1, 0.15}, 2, FALSE)"
     industries: [finance, retail]
-industries: [retail, sales, finance, operations]
+industries: [retail, sales, operations]
 related: [VLOOKUP, INDEX, MATCH, XLOOKUP]

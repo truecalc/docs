@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use ISEVEN?"
     a: "Use ISEVEN to check whether a number is even, such as alternating row shading, scheduling every other period, or validating that a quantity is divisible by 2."
-industries: [operations, finance]
+industries: [operations]
 related: [ISODD, MOD]

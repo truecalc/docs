@@ -5,5 +5,5 @@ use_cases:
   - title: "Determinant of a 2x2 matrix"
     formula: "=MDETERM({1,2;3,4})"
     industries: [engineering, science]
-industries: [engineering, science]
+industries: [science]
 related: [MINVERSE, MMULT]

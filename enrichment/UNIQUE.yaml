@@ -5,5 +5,5 @@ use_cases:
   - title: "Extract distinct values from an array"
     formula: "=UNIQUE({1,2,2,3,3,3})"
     industries: [operations, sales]
-industries: [operations, sales]
+industries: [operations]
 related: [SORT, FILTER, COUNTIF]

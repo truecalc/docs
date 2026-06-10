@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert a date serial number to a date value"
     formula: "=TO_DATE(44927)"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [TO_PURE_NUMBER, DATE, VALUE]

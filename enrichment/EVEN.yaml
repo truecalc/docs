@@ -5,5 +5,5 @@ use_cases:
   - title: "Round up to nearest even integer"
     formula: "=EVEN(3)"
     industries: [operations, retail]
-industries: [operations, retail]
+industries: [operations]
 related: [ODD, CEILING, FLOOR, ROUND]

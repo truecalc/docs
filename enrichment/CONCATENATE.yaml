@@ -13,5 +13,5 @@ use_cases:
   - title: "Join a label with a number"
     formula: "=CONCATENATE("Total: ", 1500)"
     industries: [finance, sales]
-industries: [hr, operations, retail, finance]
+industries: [operations, retail]
 related: [TEXTJOIN, LEFT, RIGHT, TEXT]

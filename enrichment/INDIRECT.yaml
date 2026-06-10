@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use INDIRECT?"
     a: "Use INDIRECT to convert a text string into a live cell reference at evaluation time — essential when the target address is built dynamically from other cells or formulas."
-industries: [operations, finance]
+industries: [operations]
 related: [ADDRESS, OFFSET, ROW]

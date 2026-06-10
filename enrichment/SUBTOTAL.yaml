@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use SUBTOTAL instead of SUM or AVERAGE?"
     a: "Use SUBTOTAL when you want to apply a summary function (sum, average, count, etc.) to a list using a numeric function code, which lets you switch the aggregation type dynamically."
-industries: [finance, operations, retail]
+industries: [operations]
 related: [SUM, AVERAGE, COUNT, AGGREGATE]

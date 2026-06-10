@@ -5,5 +5,5 @@ use_cases:
   - title: "Format a decimal as a percentage"
     formula: "=TO_PERCENT(0.5)"
     industries: [finance, operations]
-industries: [finance, operations]
+industries: [operations]
 related: [TO_DOLLARS, TO_TEXT, TEXT]

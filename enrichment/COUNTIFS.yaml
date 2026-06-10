@@ -13,5 +13,5 @@ use_cases:
   - title: "Count items in a target range"
     formula: "=COUNTIFS({10, 20, 30, 40}, ">=20", {10, 20, 30, 40}, "<=30")"
     industries: [retail, sales]
-industries: [operations, sales, finance, retail]
+industries: [operations]
 related: [COUNTIF, SUMIFS, COUNT, COUNTA]

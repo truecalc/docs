@@ -5,5 +5,5 @@ use_cases:
   - title: "Format a number to 2 decimal places as text"
     formula: "=FIXED(1234.5678, 2)"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [DOLLAR, TEXT, VALUE]

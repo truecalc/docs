@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When do I use SORTN instead of SORT or LARGE?"
     a: "Use SORTN when you want only the top N rows of an array in sorted order; SORT returns all rows sorted, while LARGE returns a single scalar value."
-industries: [operations, sales]
+industries: [operations]
 related: [SORT, LARGE, SMALL, FILTER]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Days between two dates on a 360-day calendar"
     formula: "=DAYS360(DATE(2023,1,1),DATE(2023,12,31),0)"
     industries: [finance, operations]
-industries: [finance, lending]
+industries: [finance]
 related: [DATEDIF, YEARFRAC, DATE, NETWORKDAYS]

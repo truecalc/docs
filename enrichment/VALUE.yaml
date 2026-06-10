@@ -13,5 +13,5 @@ use_cases:
   - title: "Coerce a text digit so it can be summed"
     formula: "=VALUE("42")"
     industries: [operations, education]
-industries: [finance, operations, retail, education]
+industries: [operations, retail]
 related: [TEXT, ISNUMBER, ISTEXT, ROUND]

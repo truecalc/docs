@@ -5,5 +5,5 @@ use_cases:
   - title: "Sum of squares of 1 through 5"
     formula: "=SUMSQ(1,2,3,4,5)"
     industries: [science, engineering]
-industries: [science, engineering, education]
+industries: [science, engineering]
 related: [SQRT, SUMPRODUCT, POWER, SUMX2PY2]

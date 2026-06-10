@@ -5,5 +5,5 @@ use_cases:
   - title: "Cumulative failure probability at a given time"
     formula: "=WEIBULL.DIST(2.4,2,3,TRUE)"
     industries: [engineering, operations]
-industries: [engineering, operations]
+industries: [operations]
 related: [WEIBULL, EXPON.DIST]

@@ -5,5 +5,5 @@ use_cases:
   - title: "Round value up to next multiple of 10"
     formula: "=CEILING.PRECISE(96,10)"
     industries: [finance, operations]
-industries: [finance, operations]
+industries: [operations]
 related: [CEILING.MATH, CEILING, FLOOR.MATH]

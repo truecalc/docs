@@ -13,5 +13,5 @@ use_cases:
   - title: "Confirm two single characters match exactly"
     formula: "=EXACT("a","a")"
     industries: [operations, engineering]
-industries: [retail, operations, education, engineering]
+industries: [retail, operations]
 related: [FIND, SEARCH, IF, ISTEXT]

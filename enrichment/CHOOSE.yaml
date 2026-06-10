@@ -13,5 +13,5 @@ use_cases:
   - title: "Select a commission rate by tier number"
     formula: "=CHOOSE(3, 0.02, 0.04, 0.06)"
     industries: [sales, finance]
-industries: [operations, sales, finance]
+industries: [operations, sales]
 related: [LOOKUP, INDEX, MATCH, IF]

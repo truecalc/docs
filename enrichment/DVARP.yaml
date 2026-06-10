@@ -5,5 +5,5 @@ use_cases:
   - title: "Population variance for a category"
     formula: "=DVARP({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
     industries: [science, operations]
-industries: [science, operations]
+industries: [operations]
 related: [DVAR, DSTDEVP, VARP]

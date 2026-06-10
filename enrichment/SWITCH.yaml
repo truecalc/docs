@@ -13,5 +13,5 @@ use_cases:
   - title: "Look up a code and return its value"
     formula: "=SWITCH("B","A",1,"B",2,0)"
     industries: [retail, sales]
-industries: [operations, education, hr, retail, sales]
+industries: [operations]
 related: [IFS, IF, IFNA, VLOOKUP]

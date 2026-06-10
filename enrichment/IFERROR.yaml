@@ -13,5 +13,5 @@ use_cases:
   - title: "Default to zero when a calculation errors"
     formula: "=IFERROR(10 / 0, 0)"
     industries: [finance, operations]
-industries: [finance, operations, sales, retail]
+industries: [operations]
 related: [IF, VLOOKUP, XLOOKUP]

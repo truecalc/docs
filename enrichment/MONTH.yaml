@@ -13,5 +13,5 @@ use_cases:
   - title: "Extract the billing month"
     formula: "=MONTH(DATE(2024, 2, 1))"
     industries: [finance, lending]
-industries: [finance, operations, sales, lending]
+industries: [finance, operations]
 related: [YEAR, DAY, EOMONTH, DATE]

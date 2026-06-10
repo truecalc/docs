@@ -5,5 +5,5 @@ use_cases:
   - title: "Look up a score for a specific student"
     formula: "=DGET({"Name","Score";"Alice",90;"Bob",80},"Score",{"Name";"Alice"})"
     industries: [education, operations]
-industries: [operations, education]
+industries: [operations]
 related: [DMAX, DMIN, VLOOKUP]

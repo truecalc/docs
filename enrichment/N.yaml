@@ -5,5 +5,5 @@ use_cases:
   - title: "Convert a boolean flag to a number"
     formula: "=N(TRUE)"
     industries: [operations, finance]
-industries: [operations, finance]
+industries: [operations]
 related: [VALUE, IF, ISNUMBER]

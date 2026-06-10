@@ -22,12 +22,6 @@ import { TryIt } from '@/components/try-it';
 
 Use MAP to apply a LAMBDA function element-by-element to one or more arrays, returning a transformed array of the same shape.
 
-## Use cases
-
-**Double each value in an array**
-
-<TryIt formula={"=MAP({1,2,3},LAMBDA(x,x*2))"} />
-
 ## Used in
 
 [operations](/industries/operations) · [science](/industries/science)
@@ -36,13 +30,5 @@ Use MAP to apply a LAMBDA function element-by-element to one or more arrays, ret
 
 ```
 MAP(array1, [array2, ...], lambda)
-```
-
-## Examples
-
-```formula
-=MAP({1000,2000,3000},LAMBDA(salary,salary*0.3)) // => 300
-=MAP({1,2,3},LAMBDA(x,x*2)) // => 2
-=MAP({1,2,3,4},LAMBDA(x,x^2)) // => 1
 ```
 

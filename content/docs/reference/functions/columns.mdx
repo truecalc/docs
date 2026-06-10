@@ -22,12 +22,6 @@ import { TryIt } from '@/components/try-it';
 
 Use COLUMNS to count the number of columns in an array or range, often used in dynamic formulas to adapt to variable-width data.
 
-## Use cases
-
-**Count columns in a literal array**
-
-<TryIt formula={"=COLUMNS({1,2,3})"} />
-
 ## Used in
 
 [operations](/industries/operations) · [science](/industries/science)
@@ -36,13 +30,5 @@ Use COLUMNS to count the number of columns in an array or range, often used in d
 
 ```
 COLUMNS(array)
-```
-
-## Examples
-
-```formula
-=COLUMNS(GRID) // => 2
-=COLUMNS(INDIRECT("A1:A5")) // => 1
-=COLUMNS(INDIRECT("A1:C1")) // => 3
 ```
 

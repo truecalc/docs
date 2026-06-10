@@ -22,12 +22,6 @@ import { TryIt } from '@/components/try-it';
 
 Use MAKEARRAY to programmatically generate an array of a given size where each cell value is computed by a LAMBDA based on its row and column index.
 
-## Use cases
-
-**Build a 2x3 multiplication table**
-
-<TryIt formula={"=MAKEARRAY(2,3,LAMBDA(r,c,r*c))"} />
-
 ## Used in
 
 [operations](/industries/operations) · [science](/industries/science)
@@ -36,13 +30,5 @@ Use MAKEARRAY to programmatically generate an array of a given size where each c
 
 ```
 MAKEARRAY(rows, cols, lambda)
-```
-
-## Examples
-
-```formula
-=MAKEARRAY(2,3,LAMBDA(r,c,r*c)) // => 1
-=MAKEARRAY(2,2,LAMBDA(r,c,IF(r=c,1,0))) // => 1
-=MAKEARRAY(3,3,LAMBDA(r,c,r+c)) // => 2
 ```
 

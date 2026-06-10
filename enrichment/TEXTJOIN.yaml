@@ -13,5 +13,5 @@ use_cases:
   - title: "Combine tags while skipping blanks"
     formula: "=TEXTJOIN(" | ", TRUE, "red", "", "blue", "green")"
     industries: [retail, operations]
-industries: [operations, sales, hr, retail]
+industries: [operations, sales, retail]
 related: [IF, IFERROR]

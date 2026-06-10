@@ -28,10 +28,6 @@ Yes — it replaces any error (like #DIV/0! or #N/A) with the fallback you provi
 
 ## Use cases
 
-**Show a safe value instead of a divide-by-zero error**
-
-<TryIt formula={"=IFERROR(1/0, \"safe\")"} />
-
 **Return a friendly message when a lookup fails**
 
 <TryIt formula={"=IFERROR(VLOOKUP(\"z\", {\"a\", 1; \"b\", 2}, 2, FALSE), \"Not found\")"} />
@@ -42,7 +38,7 @@ Yes — it replaces any error (like #DIV/0! or #N/A) with the fallback you provi
 
 ## Used in
 
-[finance](/industries/finance) · [operations](/industries/operations) · [sales](/industries/sales) · [retail](/industries/retail)
+[operations](/industries/operations)
 
 ## Syntax
 
@@ -55,6 +51,5 @@ IFERROR(value, value_if_error)
 ```formula
 =IFERROR(5,0) // => 5
 =IFERROR(NA(),0) // => 0
-=IFERROR(SHEET(INDIRECT("Sheet1!A1")),1) // => 1
 ```
 

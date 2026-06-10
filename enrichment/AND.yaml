@@ -13,5 +13,5 @@ use_cases:
   - title: "Gate an outcome on all rules passing"
     formula: "=IF(AND(8 > 5, 8 < 12), "ok", "no")"
     industries: [operations, hr]
-industries: [operations, finance, engineering, hr]
+industries: [operations]
 related: [OR, NOT, IF, IFS]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Find a city's region code"
     formula: "=XLOOKUP("Berlin", {"Paris", "Berlin", "Rome"}, {"EU-W", "EU-C", "EU-S"})"
     industries: [operations, engineering]
-industries: [operations, sales, retail, engineering]
+industries: [operations, sales, retail]
 related: [VLOOKUP, INDEX, MATCH, IFERROR]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Total days in a project window"
     formula: "=DATEDIF(DATE(2024, 1, 1), DATE(2024, 3, 1), "D")"
     industries: [operations, engineering]
-industries: [hr, operations, personal-finance, engineering]
+industries: [hr, operations]
 related: [DATE, IF]

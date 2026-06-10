@@ -5,5 +5,5 @@ use_cases:
   - title: "Gamma function of a non-integer value"
     formula: "=GAMMA(4.5)"
     industries: [science, engineering]
-industries: [science, engineering]
+industries: [science]
 related: [GAMMA.DIST, GAMMA.INV, GAMMALN]

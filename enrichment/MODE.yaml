@@ -13,5 +13,5 @@ use_cases:
   - title: "Most common order quantity"
     formula: "=MODE(10, 20, 20, 30, 30, 30)"
     industries: [retail, operations]
-industries: [operations, retail, hr, education]
+industries: [operations, education]
 related: [MEDIAN, AVERAGE, COUNTIF, MAX]

@@ -1,5 +1,5 @@
 when_to_use:
   - q: "When should I use TRUE?"
     a: "Use TRUE as an explicit boolean constant in formulas where a bare literal might be misinterpreted — for example, passing the a1 mode flag in INDIRECT or ADDRESS."
-industries: [operations, finance]
+industries: [operations]
 related: [FALSE, IF, AND]

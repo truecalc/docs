@@ -5,5 +5,4 @@ use_cases:
   - title: "Round up a negative price to the nearest 0.1"
     formula: "=ISO.CEILING(-23.25,0.1)"
     industries: [finance, retail]
-industries: [finance, retail]
 related: [CEILING, FLOOR.PRECISE, FLOOR.MATH]

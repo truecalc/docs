@@ -5,5 +5,5 @@ use_cases:
   - title: "Depreciation in year 2 of a $100 asset with $50 salvage over 10 years"
     formula: "=SYD(100,50,10,2)"
     industries: [finance, operations]
-industries: [finance, operations]
+industries: [finance]
 related: [SLN, DB, DDB]

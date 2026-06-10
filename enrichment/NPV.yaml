@@ -13,5 +13,5 @@ use_cases:
   - title: "Account for an upfront cost paid today"
     formula: "=-5000 + NPV(0.1, 2000, 2000, 2000)"
     industries: [finance, engineering]
-industries: [finance, real-estate, operations]
+industries: [finance, real-estate]
 related: [IRR, PV, FV, PMT, RATE]

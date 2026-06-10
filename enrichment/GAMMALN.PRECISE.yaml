@@ -5,5 +5,5 @@ use_cases:
   - title: "Log-gamma of a half-integer"
     formula: "=GAMMALN.PRECISE(0.5)"
     industries: [science, education]
-industries: [science, education]
+industries: [science]
 related: [GAMMALN, LN]

@@ -13,5 +13,5 @@ use_cases:
   - title: "Round to the nearest hundred"
     formula: "=ROUND(1278, -2)"
     industries: [operations, finance]
-industries: [finance, science, retail, operations]
+industries: [science, operations]
 related: [ROUNDUP, ROUNDDOWN, MOD, INT]
