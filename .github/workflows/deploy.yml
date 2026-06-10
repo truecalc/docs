@@ -31,7 +31,6 @@ jobs:
       - name: Build (static export)
         run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /docs
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           NEXT_PUBLIC_POSTHOG_HOST: https://us.i.posthog.com
 
