@@ -1,0 +1,49 @@
+---
+title: Build a break-even calculator
+description: "Work out how many units you must sell to cover your costs."
+level: advanced
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the number of units where revenue exactly covers costs.
+
+**What you need:** comfort with multiplication and division.
+
+**Why this matters:** break-even is the first question of any business plan.
+
+## Step 1 — Profit per unit
+
+You sell at $25, each unit costs $15 to make.
+
+```formula test
+=25-15 // => 10
+```
+
+<TryIt formula="=25-15" />
+
+**What just happened:** each unit sold contributes $10 toward fixed costs.
+
+## Step 2 — The break-even point
+
+Fixed costs are $2,000. Divide them by the $10 contribution per unit.
+
+```formula test
+=2000/(25-15) // => 200
+```
+
+<TryIt formula="=2000/(25-15)" />
+
+**What just happened:** sell 200 units and you've exactly covered your $2,000 in fixed costs.
+Unit 201 is your first profit.
+
+## Try changing…
+
+- Your own price, unit cost, and fixed costs.
+
+## You learned
+
+- Contribution per unit = price − cost.
+- Break-even units = fixed costs ÷ contribution per unit.
+
+**Next:** [Investment growth](/tutorials/investment-growth)
