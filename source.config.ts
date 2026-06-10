@@ -1,13 +1,22 @@
 import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 import { remarkMdxMermaid } from 'fumadocs-core/mdx-plugins';
+import { z } from 'zod';
 
-// You can customize Zod schemas for frontmatter and `meta.json` here
-// see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
-    schema: pageSchema,
+    schema: pageSchema.extend({
+      llmsDescription: z.string().optional(),
+      seoTitle: z.string().optional(),
+      seoDescription: z.string().optional(),
+      jsonLdFaq: z
+        .array(z.object({ question: z.string(), answer: z.string() }))
+        .optional(),
+      jsonLdHowTo: z
+        .array(z.object({ name: z.string(), text: z.string() }))
+        .optional(),
+    }),
     postprocess: {
       includeProcessedMarkdown: true,
     },

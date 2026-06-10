@@ -44,6 +44,13 @@ function functionPage(fn) {
   lines.push(`title: ${fn.name}`);
   const desc = String(fn.description ?? '').replaceAll('\n', ' ').trim();
   lines.push(`description: ${JSON.stringify(desc)}`);
+  const fnName = String(fn.name)
+  const seoTitle = `${fnName}: Spreadsheet Function in Google Sheets & Excel`
+  const seoDesc = `TrueCalc \`${fnName}\` — conformant with Google Sheets and Excel. ${desc.slice(0, 100)}`.slice(0, 160)
+  const llmsDesc = `TrueCalc ${fnName} function: ${desc.slice(0, 120)} Google Sheets/Excel conformant with fixture-verified behavior.`.slice(0, 200)
+  lines.push(`seoTitle: ${JSON.stringify(seoTitle)}`)
+  lines.push(`seoDescription: ${JSON.stringify(seoDesc)}`)
+  lines.push(`llmsDescription: ${JSON.stringify(llmsDesc)}`)
   lines.push('---');
   lines.push('');
   lines.push(

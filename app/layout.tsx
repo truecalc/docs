@@ -1,10 +1,19 @@
 import { Inter } from 'next/font/google';
 import { Provider } from '@/components/provider';
+import type { Metadata } from 'next';
 import './global.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-});
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://docs.truecalc.app'),
+  title: {
+    template: '%s | TrueCalc',
+    default: 'TrueCalc',
+  },
+  description:
+    'Official documentation for TrueCalc — conformant spreadsheet formula evaluation for Google Sheets and Excel formulas in JavaScript, Rust, and WebAssembly.',
+}
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (

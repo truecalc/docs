@@ -9,6 +9,9 @@
     "postinstall": "fumadocs-mdx",
     "test-docs": "node scripts/test-docs.mjs",
     "gen-docs": "node scripts/gen-docs.mjs",
+    "gen:lastmod": "node scripts/gen-lastmod.mjs",
+    "submit:indexnow": "node scripts/submit-indexnow.mjs",
+    "submit:indexnow:dry-run": "node scripts/submit-indexnow.mjs --dry-run",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit"
   },
   "dependencies": {
