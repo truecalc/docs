@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSUM?"
+    a: "Use IMSUM to add multiple complex numbers together, for example when summing phasor currents at a node or accumulating complex-valued measurements from several sources."
+industries: [engineering, science]
+related: [IMSUB, IMPRODUCT, IMDIV, COMPLEX]

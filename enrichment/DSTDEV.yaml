@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DSTDEV?"
+    a: "Use DSTDEV to compute the sample standard deviation of a field for rows matching criteria — useful when the matching rows are a sample drawn from a larger population and you need a measure of spread."
+use_cases:
+  - title: "Sample standard deviation for a category"
+    formula: "=DSTDEV({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [DSTDEVP, DVAR, STDEV]

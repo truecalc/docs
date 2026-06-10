@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use HARMEAN instead of AVERAGE?"
+    a: "Use HARMEAN when averaging rates defined as ratios (such as speed or price-per-unit) where the denominator quantity is constant, because harmonic mean weights slower rates appropriately."
+use_cases:
+  - title: "Harmonic mean of a set of rates"
+    formula: "=HARMEAN(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [GEOMEAN, AVERAGE, TRIMMEAN]

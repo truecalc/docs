@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DEGREES?"
+    a: "Use DEGREES to convert a radian value returned by trig functions like ASIN or ATAN into the more readable degree format."
+use_cases:
+  - title: "Convert radians to degrees"
+    formula: "=DEGREES(ASIN(1))"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [RADIANS, ASIN, ACOS, ATAN]

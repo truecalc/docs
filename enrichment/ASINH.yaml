@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ASINH?"
+    a: "Use ASINH to compute the inverse hyperbolic sine of a number; accepts any real number."
+use_cases:
+  - title: "Inverse hyperbolic sine of a value"
+    formula: "=ASINH(0.9)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SINH, ACOSH, ATANH]

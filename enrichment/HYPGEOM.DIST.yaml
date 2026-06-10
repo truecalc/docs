@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use HYPGEOM.DIST?"
+    a: "Use HYPGEOM.DIST to calculate the probability of a specific number of successes in a sample drawn without replacement from a finite population, such as quality control sampling or card-draw problems."
+use_cases:
+  - title: "Probability of drawing exactly 4 successes from a finite population"
+    formula: "=HYPGEOM.DIST(4,12,20,40,FALSE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [HYPGEOMDIST, BINOM.DIST, NEGBINOM.DIST]

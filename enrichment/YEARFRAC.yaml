@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use YEARFRAC?"
+    a: "Use YEARFRAC to compute the fraction of a year between two dates according to a specific day-count basis (e.g., actual/actual or 30/360), which is required for bond accrual and pro-rata financial calculations."
+use_cases:
+  - title: "Year fraction between two dates using 30/360 basis"
+    formula: "=YEARFRAC(DATE(2012,1,1),DATE(2012,7,30))"
+    industries: [finance, lending]
+industries: [finance, lending]
+related: [DAYS360, DATEDIF, DATE, EDATE]

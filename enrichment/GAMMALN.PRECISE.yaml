@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "What is the difference between GAMMALN and GAMMALN.PRECISE?"
+    a: "GAMMALN.PRECISE is the ISO-standard alias of GAMMALN; both return the natural logarithm of the gamma function. Use GAMMALN.PRECISE for compatibility with Excel files that use the precise variant."
+use_cases:
+  - title: "Log-gamma of a half-integer"
+    formula: "=GAMMALN.PRECISE(0.5)"
+    industries: [science, education]
+industries: [science, education]
+related: [GAMMALN, LN]

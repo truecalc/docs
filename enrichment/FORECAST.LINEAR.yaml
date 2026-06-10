@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FORECAST.LINEAR instead of FORECAST?"
+    a: "FORECAST.LINEAR is the modern replacement for FORECAST; they are functionally identical but FORECAST.LINEAR is preferred in new spreadsheets for consistency with the .LINEAR naming convention."
+use_cases:
+  - title: "Predict a y-value using linear regression"
+    formula: "=FORECAST.LINEAR(5,{2,4,6,8},{1,2,3,4})"
+    industries: [sales, operations]
+industries: [sales, operations]
+related: [FORECAST, SLOPE, INTERCEPT, TREND]

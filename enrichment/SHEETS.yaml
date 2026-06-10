@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use SHEETS?"
+    a: "Use SHEETS to return the total number of sheets in a workbook or in a multi-sheet reference, useful for dynamic formulas that must iterate over every sheet."
+industries: [operations, finance]
+related: [SHEET, INDIRECT, COUNTA]

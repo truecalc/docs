@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BITLSHIFT?"
+    a: "Use BITLSHIFT to multiply an integer by a power of two by shifting its bits left, which is the standard technique for fast power-of-two scaling in bit manipulation."
+use_cases:
+  - title: "Left-shift a value to multiply by a power of two"
+    formula: "=BITLSHIFT(9,2)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BITRSHIFT, BITAND, BITOR, BITXOR]

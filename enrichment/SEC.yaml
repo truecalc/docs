@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When would I use SEC in a spreadsheet?"
+    a: "Use SEC (secant) in trigonometric and geometric calculations where you need the reciprocal of cosine, such as computing angles in optics or structural analysis."
+use_cases:
+  - title: "Secant of 1 radian"
+    formula: "=SEC(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SECH, COS, TAN]

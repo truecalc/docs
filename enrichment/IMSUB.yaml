@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSUB?"
+    a: "Use IMSUB to subtract one complex number from another, such as computing the difference of two impedance phasors or finding the error vector between two complex signals."
+industries: [engineering, science]
+related: [IMSUM, IMPRODUCT, IMDIV, COMPLEX]

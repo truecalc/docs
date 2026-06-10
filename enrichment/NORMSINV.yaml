@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORMSINV?"
+    a: "NORMSINV is the legacy form of NORM.S.INV. Use it only when maintaining older spreadsheets; for new work prefer NORM.S.INV. Both convert a cumulative probability to the corresponding z-score on the standard normal distribution."
+use_cases:
+  - title: "Z-score at the 75th percentile"
+    formula: "=NORMSINV(0.75)"
+    industries: [science, education]
+industries: [science, education]
+related: [NORM.S.INV, NORMSDIST, NORM.S.DIST]

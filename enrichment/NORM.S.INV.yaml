@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORM.S.INV?"
+    a: "Use NORM.S.INV to convert a cumulative probability to a z-score — the inverse of NORM.S.DIST. This is essential when building confidence intervals or hypothesis tests where you need a critical z-value for a given significance level."
+use_cases:
+  - title: "Z-score at the 75th percentile of the standard normal"
+    formula: "=NORM.S.INV(0.75)"
+    industries: [science, education]
+industries: [science, education]
+related: [NORM.S.DIST, NORM.INV, NORMSINV, STANDARDIZE]

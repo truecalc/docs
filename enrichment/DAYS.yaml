@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DAYS?"
+    a: "Use DAYS to calculate the number of days between two dates — useful for measuring contract durations, project timelines, or the elapsed days between any two calendar dates."
+use_cases:
+  - title: "Days elapsed between two date strings"
+    formula: "=DAYS("7/24/1969","7/16/1969")"
+    industries: [operations]
+industries: [operations]
+related: [DATEDIF, NETWORKDAYS, DATE]

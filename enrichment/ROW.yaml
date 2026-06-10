@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ROW?"
+    a: "Use ROW to return the row number of a cell reference — commonly used inside array formulas to generate sequential integers or to compute relative offsets."
+industries: [operations, finance]
+related: [COLUMN, ADDRESS, INDIRECT]

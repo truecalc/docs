@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SKEW.P instead of SKEW?"
+    a: "Use SKEW.P when your data represents the entire population rather than a sample; it applies the population skewness formula without the sample correction factor used by SKEW."
+use_cases:
+  - title: "Population skewness of a dataset"
+    formula: "=SKEW.P({2,5,8,13,10,18,23,26})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [SKEW, KURT, STDEV.P, AVERAGE]

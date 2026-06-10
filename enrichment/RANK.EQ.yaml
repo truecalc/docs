@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use RANK.EQ?"
+    a: "Use RANK.EQ to rank a number within a list where ties are assigned the same lowest rank, making it suitable for leaderboards or grading where you do not want average ranks."
+use_cases:
+  - title: "Rank a value in descending order"
+    formula: "=RANK.EQ(5,{1,2,3,4,5,6,7,8,9,10},FALSE)"
+    industries: [science, hr]
+industries: [science, hr]
+related: [RANK.AVG, PERCENTRANK.INC, LARGE, SMALL]

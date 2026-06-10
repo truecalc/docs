@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORM.S.DIST instead of NORM.DIST?"
+    a: "Use NORM.S.DIST when your data is already standardised (z-scores with mean=0 and stdev=1). It is a shorthand for NORM.DIST(x,0,1,cumulative) and is commonly used after computing a z-score manually."
+use_cases:
+  - title: "Cumulative standard normal probability at z=2.4"
+    formula: "=NORM.S.DIST(2.4,TRUE)"
+    industries: [science, education]
+industries: [science, education]
+related: [NORM.S.INV, NORM.DIST, NORMSDIST, STANDARDIZE]

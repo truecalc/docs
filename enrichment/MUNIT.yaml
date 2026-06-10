@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When would I use MUNIT?"
+    a: "Use MUNIT to generate an identity matrix of a given size as the neutral element in matrix multiplication or as a starting point for matrix algebra in engineering and science models."
+industries: [science, engineering]
+related: [MMULT, MINVERSE]

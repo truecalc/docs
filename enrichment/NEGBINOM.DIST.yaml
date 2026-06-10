@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NEGBINOM.DIST?"
+    a: "Use NEGBINOM.DIST to model the number of failures before a fixed number of successes — for example, the probability of encountering 4 defective items before finding 2 acceptable ones in quality control, or the number of customer rejections before closing a given number of sales."
+use_cases:
+  - title: "Probability of exactly 4 failures before 2nd success"
+    formula: "=NEGBINOM.DIST(4,2,0.1,FALSE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [NEGBINOMDIST, BINOM.DIST, POISSON.DIST]

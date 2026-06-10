@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISERR instead of ISERROR?"
+    a: "Use ISERR when you want to detect any error except #N/A — it lets you treat missing-data signals (#N/A) differently from genuine formula errors like #DIV/0! or #VALUE!."
+use_cases:
+  - title: "Detect a non-N/A error from a bad text conversion"
+    formula: "=ISERR(VALUE("abc"))"
+    industries: [operations]
+industries: [operations]
+related: [ISERROR, ISNA, IFERROR, ERROR.TYPE]

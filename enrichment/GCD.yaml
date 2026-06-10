@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When is GCD useful in a spreadsheet?"
+    a: "Use GCD to simplify fractions, find common packaging units, or determine the largest batch size that divides evenly into multiple quantities."
+use_cases:
+  - title: "Find the largest common batch size for two production runs"
+    formula: "=GCD(24,36)"
+    industries: [operations, engineering]
+industries: [operations, engineering]
+related: [LCM]

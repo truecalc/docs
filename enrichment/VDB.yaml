@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VDB?"
+    a: "Use VDB to calculate depreciation over any partial or full period using a variable declining-balance method — more flexible than DB or DDB because it can span fractional periods and optionally switch to straight-line when that yields a higher deduction."
+use_cases:
+  - title: "Double-declining balance depreciation for period 10-11, no switch"
+    formula: "=VDB(100,10,20,10,11,2,TRUE)"
+    industries: [finance, operations]
+industries: [finance, operations]
+related: [DB, DDB, SLN, SYD]

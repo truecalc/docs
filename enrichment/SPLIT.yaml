@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SPLIT?"
+    a: "Use SPLIT to break a delimited text string into an array of separate values, such as parsing a CSV row or splitting a full name into parts."
+use_cases:
+  - title: "Split a comma-delimited list into an array"
+    formula: "=SPLIT("1,2,3", ",")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [JOIN, TEXTJOIN, LEFT, MID]

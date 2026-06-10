@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COUPDAYBS?"
+    a: "Use COUPDAYBS to find the number of days from the start of the current coupon period to the settlement date of a bond — essential for accrued-interest calculations."
+use_cases:
+  - title: "Days accrued in current coupon period"
+    formula: "=COUPDAYBS(DATE(2010,2,1),DATE(2019,12,31),4)"
+    industries: [finance]
+industries: [finance]
+related: [COUPDAYS, COUPDAYSNC, COUPNCD]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I use IMREAL?"
+    a: "Use IMREAL to extract the real part of a complex number, for example to read the resistive component of an impedance or the in-phase component of a phasor after calculations in COMPLEX/IM* functions."
+use_cases:
+  - title: "Extract real part of a complex number"
+    formula: "=IMREAL("3+5i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMAGINARY, COMPLEX, IMABS, IMARGUMENT]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COMBIN?"
+    a: "Use COMBIN to count how many ways you can choose k items from n items when order does not matter and repetition is not allowed."
+use_cases:
+  - title: "Number of ways to choose 3 items from 10"
+    formula: "=COMBIN(10,3)"
+    industries: [science, education]
+industries: [science, education]
+related: [COMBINA, PERMUT, FACT]

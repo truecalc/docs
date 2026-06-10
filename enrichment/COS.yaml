@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COS?"
+    a: "Use COS to compute the cosine of an angle given in radians; combine with RADIANS to convert from degrees first."
+use_cases:
+  - title: "Cosine of an angle in radians"
+    formula: "=COS(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SIN, TAN, ACOS, RADIANS]

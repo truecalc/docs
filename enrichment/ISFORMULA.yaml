@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ISFORMULA?"
+    a: "Use ISFORMULA to check whether a cell contains a formula rather than a plain value — useful in auditing or conditional-formatting rules that highlight cells with computed results."
+industries: [operations]
+related: [FORMULATEXT, CELL, TYPE]

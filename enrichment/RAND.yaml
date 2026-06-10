@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use RAND?"
+    a: "Use RAND to generate a uniformly distributed random number between 0 and 1, useful for Monte Carlo simulations, random sampling, or adding noise to a model."
+industries: [science, finance]
+related: [RANDBETWEEN, RANDARRAY]

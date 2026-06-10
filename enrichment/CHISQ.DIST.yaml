@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHISQ.DIST?"
+    a: "Use CHISQ.DIST to compute either the chi-squared PDF (cumulative=FALSE) or left-tail CDF (cumulative=TRUE) for a given value and degrees of freedom — the modern replacement for CHIDIST when you need the left tail or density."
+use_cases:
+  - title: "Chi-squared PDF value at x=12.3 with 5 degrees of freedom"
+    formula: "=CHISQ.DIST(12.3,5,FALSE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHISQ.DIST.RT, CHISQ.INV, CHIDIST]

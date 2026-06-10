@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SYD?"
+    a: "Use SYD to calculate sum-of-years'-digits depreciation for a specific period — an accelerated method that charges more depreciation in early years and less in later years, useful for assets that lose value quickly."
+use_cases:
+  - title: "Depreciation in year 2 of a $100 asset with $50 salvage over 10 years"
+    formula: "=SYD(100,50,10,2)"
+    industries: [finance, operations]
+industries: [finance, operations]
+related: [SLN, DB, DDB]

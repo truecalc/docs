@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MIRR instead of IRR?"
+    a: "Use MIRR when you want to avoid IRR's assumption that interim cash flows are reinvested at the same IRR — MIRR lets you specify a separate reinvestment rate and a finance rate for costs."
+use_cases:
+  - title: "MIRR with separate finance and reinvest rates"
+    formula: "=MIRR({-4000,200,250,300,350},0.08,0.11)"
+    industries: [finance]
+industries: [finance]
+related: [IRR, XIRR, NPV]

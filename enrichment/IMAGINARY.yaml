@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMAGINARY?"
+    a: "Use IMAGINARY to extract the imaginary part (the coefficient of i) from a complex number text string, for use in further arithmetic or display."
+use_cases:
+  - title: "Extract imaginary part of 3+5i"
+    formula: "=IMAGINARY("3+5i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMREAL, IMABS, COMPLEX]

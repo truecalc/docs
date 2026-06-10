@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use INTRATE?"
+    a: "Use INTRATE to find the annualised interest rate of a fully-invested security — one that pays no interim coupons but earns a return at redemption, like a Treasury bill."
+use_cases:
+  - title: "Interest rate of a fully invested security"
+    formula: "=INTRATE(DATE(2008,2,15),DATE(2008,5,15),1000000,1014420)"
+    industries: [finance]
+industries: [finance]
+related: [DISC, RATE, YIELD]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TDIST?"
+    a: "TDIST is the legacy (pre-2010) version of the Student's t distribution function; use it only when maintaining older spreadsheets — for new work prefer T.DIST, T.DIST.RT, or T.DIST.2T which accept negative x values and offer a cumulative parameter."
+use_cases:
+  - title: "One-tailed t-distribution probability (legacy)"
+    formula: "=TDIST(0.5,1,1)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.DIST, T.DIST.2T, T.DIST.RT, TINV]

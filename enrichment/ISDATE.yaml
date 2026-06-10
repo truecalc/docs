@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISDATE?"
+    a: "Use ISDATE to test whether a value is recognized as a date — useful for input validation in data-entry workflows where date fields must contain valid date values before downstream calculations proceed."
+use_cases:
+  - title: "Check whether a date literal is a valid date"
+    formula: "=ISDATE(DATE(2024,1,15))"
+    industries: [operations]
+industries: [operations]
+related: [ISNUMBER, ISTEXT, DATE, DATEVALUE]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ROMAN?"
+    a: "Use ROMAN to convert an integer to a Roman numeral string, useful for chapter numbering, historical documents, or decorative formatting."
+use_cases:
+  - title: "Convert a number to a Roman numeral"
+    formula: "=ROMAN(2024)"
+    industries: [education, operations]
+industries: [education, operations]
+related: [TEXT, ARABIC]

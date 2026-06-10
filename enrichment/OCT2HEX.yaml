@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use OCT2HEX?"
+    a: "Use OCT2HEX to convert an octal number to hexadecimal, helpful when bridging older octal-based documentation with modern hexadecimal memory addressing or color-code conventions."
+industries: [engineering, science]
+related: [OCT2DEC, OCT2BIN, HEX2OCT, DEC2HEX]

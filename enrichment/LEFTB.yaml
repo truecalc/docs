@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use LEFTB instead of LEFT?"
+    a: "Use LEFTB when you need to extract a specific number of bytes from the start of a string, which matters for multibyte (CJK) text where one character may occupy more than one byte."
+industries: [operations]
+related: [LEFT, RIGHTB, MIDB, LENB]

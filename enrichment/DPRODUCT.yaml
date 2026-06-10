@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DPRODUCT?"
+    a: "Use DPRODUCT to multiply together all values in a field for the rows that match your criteria — useful for computing combined probabilities, compound growth factors, or other multiplicative aggregates over a filtered table."
+use_cases:
+  - title: "Product of values for a matching category"
+    formula: "=DPRODUCT({"Cat","Val";"A",2;"A",3;"B",10},"Val",{"Cat";"A"})"
+    industries: [science, operations]
+industries: [operations, science]
+related: [DSUM, DMAX, PRODUCT]

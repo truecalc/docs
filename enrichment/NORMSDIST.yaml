@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use NORMSDIST?"
+    a: "NORMSDIST is the legacy single-argument form of NORM.S.DIST; it always returns the cumulative standard normal probability for a given z-score. Use it only when maintaining older spreadsheets; prefer NORM.S.DIST(x, TRUE) in new work."
+industries: [science, education]
+related: [NORM.S.DIST, NORMSINV, NORM.S.INV]

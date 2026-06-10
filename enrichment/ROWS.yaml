@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ROWS?"
+    a: "Use ROWS to count the number of rows in an array or range, often used in dynamic formulas to adapt to variable-height data."
+use_cases:
+  - title: "Count rows in a literal vertical array"
+    formula: "=ROWS({1;2;3})"
+    industries: [operations, science]
+industries: [operations, science]
+related: [COLUMNS, ARRAY_CONSTRAIN, CHOOSEROWS]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use YIELD?"
+    a: "Use YIELD to find the annual yield of a coupon-paying bond given its price — the inverse of PRICE, useful for determining whether a bond trading at a discount or premium meets a target return."
+use_cases:
+  - title: "Yield on a semi-annual coupon bond priced at 93.45"
+    formula: "=YIELD(DATE(2010,1,2),DATE(2039,12,31),3,93.45,100,2)"
+    industries: [finance]
+industries: [finance]
+related: [PRICE, YIELDDISC, YIELDMAT, DURATION]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DEC2BIN?"
+    a: "Use DEC2BIN to convert a decimal integer to its binary (base-2) string representation, optionally zero-padded to a specified number of places."
+use_cases:
+  - title: "Convert decimal 9 to binary"
+    formula: "=DEC2BIN(9, 4)"
+    industries: [engineering]
+industries: [engineering]
+related: [BIN2DEC, DEC2HEX, DEC2OCT]

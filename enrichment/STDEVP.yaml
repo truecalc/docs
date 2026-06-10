@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use STDEVP?"
+    a: "Use STDEVP (legacy alias for STDEV.P) when working with older spreadsheet files or formulas; it computes population standard deviation and ignores text and logical values."
+use_cases:
+  - title: "Population standard deviation (legacy)"
+    formula: "=STDEVP(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [STDEV.P, STDEVPA, VAR.P, AVERAGE]

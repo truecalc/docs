@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SEARCHB instead of SEARCH?"
+    a: "Use SEARCHB when you need a case-insensitive byte-position search with wildcard support for text that may contain multibyte characters."
+use_cases:
+  - title: "Find byte position of a letter (case-insensitive) in ASCII text"
+    formula: "=SEARCHB("n", "printing")"
+    industries: [operations]
+industries: [operations]
+related: [SEARCH, FINDB, FIND]

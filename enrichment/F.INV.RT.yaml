@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use F.INV.RT?"
+    a: "Use F.INV.RT to find the right-tail critical F-value for a given significance level, which is the most common form used in ANOVA decision tables."
+use_cases:
+  - title: "Right-tail critical F-value at 5% significance"
+    formula: "=F.INV.RT(0.05,4,5)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [F.INV, F.DIST.RT, F.TEST]

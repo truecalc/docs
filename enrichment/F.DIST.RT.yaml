@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use F.DIST.RT instead of F.DIST?"
+    a: "Use F.DIST.RT to get the right-tail probability of the F-distribution, which directly gives the p-value when testing whether two groups have equal variances."
+use_cases:
+  - title: "Right-tail p-value for variance equality test"
+    formula: "=F.DIST.RT(15.35,7,6)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [F.DIST, F.INV.RT, F.TEST]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MODE.SNGL?"
+    a: "Use MODE.SNGL to find the single most frequently occurring value in a dataset — such as the most common score, defect code, or survey rating. When multiple values tie, it returns the smallest; use MODE.MULT if you need all tied values."
+use_cases:
+  - title: "Most frequent score in a list"
+    formula: "=MODE.SNGL({1,2,3,3,4})"
+    industries: [education, operations]
+industries: [education, operations]
+related: [MODE.MULT, MODE, MEDIAN, AVERAGE]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISLOGICAL?"
+    a: "Use ISLOGICAL to verify that a value is a Boolean TRUE or FALSE — useful for input validation when a formula expects a logical argument and you want to guard against text or numeric inputs."
+use_cases:
+  - title: "Check that TRUE is recognized as a logical value"
+    formula: "=ISLOGICAL(TRUE)"
+    industries: [operations]
+industries: [operations]
+related: [ISNUMBER, ISTEXT, TYPE, AND, OR]

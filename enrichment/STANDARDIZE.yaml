@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use STANDARDIZE?"
+    a: "Use STANDARDIZE to convert a raw value to a z-score by subtracting the mean and dividing by the standard deviation, making values from different distributions directly comparable."
+use_cases:
+  - title: "Z-score of a test result"
+    formula: "=STANDARDIZE(96,80,6.7)"
+    industries: [science, education]
+industries: [science, education]
+related: [NORM.S.DIST, NORM.INV, STDEV.S, AVERAGE]

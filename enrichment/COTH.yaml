@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COTH?"
+    a: "Use COTH to compute the hyperbolic cotangent of a number; it is the ratio of COSH to SINH and is undefined at zero."
+use_cases:
+  - title: "Hyperbolic cotangent of a value"
+    formula: "=COTH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [ACOTH, TANH, COSH, SINH]

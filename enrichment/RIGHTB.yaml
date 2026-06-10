@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use RIGHTB instead of RIGHT?"
+    a: "Use RIGHTB when you need to extract a number of bytes from the end of a string, which differs from character-based RIGHT for multibyte (CJK) text."
+industries: [operations]
+related: [RIGHT, LEFTB, MIDB, LENB]

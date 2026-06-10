@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COUNTUNIQUE?"
+    a: "Use COUNTUNIQUE to count the number of distinct values in a set, ignoring duplicates."
+use_cases:
+  - title: "Count distinct values in an inline array"
+    formula: "=COUNTUNIQUE({1,1,2,3,5,8,13})"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [COUNTA, COUNT, COUNTIF]

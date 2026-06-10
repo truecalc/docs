@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BITXOR?"
+    a: "Use BITXOR to compute the exclusive OR of two integers, which sets bits that differ between the two values — useful for toggling flags or simple checksums."
+use_cases:
+  - title: "Toggle bits that differ between two values"
+    formula: "=BITXOR(9,5)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BITAND, BITOR, BITLSHIFT, BITRSHIFT]

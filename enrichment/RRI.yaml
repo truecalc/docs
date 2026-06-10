@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use RRI?"
+    a: "Use RRI to find the equivalent per-period interest rate needed for an investment to grow from a present value to a future value over a given number of periods — useful for comparing growth rates across different time horizons."
+use_cases:
+  - title: "Equivalent annual growth rate from 2 to 4 over 3 years"
+    formula: "=RRI(3,2,4)"
+    industries: [finance, personal-finance]
+industries: [finance, personal-finance]
+related: [RATE, CAGR, FV, PV]

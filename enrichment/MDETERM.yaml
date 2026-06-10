@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MDETERM?"
+    a: "Use MDETERM to compute the determinant of a square matrix, which indicates whether the matrix is invertible and is used in solving systems of linear equations."
+use_cases:
+  - title: "Determinant of a 2x2 matrix"
+    formula: "=MDETERM({1,2;3,4})"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [MINVERSE, MMULT]

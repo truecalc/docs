@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NORM.INV?"
+    a: "Use NORM.INV to find the value below which a given percentage of a normally distributed population falls — for example, the test score at the 75th percentile, or the value-at-risk threshold for a normally distributed return."
+use_cases:
+  - title: "75th percentile of a normal distribution with mean=1 and stdev=4"
+    formula: "=NORM.INV(0.75,1,4)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [NORM.DIST, NORM.S.INV, NORMINV]

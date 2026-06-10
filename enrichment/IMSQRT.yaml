@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSQRT?"
+    a: "Use IMSQRT to find the principal square root of a complex number, for example when computing the characteristic impedance from a complex expression or solving quadratic equations over the complex numbers."
+industries: [engineering, science]
+related: [IMPOWER, IMABS, IMARGUMENT, COMPLEX]

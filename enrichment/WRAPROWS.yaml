@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use WRAPROWS?"
+    a: "Use WRAPROWS to reshape a flat vector into a multi-row array of a fixed row width — useful for paginating a sequential list into fixed-width rows for display or matrix operations."
+industries: [operations]
+related: [WRAPCOLS, TOCOL, TOROW]

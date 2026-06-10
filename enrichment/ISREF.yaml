@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ISREF?"
+    a: "Use ISREF to test whether a value is a valid cell reference, which is useful inside INDIRECT-based formulas to guard against invalid address strings."
+industries: [operations, finance]
+related: [INDIRECT, ISERROR, IF]

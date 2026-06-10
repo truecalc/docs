@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHISQ.INV?"
+    a: "Use CHISQ.INV to find the chi-squared value whose left-tail CDF equals p — the inverse of CHISQ.DIST with cumulative=TRUE, used to compute left-tail critical values for confidence intervals or variance tests."
+use_cases:
+  - title: "Chi-squared left-tail critical value at 95th percentile with 4 degrees of freedom"
+    formula: "=CHISQ.INV(0.95,4)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [CHISQ.INV.RT, CHISQ.DIST, CHIINV]

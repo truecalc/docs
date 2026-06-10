@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DSTDEVP instead of DSTDEV?"
+    a: "Use DSTDEVP when the rows matching your criteria represent the entire population, not just a sample — it divides by N rather than N−1 and gives a lower (population) standard deviation."
+use_cases:
+  - title: "Population standard deviation for a category"
+    formula: "=DSTDEVP({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [DSTDEV, DVARP, STDEVP]

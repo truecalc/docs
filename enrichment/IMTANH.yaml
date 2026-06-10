@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMTANH?"
+    a: "Use IMTANH to compute the hyperbolic tangent of a complex number, arising in conformal mapping, quantum mechanics, or electromagnetic waveguide analysis."
+industries: [engineering, science]
+related: [IMSINH, IMCOSH, IMTAN, COMPLEX]

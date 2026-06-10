@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ARRAYFORMULA?"
+    a: "Use ARRAYFORMULA to evaluate a formula as an array formula, expanding operations across multiple values without manually entering it as an array formula."
+industries: [operations, science]
+related: [MAP, BYROW, BYCOL]

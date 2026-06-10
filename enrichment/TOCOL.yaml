@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use TOCOL?"
+    a: "Use TOCOL to reshape a 2-D array or multi-row range into a single column — useful when you need to feed a flat list of values into UNIQUE, SORT, or other single-column functions."
+industries: [operations]
+related: [TOROW, TRANSPOSE, VSTACK]

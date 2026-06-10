@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TO_DATE?"
+    a: "Use TO_DATE to convert a numeric serial value into a date type so that date arithmetic and date-formatting functions treat it as a date rather than a plain number."
+use_cases:
+  - title: "Convert a date serial number to a date value"
+    formula: "=TO_DATE(44927)"
+    industries: [operations, finance]
+industries: [operations, finance]
+related: [TO_PURE_NUMBER, DATE, VALUE]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use XNPV instead of NPV?"
+    a: "Use XNPV when cash flows occur on irregular dates — it accepts an explicit dates array and discounts each flow by its actual elapsed time, whereas NPV assumes equal spacing between periods."
+use_cases:
+  - title: "Net present value of irregular future cash flows at 8%"
+    formula: "=XNPV(0.08,{200,250,300},{DATE(2012,6,23),DATE(2013,5,12),DATE(2014,2,9)})"
+    industries: [finance]
+industries: [finance]
+related: [NPV, XIRR, IRR]

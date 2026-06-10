@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISOWEEKNUM instead of WEEKNUM?"
+    a: "Use ISOWEEKNUM when you need ISO 8601 week numbers (week starts Monday, week 1 is the week containing the year's first Thursday), which is the standard used in Europe and international supply chains."
+use_cases:
+  - title: "ISO week number for a specific date"
+    formula: "=ISOWEEKNUM(DATE(2002,6,14))"
+    industries: [operations, science]
+industries: [operations, engineering]
+related: [WEEKNUM, WEEKDAY, DATE, ISOWEEKNUM]

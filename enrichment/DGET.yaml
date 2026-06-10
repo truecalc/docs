@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DGET?"
+    a: "Use DGET to retrieve a single value from a database field where criteria match exactly one row — useful when you need a precise lookup and want an error if zero or multiple rows match."
+use_cases:
+  - title: "Look up a score for a specific student"
+    formula: "=DGET({"Name","Score";"Alice",90;"Bob",80},"Score",{"Name";"Alice"})"
+    industries: [education, operations]
+industries: [operations, education]
+related: [DMAX, DMIN, VLOOKUP]

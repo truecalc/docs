@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TRIMMEAN?"
+    a: "Use TRIMMEAN when your dataset contains outliers that would distort a simple AVERAGE — it excludes the top and bottom fraction of values before averaging, giving a more robust central tendency measure for skewed or noisy data."
+use_cases:
+  - title: "Trimmed mean excluding top and bottom 5% of values"
+    formula: "=TRIMMEAN({1,1,2,3,5,8,13,21,34,55},0.05)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [AVERAGE, MEDIAN, VAR.S]

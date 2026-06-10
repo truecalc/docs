@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use AVERAGEIF instead of AVERAGE?"
+    a: "Use AVERAGEIF when you want to average only the cells in a range that satisfy a given condition, such as averaging sales figures above a threshold."
+use_cases:
+  - title: "Average values less than 10 in a list"
+    formula: "=AVERAGEIF({5,10,15,25,30},"<10")"
+    industries: [operations, finance]
+industries: [operations, finance, sales]
+related: [AVERAGE, AVERAGEIFS, SUMIF, COUNTIF]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DOLLARFR?"
+    a: "Use DOLLARFR to convert a decimal bond price back into fractional notation (e.g., 32nds) for display or reporting in markets that quote prices that way."
+use_cases:
+  - title: "Convert decimal price to 32nds notation"
+    formula: "=DOLLARFR(100.125,32)"
+    industries: [finance]
+industries: [finance]
+related: [DOLLARDE]

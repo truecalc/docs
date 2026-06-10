@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LENB instead of LEN?"
+    a: "Use LENB when you need the byte length of a string rather than the character count, which differs for multibyte character sets such as CJK where each character is 2 bytes."
+use_cases:
+  - title: "Get byte length of an ASCII string"
+    formula: "=LENB("Aen")"
+    industries: [operations]
+industries: [operations]
+related: [LEN, LEFTB, RIGHTB, MIDB]

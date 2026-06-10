@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DISC?"
+    a: "Use DISC to calculate the annualised discount rate of a zero-coupon or discounted security given its purchase price and redemption value — common for Treasury bills and commercial paper."
+use_cases:
+  - title: "Discount rate of a long-dated security"
+    formula: "=DISC(DATE(2010,1,2),DATE(2039,12,31),90,100)"
+    industries: [finance]
+industries: [finance]
+related: [INTRATE, PRICEDISC, YIELDDISC]

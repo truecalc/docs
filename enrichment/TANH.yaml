@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TANH?"
+    a: "Use TANH to compute the hyperbolic tangent, which is used in physics, neural network activation functions, and normalizing values to the range (-1, 1)."
+use_cases:
+  - title: "Hyperbolic tangent of 1"
+    formula: "=TANH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SINH, COSH, TAN]

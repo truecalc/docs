@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use YIELDDISC?"
+    a: "Use YIELDDISC to compute the annual yield of a discounted security (one that pays no coupon and is sold below face value) — common for Treasury bills, commercial paper, and other short-term discount instruments."
+use_cases:
+  - title: "Annual yield on a discounted security purchased at $98.45"
+    formula: "=YIELDDISC(DATE(2010,1,2),DATE(2010,12,31),98.45,100)"
+    industries: [finance]
+industries: [finance]
+related: [DISC, TBILLYIELD, YIELD, PRICEDISC]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ATAN2?"
+    a: "Use ATAN2 when you have separate x and y coordinates; it returns the angle in radians and handles all four quadrants correctly, unlike ATAN."
+use_cases:
+  - title: "Angle from x and y coordinates"
+    formula: "=ATAN2(4,3)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [ATAN, DEGREES, COS, SIN]

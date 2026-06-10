@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T.INV?"
+    a: "Use T.INV when you need the left-tail critical value of the Student's t distribution for a given probability and degrees of freedom — for example, to find the t-score that cuts off the bottom 5% of the distribution when constructing confidence intervals."
+use_cases:
+  - title: "Left-tail critical t-value at 5% significance"
+    formula: "=T.INV(0.05757,45)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.INV.2T, T.DIST, TINV]

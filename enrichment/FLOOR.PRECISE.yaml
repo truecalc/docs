@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FLOOR.PRECISE instead of FLOOR?"
+    a: "Use FLOOR.PRECISE when the sign of the significance argument should be ignored — it always rounds toward negative infinity regardless of significance sign."
+use_cases:
+  - title: "Floor a negative value to the nearest 0.1"
+    formula: "=FLOOR.PRECISE(-23.25,0.1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [FLOOR, FLOOR.MATH, ISO.CEILING]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MAXA instead of MAX?"
+    a: "Use MAXA when your range may contain logical values (TRUE/FALSE) or text strings that you want included in the comparison — MAXA treats TRUE as 1, FALSE and text as 0. MAX silently ignores non-numeric cells."
+use_cases:
+  - title: "Highest value including a boolean flag"
+    formula: "=MAXA({1,2,3},{4,5,6},4,26)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [MAX, MINA, MIN, LARGE]

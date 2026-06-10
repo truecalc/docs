@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CEILING.MATH instead of CEILING?"
+    a: "Use CEILING.MATH when you need control over how negative numbers are rounded; the mode argument lets you round toward or away from zero."
+use_cases:
+  - title: "Round up to next whole number"
+    formula: "=CEILING.MATH(11.2)"
+    industries: [operations, finance]
+industries: [finance, operations]
+related: [CEILING, FLOOR.MATH, CEILING.PRECISE, MROUND]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DURATION?"
+    a: "Use DURATION (Macaulay duration) to measure a bond's weighted-average time to receive cash flows — the foundation for assessing interest-rate sensitivity."
+use_cases:
+  - title: "Macaulay duration of a long-dated bond"
+    formula: "=DURATION(DATE(2010,1,2),DATE(2039,12,31),0.03,1.2,2)"
+    industries: [finance]
+industries: [finance]
+related: [MDURATION, PRICE, YIELD]

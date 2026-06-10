@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BINOMDIST?"
+    a: "Use BINOMDIST to compute the binomial PMF or CDF — it is the legacy equivalent of BINOM.DIST, retained for compatibility with older spreadsheets."
+use_cases:
+  - title: "Probability of exactly 4 defects in 100 trials at 0.5% rate (legacy)"
+    formula: "=BINOMDIST(4,100,0.005,FALSE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BINOM.DIST, BINOM.INV, CRITBINOM]

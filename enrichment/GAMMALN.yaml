@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When would I use GAMMALN in a spreadsheet?"
+    a: "Use GAMMALN when computing the natural logarithm of the gamma function for statistical probability models such as Poisson or chi-squared distributions."
+use_cases:
+  - title: "Log-gamma of a positive integer"
+    formula: "=GAMMALN(4)"
+    industries: [science, education]
+industries: [science, education]
+related: [GAMMALN.PRECISE, LN]

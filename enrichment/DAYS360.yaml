@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DAYS360 instead of regular date subtraction?"
+    a: "Use DAYS360 when you need days between dates on a standardized 360-day year (12 months of 30 days), which is standard in bond interest and some financial calculations."
+use_cases:
+  - title: "Days between two dates on a 360-day calendar"
+    formula: "=DAYS360(DATE(2023,1,1),DATE(2023,12,31),0)"
+    industries: [finance, operations]
+industries: [finance, lending]
+related: [DATEDIF, YEARFRAC, DATE, NETWORKDAYS]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ZTEST?"
+    a: "ZTEST is the legacy z-test function equivalent to Z.TEST; use it only when maintaining older spreadsheets — for new work, prefer Z.TEST which has the same behavior and clearer naming."
+use_cases:
+  - title: "Legacy z-test p-value for a sample"
+    formula: "=ZTEST({1,2,3,4,5,6},5.5,1.2)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [Z.TEST, T.TEST, NORM.S.DIST]

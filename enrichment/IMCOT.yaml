@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use IMCOT?"
+    a: "Use IMCOT to compute the cotangent of a complex number; it appears in complex partial-fraction expansions and certain electromagnetic field calculations."
+use_cases:
+  - title: "Cotangent of complex number 1+i"
+    formula: "=IMCOT("1+i")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMTAN, IMCOS, IMSIN]

@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SUMX2PY2?"
+    a: "Use SUMX2PY2 to compute the sum of squared magnitudes across two parallel arrays — useful in physics and statistics where you need the total sum of x² + y² for each paired element."
+use_cases:
+  - title: "Sum of squared array magnitudes"
+    formula: "=SUMX2PY2({1,2,3},{4,5,6})"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SUMXMY2, SUMX2MY2, SUMSQ]

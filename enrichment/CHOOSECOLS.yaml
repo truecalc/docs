@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHOOSECOLS?"
+    a: "Use CHOOSECOLS to extract specific columns from an array by index, allowing you to reorder or subset columns without helper formulas."
+use_cases:
+  - title: "Extract first column of a 2x3 array"
+    formula: "=CHOOSECOLS({1,2,3;4,5,6},1)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [CHOOSEROWS, ARRAY_CONSTRAIN, HSTACK]

@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use NEGBINOMDIST?"
+    a: "NEGBINOMDIST is the legacy three-argument form of NEGBINOM.DIST that always returns the PMF (exact probability). Use it only when maintaining older spreadsheets; for new work prefer NEGBINOM.DIST which also supports the cumulative form."
+industries: [operations, science]
+related: [NEGBINOM.DIST, BINOM.DIST, BINOMDIST]

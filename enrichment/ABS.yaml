@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ABS?"
+    a: "Use ABS whenever you need the magnitude of a value regardless of sign — for example, computing variances, distances, or deviations where direction does not matter."
+use_cases:
+  - title: "Return the absolute value of a negative number"
+    formula: "=ABS(-26)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SIGN, SQRT, ROUND]

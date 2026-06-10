@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use UNIQUE?"
+    a: "Use UNIQUE to extract a de-duplicated list from an array — useful for building dropdown source lists, counting distinct items, or eliminating repeated entries before aggregation."
+use_cases:
+  - title: "Extract distinct values from an array"
+    formula: "=UNIQUE({1,2,2,3,3,3})"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [SORT, FILTER, COUNTIF]

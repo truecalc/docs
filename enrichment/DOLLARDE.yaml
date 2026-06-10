@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DOLLARDE?"
+    a: "Use DOLLARDE to convert a bond price quoted in fractional notation (e.g., 100.10 meaning 100 and 10/32) to a plain decimal price that can be used in arithmetic."
+use_cases:
+  - title: "Convert 32nds bond quote to decimal"
+    formula: "=DOLLARDE(100.10,32)"
+    industries: [finance]
+industries: [finance]
+related: [DOLLARFR]

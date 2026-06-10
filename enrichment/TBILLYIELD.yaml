@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TBILLYIELD?"
+    a: "Use TBILLYIELD to compute the yield of a Treasury bill from its purchase price — useful when evaluating whether a T-bill available at a given market price meets a target return."
+use_cases:
+  - title: "Yield on a T-bill purchased at $98.45"
+    formula: "=TBILLYIELD(DATE(2010,1,2),DATE(2010,12,31),98.45)"
+    industries: [finance]
+industries: [finance]
+related: [TBILLPRICE, TBILLEQ, YIELDDISC]

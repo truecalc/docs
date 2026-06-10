@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CODE?"
+    a: "Use CODE when you need the numeric character code of the first character in a string — for example, to detect whether a cell starts with an uppercase letter, a digit, or a special character, or to build character-range validation logic."
+use_cases:
+  - title: "Get the ASCII code of a character"
+    formula: "=CODE("A")"
+    industries: [operations]
+industries: [operations]
+related: [CHAR, UNICODE, MID]

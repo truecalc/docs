@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSEC?"
+    a: "Use IMSEC to compute the secant (1/cos) of a complex number, which appears in advanced mathematical physics or engineering computations involving complex trigonometric identities."
+industries: [engineering, science]
+related: [IMCOS, IMCSC, IMTAN, COMPLEX]

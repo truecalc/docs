@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use NETWORKDAYS.INTL instead of NETWORKDAYS?"
+    a: "Use NETWORKDAYS.INTL when your working week differs from Mon–Fri, for example in the Middle East where the weekend may be Friday–Saturday, or for any custom weekend pattern."
+use_cases:
+  - title: "Working days between two dates with Tue-Wed weekend"
+    formula: "=NETWORKDAYS.INTL(DATE(1969,7,16),DATE(1969,7,24),3)"
+    industries: [operations, hr]
+industries: [operations, hr]
+related: [NETWORKDAYS, WORKDAY, WORKDAY.INTL, DAYS360]

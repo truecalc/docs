@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ISNONTEXT?"
+    a: "Use ISNONTEXT to check whether a value is not text — numbers, booleans, blanks, and errors all return TRUE, while any string returns FALSE."
+industries: [operations, finance]
+related: [ISTEXT, ISNUMBER, IF]

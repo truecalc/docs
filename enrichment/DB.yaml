@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DB instead of SLN or DDB?"
+    a: "Use DB (fixed-declining balance) when an asset loses value faster early in its life but you want a fixed-rate method that is less aggressive than double-declining balance."
+use_cases:
+  - title: "Year-2 depreciation on an asset"
+    formula: "=DB(100,50,10,2)"
+    industries: [finance]
+industries: [finance]
+related: [DDB, SLN, SYD]

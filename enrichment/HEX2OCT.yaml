@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use HEX2OCT?"
+    a: "Use HEX2OCT to convert a hexadecimal number to its octal (base-8) representation, a conversion sometimes needed when working with Unix file permissions or legacy systems."
+use_cases:
+  - title: "Convert hex F to octal"
+    formula: "=HEX2OCT("F")"
+    industries: [engineering]
+industries: [engineering]
+related: [OCT2HEX, HEX2DEC, HEX2BIN]

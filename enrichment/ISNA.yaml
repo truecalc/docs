@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISNA?"
+    a: "Use ISNA to test specifically for the #N/A error — which signals a missing or unavailable value — so you can handle lookup misses or missing data differently from other error types."
+use_cases:
+  - title: "Detect an explicit #N/A signal"
+    formula: "=ISNA(NA())"
+    industries: [operations]
+industries: [operations]
+related: [ISERROR, ISERR, IFERROR, NA]

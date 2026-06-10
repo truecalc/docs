@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use VARP?"
+    a: "VARP is the legacy population variance function equivalent to VAR.P; use it only when maintaining older spreadsheets — for new work, prefer VAR.P which has the same behavior but follows the modern naming convention."
+use_cases:
+  - title: "Legacy population variance calculation"
+    formula: "=VARP(2,4,4,4,5,5,7,9)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [VAR.P, VAR, VARPA]

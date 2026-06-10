@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BITOR?"
+    a: "Use BITOR to combine two integers by setting every bit that is set in either operand, commonly used to merge permission flags or feature bitmasks."
+use_cases:
+  - title: "Combine two permission flags with bitwise OR"
+    formula: "=BITOR(9,5)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [BITAND, BITXOR, BITLSHIFT, BITRSHIFT]

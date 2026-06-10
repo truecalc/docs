@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CONVERT?"
+    a: "Use CONVERT to translate a measurement from one unit to another, such as grams to kilograms or miles to kilometers, without manual conversion factors."
+use_cases:
+  - title: "Convert 1000 grams to kilograms"
+    formula: "=CONVERT(1000,"g","kg")"
+    industries: [science, engineering]
+industries: [science, engineering, operations]
+related: [ROUND, TRUNC]

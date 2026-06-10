@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use FILTER instead of IF or manually hiding rows?"
+    a: "Use FILTER when you need a dynamic sub-array of rows or columns that match a condition, returning only the matching elements automatically without helper columns or manual row hiding."
+industries: [operations, finance]
+related: [SORTN, SORT, UNIQUE, IF]

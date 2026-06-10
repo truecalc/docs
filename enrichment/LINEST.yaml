@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LINEST?"
+    a: "Use LINEST to obtain linear regression statistics (slope, intercept, and optional extended statistics) for a set of known x and y values."
+use_cases:
+  - title: "Slope of a perfectly linear dataset"
+    formula: "=LINEST({1,2,3,4},{1,2,3,4})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [LOGEST, GROWTH, TREND, FORECAST]

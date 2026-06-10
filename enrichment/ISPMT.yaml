@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISPMT instead of IPMT?"
+    a: "Use ISPMT for loans that use straight-line (equal-principal) amortisation — each period's interest is calculated on the outstanding balance after the period's principal repayment, unlike IPMT which uses standard annuity amortisation."
+use_cases:
+  - title: "Interest paid in period 2 under straight-line amortisation"
+    formula: "=ISPMT(0.15,2,5,1000)"
+    industries: [finance, lending]
+industries: [finance, lending]
+related: [IPMT, PMT, CUMIPMT]

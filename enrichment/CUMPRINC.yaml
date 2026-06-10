@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CUMPRINC instead of PPMT?"
+    a: "Use CUMPRINC when you want the total principal repaid over multiple periods — for example, how much principal you pay down in the first year of a loan."
+use_cases:
+  - title: "Principal repaid over first 5 periods"
+    formula: "=CUMPRINC(0.12,12,100,1,5,0)"
+    industries: [finance, lending]
+industries: [finance, lending, real-estate]
+related: [PPMT, CUMIPMT, PMT]

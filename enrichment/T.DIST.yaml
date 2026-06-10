@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T.DIST?"
+    a: "Use T.DIST when you need the Student's t cumulative distribution function (CDF) or probability density function (PDF) for a given x value and degrees of freedom — for example, to find the probability that a t-statistic falls below a threshold in a one-tailed test."
+use_cases:
+  - title: "Left-tail p-value for a t-statistic"
+    formula: "=T.DIST(1.96,60,TRUE)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.DIST.2T, T.DIST.RT, T.INV, TDIST]

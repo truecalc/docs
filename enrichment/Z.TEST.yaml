@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use Z.TEST?"
+    a: "Use Z.TEST when you want to test whether a hypothesized population mean is plausible given a sample — it returns the one-tailed p-value of a z-test, and is most appropriate when the sample size is large (typically n ≥ 30) or the population standard deviation is known."
+use_cases:
+  - title: "One-tailed z-test p-value for a sample vs. hypothesized mean"
+    formula: "=Z.TEST({1,2,3,4,5,6},5.5,1.2)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [ZTEST, T.TEST, NORM.S.DIST]

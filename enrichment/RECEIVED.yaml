@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use RECEIVED?"
+    a: "Use RECEIVED to calculate the amount received at maturity for a fully invested security — ideal for evaluating discount instruments like T-bills or certificates of deposit held to maturity."
+use_cases:
+  - title: "Maturity payout on a $1000 discounted investment"
+    formula: "=RECEIVED(DATE(2010,2,1),DATE(2019,12,31),1000,0.05)"
+    industries: [finance]
+industries: [finance]
+related: [INTRATE, DISC, YIELDDISC]

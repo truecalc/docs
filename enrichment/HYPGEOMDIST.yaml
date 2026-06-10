@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use HYPGEOMDIST instead of HYPGEOM.DIST?"
+    a: "HYPGEOMDIST is the legacy version of HYPGEOM.DIST and only returns the PMF (not CDF); use HYPGEOM.DIST in new spreadsheets for both cumulative and non-cumulative results."
+industries: [operations, science]
+related: [HYPGEOM.DIST, BINOM.DIST, NEGBINOM.DIST]

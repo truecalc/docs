@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TAN?"
+    a: "Use TAN when you need the tangent of an angle in radians, such as computing slopes, angles of inclination, or trigonometric projections."
+use_cases:
+  - title: "Tangent of 1 radian"
+    formula: "=TAN(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SIN, COS, ATAN, PI]

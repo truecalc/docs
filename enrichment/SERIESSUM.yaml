@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SERIESSUM?"
+    a: "Use SERIESSUM to evaluate a power series approximation, such as approximating e^x or sin(x), by supplying the coefficients of the series."
+use_cases:
+  - title: "Approximate e using a power series"
+    formula: "=SERIESSUM(1,0,1,{1,1,0.5,0.16667,0.04167})"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SUM, POWER, SQRT]

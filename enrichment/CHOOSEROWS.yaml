@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use CHOOSEROWS?"
+    a: "Use CHOOSEROWS to extract specific rows from an array by index, allowing you to reorder or subset rows without helper formulas."
+use_cases:
+  - title: "Extract first row of a 3x2 array"
+    formula: "=CHOOSEROWS({1,2;3,4;5,6},1)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [CHOOSECOLS, ARRAY_CONSTRAIN, VSTACK]

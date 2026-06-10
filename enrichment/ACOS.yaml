@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ACOS?"
+    a: "Use ACOS to compute the arccosine of a value between -1 and 1, returning the angle in radians — commonly needed in geometry, physics, and navigation calculations."
+use_cases:
+  - title: "Angle whose cosine is zero (90 degrees in radians)"
+    formula: "=ACOS(0)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COS, ASIN, ATAN]

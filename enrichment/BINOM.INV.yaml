@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BINOM.INV?"
+    a: "Use BINOM.INV to find the smallest number of successes k such that the binomial CDF is at least alpha — useful for setting acceptance thresholds in quality control or determining minimum passing scores."
+use_cases:
+  - title: "Minimum successes needed so cumulative binomial probability reaches 80%"
+    formula: "=BINOM.INV(100,0.005,0.8)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BINOM.DIST, CRITBINOM, BINOMDIST]

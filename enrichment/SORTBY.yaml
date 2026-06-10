@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use SORTBY?"
+    a: "Use SORTBY to sort an array based on the values in one or more separate corresponding arrays, which lets you order data by an external key without it being part of the returned array."
+industries: [operations, science]
+related: [SORT, FILTER, UNIQUE]

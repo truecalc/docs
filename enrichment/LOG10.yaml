@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use LOG10?"
+    a: "Use LOG10 for base-10 logarithms, which are common in decibel calculations, pH measurements, earthquake magnitude (Richter), and any scale that spans many orders of magnitude."
+use_cases:
+  - title: "Base-10 log of 1000"
+    formula: "=LOG10(1000)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [LOG, LN]

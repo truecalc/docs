@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MINVERSE?"
+    a: "Use MINVERSE to compute the inverse of a square matrix, needed for solving systems of linear equations or performing matrix division."
+use_cases:
+  - title: "Inverse of an identity matrix"
+    formula: "=MINVERSE({1,0;0,1})"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [MDETERM, MMULT]

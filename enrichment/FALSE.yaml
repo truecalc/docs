@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FALSE()?"
+    a: "Use FALSE() as a literal Boolean false value in formulas where you need an explicit false constant — for example, as the range_lookup argument in VLOOKUP to force exact matching, or as a default in IF chains."
+use_cases:
+  - title: "Use FALSE as an explicit Boolean constant"
+    formula: "=IF(FALSE(),"yes","no")"
+    industries: [operations]
+industries: [operations]
+related: [TRUE, IF, NOT, AND]

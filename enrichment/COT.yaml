@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COT?"
+    a: "Use COT to compute the cotangent of an angle in radians; it is the reciprocal of TAN and undefined at multiples of pi."
+use_cases:
+  - title: "Cotangent of an angle in radians"
+    formula: "=COT(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [TAN, CSC, SEC, ATAN]

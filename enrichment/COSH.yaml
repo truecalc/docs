@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COSH?"
+    a: "Use COSH to compute the hyperbolic cosine of a number, which appears in catenary curves and engineering stress models."
+use_cases:
+  - title: "Hyperbolic cosine of a value"
+    formula: "=COSH(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [SINH, TANH, ACOSH, COS]

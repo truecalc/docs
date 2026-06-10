@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PI() in a formula?"
+    a: "Use PI() whenever you need the mathematical constant π in a formula, such as computing circle areas, arc lengths, or converting between degrees and radians."
+use_cases:
+  - title: "Area of a circle with radius 5"
+    formula: "=PI()*5^2"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [RADIANS, SIN, COS]

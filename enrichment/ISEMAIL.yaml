@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISEMAIL?"
+    a: "Use ISEMAIL to validate that a string conforms to the email address format — useful in data-cleansing steps or form-validation logic before sending emails or importing contacts."
+use_cases:
+  - title: "Validate a well-formed email address"
+    formula: "=ISEMAIL("user@example.com")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [ISURL, ISTEXT, REGEXMATCH]

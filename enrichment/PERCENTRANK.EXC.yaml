@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PERCENTRANK.EXC instead of PERCENTRANK.INC?"
+    a: "Use PERCENTRANK.EXC when you want an exclusive percentile rank that excludes the endpoints 0 and 1, making it more appropriate for statistical comparisons where values at the exact minimum or maximum should not be ranked as 0% or 100%."
+use_cases:
+  - title: "Exclusive percentile rank of a test score"
+    formula: "=PERCENTRANK.EXC({1,2,3,4,5,6,7,8,9,10},5)"
+    industries: [science, education]
+industries: [science, education]
+related: [PERCENTRANK.INC, PERCENTILE.EXC, RANK.AVG]

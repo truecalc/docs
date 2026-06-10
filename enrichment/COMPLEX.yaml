@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use COMPLEX?"
+    a: "Use COMPLEX to construct a complex number string from real and imaginary parts so you can pass it to engineering functions like IMABS, IMSUB, or IMPRODUCT."
+use_cases:
+  - title: "Build a complex number from real and imaginary parts"
+    formula: "=COMPLEX(3,4)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [IMABS, IMREAL, IMAGINARY, IMSUM]

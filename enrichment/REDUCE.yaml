@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use REDUCE?"
+    a: "Use REDUCE to fold an array down to a single accumulated value using a LAMBDA, useful for custom summations, products, or running aggregations."
+use_cases:
+  - title: "Sum an array using accumulator"
+    formula: "=REDUCE(0,{1,2,3},LAMBDA(acc,x,acc+x))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [SCAN, MAP, BYCOL, BYROW]

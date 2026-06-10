@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SIGN?"
+    a: "Use SIGN to determine whether a number is positive, negative, or zero — it returns 1, -1, or 0, which is useful for branching logic or directional calculations."
+use_cases:
+  - title: "Check the sign of a profit/loss figure"
+    formula: "=SIGN(-42)"
+    industries: [finance, operations]
+industries: [finance, operations, science]
+related: [ABS, IF, MOD]

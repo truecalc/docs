@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use WEIBULL.DIST?"
+    a: "Use WEIBULL.DIST when modeling time-to-failure or reliability — it computes the probability that a component fails by a given time (cumulative=TRUE) or the instantaneous failure density (cumulative=FALSE), using shape (alpha) and scale (beta) parameters."
+use_cases:
+  - title: "Cumulative failure probability at a given time"
+    formula: "=WEIBULL.DIST(2.4,2,3,TRUE)"
+    industries: [engineering, operations]
+industries: [engineering, operations]
+related: [WEIBULL, EXPON.DIST]

@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use WRAPCOLS?"
+    a: "Use WRAPCOLS to reshape a flat vector into a multi-column array of a fixed column height — useful for converting a sequential list into a grid layout for display or further array operations."
+industries: [operations]
+related: [WRAPROWS, TOCOL, TOROW]

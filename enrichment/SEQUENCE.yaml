@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SEQUENCE instead of manually listing numbers?"
+    a: "Use SEQUENCE when you need to generate a series of numbers automatically, such as row numbers, step indices, or evenly spaced values, without typing each one."
+use_cases:
+  - title: "Generate a 5-step sequence starting at 0 with step 2"
+    formula: "=SEQUENCE(5,1,0,2)"
+    industries: [science, engineering]
+industries: [science, engineering, education]
+related: [ROWS, COLUMNS, ARRAY_CONSTRAIN]

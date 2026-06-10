@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use STDEV.P instead of STDEV.S?"
+    a: "Use STDEV.P when your data represents the entire population, not a sample; it divides by N rather than N-1 and produces a smaller value that reflects the true population spread."
+use_cases:
+  - title: "Population standard deviation of 1 to 10"
+    formula: "=STDEV.P(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [STDEV.S, STDEVP, VAR.P, AVERAGE]

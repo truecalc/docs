@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMSINH?"
+    a: "Use IMSINH to compute the hyperbolic sine of a complex number, which occurs in solutions to Laplace's equation or transmission-line equations in electrical engineering."
+industries: [engineering, science]
+related: [IMCOSH, IMTANH, IMSIN, COMPLEX]

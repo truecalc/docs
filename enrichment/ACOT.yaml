@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ACOT?"
+    a: "Use ACOT to compute the inverse cotangent of a number, returning the angle in radians — useful in trigonometric and surveying calculations where cotangent is the natural form."
+use_cases:
+  - title: "Inverse cotangent of 1 (45 degrees in radians)"
+    formula: "=ACOT(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [COT, ATAN, ACOSH]

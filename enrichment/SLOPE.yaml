@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use SLOPE?"
+    a: "Use SLOPE to find the rate of change (rise over run) in a linear regression between two variables — for example, how much sales revenue increases for each additional unit of advertising spend."
+use_cases:
+  - title: "Slope of a regression line"
+    formula: "=SLOPE({2,3,9,1,8,7,5},{6,5,11,7,5,4,4})"
+    industries: [science, finance]
+industries: [science, finance]
+related: [INTERCEPT, RSQ, STEYX, CORREL]

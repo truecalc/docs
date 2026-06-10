@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use KURT?"
+    a: "Use KURT to measure the excess kurtosis of a data set, indicating whether the distribution has heavier or lighter tails than a normal distribution, which is important in risk and financial modeling."
+use_cases:
+  - title: "Excess kurtosis of a data set"
+    formula: "=KURT(1,2,3,4,5,6,7,8,9,10)"
+    industries: [science, finance]
+industries: [science, finance]
+related: [SKEW, STDEV.S, AVERAGE, VAR.S]

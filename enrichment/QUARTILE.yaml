@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use QUARTILE?"
+    a: "Use QUARTILE to split a dataset into four equal groups and find the boundary values (Q1, median, Q3) — useful for summarizing salary distributions, test score spreads, or sales performance ranges."
+use_cases:
+  - title: "First quartile of a dataset"
+    formula: "=QUARTILE({1,3,5,7,9},1)"
+    industries: [science, hr]
+industries: [science, hr]
+related: [QUARTILE.INC, QUARTILE.EXC, PERCENTILE, MEDIAN]

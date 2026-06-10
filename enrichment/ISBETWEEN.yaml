@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use ISBETWEEN?"
+    a: "Use ISBETWEEN to check whether a value falls within a range defined by lower and upper bounds, with optional control over whether each bound is inclusive."
+industries: [operations, finance, science]
+related: [IF, AND, MIN, MAX]

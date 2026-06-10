@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use EXPONDIST?"
+    a: "Use EXPONDIST to compute the exponential distribution PDF or CDF — it is the legacy equivalent of EXPON.DIST, retained for compatibility with older spreadsheets."
+use_cases:
+  - title: "Exponential CDF at x=4 with rate 0.5 (legacy)"
+    formula: "=EXPONDIST(4,0.5,TRUE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [EXPON.DIST, POISSON.DIST]

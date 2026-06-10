@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMTAN?"
+    a: "Use IMTAN to compute the tangent of a complex number, which appears in advanced optics and wave propagation analyses where angles and phases are complex-valued."
+industries: [engineering, science]
+related: [IMSIN, IMCOS, IMTANH, COMPLEX]

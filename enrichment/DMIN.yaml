@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DMIN?"
+    a: "Use DMIN to find the lowest value in a field among only the rows that match your criteria — useful for finding the minimum cost, lowest score, or smallest measurement within a filtered subset of a database table."
+use_cases:
+  - title: "Lowest score among students above 75"
+    formula: "=DMIN({"Name","Score";"Alice",90;"Bob",80;"Carol",70},"Score",{"Score";">75"})"
+    industries: [education, operations]
+industries: [operations, education]
+related: [DMAX, DSUM, MINIFS]

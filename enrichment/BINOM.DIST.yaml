@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use BINOM.DIST?"
+    a: "Use BINOM.DIST to compute the binomial PMF (exact probability of exactly k successes) or CDF (probability of at most k successes) given n trials and success probability p — for quality control, defect analysis, or any pass/fail process."
+use_cases:
+  - title: "Probability of exactly 4 defects in 100 items with 0.5% defect rate"
+    formula: "=BINOM.DIST(4,100,0.005,FALSE)"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BINOM.INV, BINOMDIST, CRITBINOM]

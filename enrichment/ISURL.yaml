@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ISURL?"
+    a: "Use ISURL to validate that a cell or value is a properly formed URL string before using it in HYPERLINK or passing it to a web request."
+use_cases:
+  - title: "Check if a literal string is a valid URL"
+    formula: "=ISURL("https://example.com")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [HYPERLINK, ENCODEURL, ISTEXT]

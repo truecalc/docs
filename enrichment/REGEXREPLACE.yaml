@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use REGEXREPLACE instead of SUBSTITUTE?"
+    a: "Use REGEXREPLACE when the text you want to replace follows a pattern rather than a fixed string, such as removing all punctuation or normalizing whitespace."
+use_cases:
+  - title: "Remove all digits from a string"
+    formula: "=REGEXREPLACE("Order 1234", "[0-9]+", "")"
+    industries: [operations, sales]
+industries: [operations, sales]
+related: [REGEXEXTRACT, REGEXMATCH, SUBSTITUTE, REPLACE]

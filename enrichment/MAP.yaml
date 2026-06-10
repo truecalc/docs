@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MAP?"
+    a: "Use MAP to apply a LAMBDA function element-by-element to one or more arrays, returning a transformed array of the same shape."
+use_cases:
+  - title: "Double each value in an array"
+    formula: "=MAP({1,2,3},LAMBDA(x,x*2))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [BYCOL, BYROW, REDUCE, SCAN]

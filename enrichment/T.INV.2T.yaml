@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use T.INV.2T?"
+    a: "Use T.INV.2T when you need the two-tailed critical value of the Student's t distribution — it returns the t-score such that the probability of exceeding it in absolute value equals p, which is the standard critical value for two-tailed hypothesis tests and confidence intervals."
+use_cases:
+  - title: "Two-tailed critical t-value at 35% alpha"
+    formula: "=T.INV.2T(0.35,1)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [T.INV, T.DIST.2T, TINV]

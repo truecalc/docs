@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use PROB?"
+    a: "Use PROB when you have a discrete probability distribution defined by a set of values and their associated probabilities and need to find the probability that a variable falls within a specified range."
+use_cases:
+  - title: "Probability that a value falls between 2 and 3"
+    formula: "=PROB({1,2,3,4},{0.25,0.25,0.25,0.25},2,3)"
+    industries: [science, operations]
+industries: [science, operations]
+related: [POISSON.DIST, BINOM.DIST, NORM.DIST]

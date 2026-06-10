@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use DVAR?"
+    a: "Use DVAR to compute the sample variance of a field for rows matching criteria — useful when the filtered rows are a sample and you need a measure of variability for statistical analysis."
+use_cases:
+  - title: "Sample variance for a category"
+    formula: "=DVAR({"Cat","Val";"A",10;"A",20;"A",30},"Val",{"Cat";"A"})"
+    industries: [science, operations]
+industries: [science, operations]
+related: [DVARP, DSTDEV, VAR]

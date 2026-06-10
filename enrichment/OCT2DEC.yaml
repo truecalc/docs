@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When do I use OCT2DEC?"
+    a: "Use OCT2DEC to convert an octal number to its decimal equivalent, which is common when reading Unix file-permission values (e.g., 755) or legacy hardware documentation that uses octal notation."
+use_cases:
+  - title: "Convert Unix permission octal to decimal"
+    formula: "=OCT2DEC("37")"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [OCT2BIN, OCT2HEX, DEC2OCT, HEX2DEC]

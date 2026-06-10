@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use AVERAGEA instead of AVERAGE?"
+    a: "Use AVERAGEA when your dataset includes boolean values or text that should be counted as 0 (FALSE/text) or 1 (TRUE); AVERAGE silently ignores non-numeric values, while AVERAGEA includes them."
+use_cases:
+  - title: "Average of a numeric list including all values"
+    formula: "=AVERAGEA(1,2,3,4,5,6,7,8,9,10,4,26)"
+    industries: [science, operations]
+industries: [science, operations, education]
+related: [AVERAGE, AVERAGE.WEIGHTED, AVERAGEIF]

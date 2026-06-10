@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When do I use IMPOWER?"
+    a: "Use IMPOWER to raise a complex number to a real or complex power, which appears in AC circuit analysis, fractal geometry, and control systems where complex exponentials are computed."
+industries: [engineering, science]
+related: [IMSQRT, IMPRODUCT, IMEXP, COMPLEX]

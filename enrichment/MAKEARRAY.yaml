@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use MAKEARRAY?"
+    a: "Use MAKEARRAY to programmatically generate an array of a given size where each cell value is computed by a LAMBDA based on its row and column index."
+use_cases:
+  - title: "Build a 2x3 multiplication table"
+    formula: "=MAKEARRAY(2,3,LAMBDA(r,c,r*c))"
+    industries: [operations, science]
+industries: [operations, science]
+related: [SEQUENCE, MAP, BYCOL, BYROW]

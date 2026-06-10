@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use TBILLEQ?"
+    a: "Use TBILLEQ to convert a T-bill discount rate into its bond-equivalent yield — allowing fair comparison of T-bill returns with coupon-bearing bonds quoted on a 365-day basis."
+use_cases:
+  - title: "Bond-equivalent yield for a T-bill at 9% discount"
+    formula: "=TBILLEQ(DATE(2010,1,2),DATE(2010,12,31),0.09)"
+    industries: [finance]
+industries: [finance]
+related: [TBILLPRICE, TBILLYIELD, YIELDDISC]

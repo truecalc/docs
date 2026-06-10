@@ -1,0 +1,5 @@
+when_to_use:
+  - q: "When should I use FTEST instead of F.TEST?"
+    a: "FTEST is the legacy version of F.TEST; use F.TEST in new spreadsheets. FTEST is kept for backward compatibility."
+industries: [science, operations]
+related: [F.TEST, F.DIST, F.DIST.RT]

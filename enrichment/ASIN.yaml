@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ASIN?"
+    a: "Use ASIN to find the angle (in radians) whose sine equals a given value; input must be between -1 and 1."
+use_cases:
+  - title: "Arcsine of a value"
+    formula: "=ASIN(1)"
+    industries: [science, engineering]
+industries: [science, engineering]
+related: [ACOS, ATAN, DEGREES, SIN]

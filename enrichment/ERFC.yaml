@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use ERFC?"
+    a: "Use ERFC to compute the complementary error function (1 - ERF(x)), which is numerically stable for large x where ERF(x) is very close to 1."
+use_cases:
+  - title: "Complementary error function at x=2"
+    formula: "=ERFC(2)"
+    industries: [engineering, science]
+industries: [engineering, science]
+related: [ERF, ERFC.PRECISE, ERF.PRECISE]

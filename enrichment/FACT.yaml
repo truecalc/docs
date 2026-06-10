@@ -1,0 +1,9 @@
+when_to_use:
+  - q: "When should I use FACT?"
+    a: "Use FACT to compute the factorial of a non-negative integer; required when calculating permutations, combinations, or probability distributions."
+use_cases:
+  - title: "Factorial of 6"
+    formula: "=FACT(6)"
+    industries: [science, education]
+industries: [science, education]
+related: [FACTDOUBLE, COMBIN, PERMUT]
