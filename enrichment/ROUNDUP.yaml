@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ROUNDUP instead of ROUND?"
+    a: "Use ROUNDUP to always round away from zero; use ROUND when you want standard nearest-value rounding."
+  - q: "Why would I round up instead of to the nearest value?"
+    a: "Rounding up is common for billing, capacity, and materials, where you never want to under-count what is needed."
+use_cases:
+  - title: "Always round a price up to two decimals"
+    formula: "=ROUNDUP(2.341, 2)"
+    industries: [retail, finance]
+  - title: "Round up units needed to a whole number"
+    formula: "=ROUNDUP(7.1, 0)"
+    industries: [operations, engineering]
+  - title: "Round a cost up to the nearest ten"
+    formula: "=ROUNDUP(123, -1)"
+    industries: [finance, operations]
+industries: [retail, finance, operations, engineering]
+related: [ROUND, ROUNDDOWN, MOD, INT]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use COUNT instead of COUNTA?"
+    a: "Use COUNT to count only numeric values; use COUNTA to count every non-empty value, including text."
+  - q: "Does COUNT count text or blank cells?"
+    a: "No. COUNT ignores text, logical values, and empty cells, and only tallies entries that are numbers."
+use_cases:
+  - title: "Count the numbers in a mixed list"
+    formula: "=COUNT(1, 2, "x", 3)"
+    industries: [operations, finance]
+  - title: "Count numeric responses in a survey row"
+    formula: "=COUNT({10, 20, "n/a", 40})"
+    industries: [hr, education]
+  - title: "Count completed numeric readings"
+    formula: "=COUNT(98.6, 99.1, "skip", 97.9)"
+    industries: [science, engineering]
+industries: [operations, finance, hr, education]
+related: [COUNTA, COUNTIF, COUNTIFS, SUM]

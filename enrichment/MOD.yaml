@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MOD?"
+    a: "Use MOD to get the remainder after division, which is handy for spotting even/odd values or repeating cycles."
+  - q: "How do I test whether a number is even with MOD?"
+    a: "Take MOD of the number by 2; a result of 0 means even and 1 means odd."
+use_cases:
+  - title: "Get the remainder of a division"
+    formula: "=MOD(10, 3)"
+    industries: [operations, engineering]
+  - title: "Check whether a number is even"
+    formula: "=MOD(8, 2)"
+    industries: [education, science]
+  - title: "Find position within a repeating cycle"
+    formula: "=MOD(17, 12)"
+    industries: [operations, engineering]
+industries: [operations, engineering, education, science]
+related: [ROUND, ROUNDDOWN, INT, QUOTIENT]

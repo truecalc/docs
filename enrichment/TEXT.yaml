@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "What does TEXT do?"
+    a: "TEXT converts a number or date into text formatted by a pattern you supply, such as a currency, percentage, or date layout. The result is text, not a number."
+  - q: "When should I avoid TEXT?"
+    a: "Avoid TEXT when you still need to do math on the value. Formatting turns the number into text, so apply TEXT only at the point where you want a display string."
+use_cases:
+  - title: "Format a value as currency"
+    formula: "=TEXT(1234.5, "$#,##0.00")"
+    industries: [finance, retail]
+  - title: "Show a ratio as a percentage"
+    formula: "=TEXT(0.0825, "0.0%")"
+    industries: [finance, lending]
+  - title: "Format a large number with thousands separators"
+    formula: "=TEXT(2500000, "#,##0")"
+    industries: [operations, engineering]
+industries: [finance, retail, lending, operations]
+related: [CONCATENATE, SUBSTITUTE, LEFT, RIGHT]

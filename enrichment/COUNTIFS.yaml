@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use COUNTIFS instead of COUNTIF?"
+    a: "Use COUNTIFS to count rows that satisfy several conditions at once; use COUNTIF when you have just one condition."
+  - q: "Do all the conditions in COUNTIFS have to match?"
+    a: "Yes. COUNTIFS only counts an item when every range/criteria pair it lists is satisfied for that position."
+use_cases:
+  - title: "Count values above a single threshold"
+    formula: "=COUNTIFS({1, 2, 3, 4}, ">2")"
+    industries: [operations, sales]
+  - title: "Count rows matching two conditions"
+    formula: "=COUNTIFS({1, 2, 3, 4}, ">1", {5, 6, 7, 8}, "<8")"
+    industries: [finance, operations]
+  - title: "Count items in a target range"
+    formula: "=COUNTIFS({10, 20, 30, 40}, ">=20", {10, 20, 30, 40}, "<=30")"
+    industries: [retail, sales]
+industries: [operations, sales, finance, retail]
+related: [COUNTIF, SUMIFS, COUNT, COUNTA]

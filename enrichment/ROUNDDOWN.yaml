@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ROUNDDOWN instead of ROUND?"
+    a: "Use ROUNDDOWN to always round toward zero; use ROUND when you want standard nearest-value rounding."
+  - q: "How is ROUNDDOWN different from truncating?"
+    a: "ROUNDDOWN to zero decimals truncates the fractional part, and you can also round down to any number of decimals or to tens."
+use_cases:
+  - title: "Round a value down to two decimals"
+    formula: "=ROUNDDOWN(2.349, 2)"
+    industries: [finance, science]
+  - title: "Round down to whole units shipped"
+    formula: "=ROUNDDOWN(7.9, 0)"
+    industries: [operations, retail]
+  - title: "Round a figure down to the nearest hundred"
+    formula: "=ROUNDDOWN(1789, -2)"
+    industries: [finance, operations]
+industries: [finance, science, operations, retail]
+related: [ROUND, ROUNDUP, MOD, INT]

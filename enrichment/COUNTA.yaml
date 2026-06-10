@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use COUNTA instead of COUNT?"
+    a: "Use COUNTA to count every non-empty value, including text and logicals; use COUNT when you only want numbers."
+  - q: "Does COUNTA count blank cells?"
+    a: "No. COUNTA counts any cell that contains data of any type, but it skips truly empty cells."
+use_cases:
+  - title: "Count all filled-in entries"
+    formula: "=COUNTA(1, "x", TRUE)"
+    industries: [operations, hr]
+  - title: "Count non-empty responses in a row"
+    formula: "=COUNTA("yes", "no", "yes", 5)"
+    industries: [hr, sales]
+  - title: "Tally any kind of recorded value"
+    formula: "=COUNTA({1, "ok", FALSE, 9})"
+    industries: [operations, science]
+industries: [operations, hr, sales, science]
+related: [COUNT, COUNTIF, COUNTIFS, SUM]

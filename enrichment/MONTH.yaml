@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "What does MONTH return?"
+    a: "MONTH takes a date and returns its month as a number from 1 to 12, where 1 is January and 12 is December."
+  - q: "How do I group transactions by month?"
+    a: "Apply MONTH to each date to get a 1-to-12 number, then use it as the key in a SUMIF or COUNTIF to total figures per month."
+use_cases:
+  - title: "Get the month number from a date"
+    formula: "=MONTH(DATE(2024, 5, 15))"
+    industries: [finance, operations]
+  - title: "Find the month a sale closed"
+    formula: "=MONTH(DATE(2024, 11, 28))"
+    industries: [sales, retail]
+  - title: "Extract the billing month"
+    formula: "=MONTH(DATE(2024, 2, 1))"
+    industries: [finance, lending]
+industries: [finance, operations, sales, lending]
+related: [YEAR, DAY, EOMONTH, DATE]

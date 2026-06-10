@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SUBSTITUTE instead of REPLACE?"
+    a: "Use SUBSTITUTE when you want to swap out matching text wherever it appears. Use REPLACE when you want to overwrite characters at a known position regardless of their content."
+  - q: "How do I replace only the second occurrence of a character?"
+    a: "Pass an instance number as the optional fourth argument, for example SUBSTITUTE(text, "-", "/", 2), to change just that occurrence."
+use_cases:
+  - title: "Swap separators in a code"
+    formula: "=SUBSTITUTE("2024-05-15", "-", "/")"
+    industries: [operations, finance]
+  - title: "Remove thousands separators from a string"
+    formula: "=SUBSTITUTE("1,250,000", ",", "")"
+    industries: [finance, sales]
+  - title: "Replace only the first dash"
+    formula: "=SUBSTITUTE("a-b-c", "-", "+", 1)"
+    industries: [operations, engineering]
+industries: [operations, finance, sales, engineering]
+related: [TRIM, LEFT, RIGHT, TEXT]

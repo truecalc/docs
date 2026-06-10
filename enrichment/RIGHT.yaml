@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use RIGHT instead of LEFT?"
+    a: "Use RIGHT when the characters you want are at the end of the text, such as a suffix, last few digits, or a trailing code."
+  - q: "How do I get the last few digits of an account number?"
+    a: "Pass the count of trailing characters you need to RIGHT, for example RIGHT(account, 4) to mask all but the last four digits."
+use_cases:
+  - title: "Show the last four digits of a card"
+    formula: "=RIGHT("4111111111114242", 4)"
+    industries: [finance, retail]
+  - title: "Get a file extension"
+    formula: "=RIGHT("report.csv", 3)"
+    industries: [operations, engineering]
+  - title: "Extract a two-letter currency suffix"
+    formula: "=RIGHT("1500USD", 3)"
+    industries: [finance, sales]
+industries: [finance, retail, operations, engineering]
+related: [LEFT, MID, LEN, SUBSTITUTE]
