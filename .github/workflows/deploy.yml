@@ -31,6 +31,7 @@ jobs:
       - name: Build (static export)
         run: npm run build
         env:
+          NEXT_PUBLIC_BASE_URL: https://docs.truecalc.app
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
           NEXT_PUBLIC_POSTHOG_HOST: https://us.i.posthog.com
 
@@ -52,3 +53,23 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Submit changed URLs to IndexNow
+        run: |
+          if [ -n "$INDEXNOW_KEY" ]; then
+            npm run submit:indexnow
+          else
+            echo "INDEXNOW_KEY not set — skipping IndexNow submission"
+          fi
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}

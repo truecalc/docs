@@ -30,3 +30,5 @@ jobs:
 
       - name: Build (static export)
         run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_URL: https://docs.truecalc.app
