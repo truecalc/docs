@@ -1,0 +1,45 @@
+---
+title: Calculate a percentage change
+description: "Find out how much a value grew or shrank, as a percentage."
+level: beginner
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the percentage change between an old and a new number.
+
+**What you need:** Nothing but this page.
+
+**Why this matters:** percentage change is everywhere — prices, scores, growth.
+
+## Step 1 — The raw difference
+
+Sales went from 200 to 250.
+
+```formula test
+=250-200 // => 50
+```
+
+<TryIt formula="=250-200" />
+
+## Step 2 — As a fraction of the original
+
+```formula test
+=(250-200)/200 // => 0.25
+```
+
+<TryIt formula="=(250-200)/200" />
+
+**What just happened:** parentheses force the subtraction to happen first, then we divide
+by the original 200. `0.25` means 25%.
+
+## Try changing…
+
+- Your own old and new numbers.
+
+## You learned
+
+- Parentheses control what happens first.
+- `(new - old) / old` is the percentage change as a decimal.
+
+**Next:** [Simple invoice](/docs/tutorials/simple-invoice)

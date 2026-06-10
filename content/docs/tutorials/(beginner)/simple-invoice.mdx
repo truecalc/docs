@@ -1,0 +1,44 @@
+---
+title: Build a simple invoice line
+description: "Calculate a line total with quantity, price, and sales tax."
+level: beginner
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the total for one invoice line, including tax.
+
+**What you need:** Nothing but this page.
+
+**Why this matters:** quantity × price × tax is the core of every invoice and order form.
+
+## Step 1 — Quantity times price
+
+3 items at $12.50 each.
+
+```formula test
+=3*12.5 // => 37.5
+```
+
+<TryIt formula="=3*12.5" />
+
+## Step 2 — Add 8% sales tax
+
+```formula test
+=3*12.5*1.08 // => 40.5
+```
+
+<TryIt formula="=3*12.5*1.08" />
+
+**What just happened:** multiplying by `1.08` adds 8% tax in one step.
+
+## Try changing…
+
+- Your own quantity, price, and tax rate.
+
+## You learned
+
+- Chain multiplications left to right.
+- Multiply by `1 + rate` to add a percentage.
+
+**Next:** [Monthly loan payment](/docs/tutorials/monthly-loan-payment)
