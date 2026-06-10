@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use COUNTIF instead of SUMIF?"
+    a: "Use COUNTIF to count how many cells meet a condition; use SUMIF to add up the values of the cells that meet a condition."
+  - q: "How do I write the condition in COUNTIF?"
+    a: "Put the criteria in quotes, e.g. greater-than two as a quoted comparison, or a quoted word to count matching text."
+use_cases:
+  - title: "Count values greater than a threshold"
+    formula: "=COUNTIF({1, 2, 3, 4}, ">2")"
+    industries: [operations, sales]
+  - title: "Count how many entries match a label"
+    formula: "=COUNTIF({"Yes", "No", "Yes", "Yes"}, "Yes")"
+    industries: [hr, operations]
+  - title: "Count scores at or above a passing mark"
+    formula: "=COUNTIF({55, 62, 70, 48}, ">=60")"
+    industries: [education, hr]
+industries: [operations, sales, education, hr]
+related: [SUMIF, SUM, AVERAGE, IF]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use IFERROR instead of IF?"
+    a: "Use IFERROR to catch and replace a formula that returns an error; use IF when you want to branch on a condition you define yourself."
+  - q: "Does IFERROR hide all errors?"
+    a: "Yes — it replaces any error (like #DIV/0! or #N/A) with the fallback you provide, so use it carefully or you may mask a real mistake."
+use_cases:
+  - title: "Show a safe value instead of a divide-by-zero error"
+    formula: "=IFERROR(1/0, "safe")"
+    industries: [finance, operations]
+  - title: "Return a friendly message when a lookup fails"
+    formula: "=IFERROR(VLOOKUP("z", {"a", 1; "b", 2}, 2, FALSE), "Not found")"
+    industries: [sales, retail]
+  - title: "Default to zero when a calculation errors"
+    formula: "=IFERROR(10 / 0, 0)"
+    industries: [finance, operations]
+industries: [finance, operations, sales, retail]
+related: [IF, VLOOKUP, XLOOKUP]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use MATCH instead of VLOOKUP?"
+    a: "Use MATCH when you need the position (row or column number) of a value rather than the value itself — often combined with INDEX to build a flexible lookup."
+  - q: "How do I force MATCH to find an exact match?"
+    a: "Pass 0 as the third argument. Using 1 or -1 assumes the list is sorted and returns the nearest match instead."
+use_cases:
+  - title: "Find the position of a value in a list"
+    formula: "=MATCH(20, {10, 20, 30}, 0)"
+    industries: [operations, sales]
+  - title: "Locate a name in a roster"
+    formula: "=MATCH("Berlin", {"Paris", "Berlin", "Rome"}, 0)"
+    industries: [hr, operations]
+  - title: "Use MATCH inside INDEX for a lookup"
+    formula: "=INDEX({"x", "y", "z"}, MATCH(30, {10, 20, 30}, 0))"
+    industries: [finance, engineering]
+industries: [operations, sales, hr, finance]
+related: [INDEX, VLOOKUP, XLOOKUP]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use XLOOKUP instead of VLOOKUP?"
+    a: "Use XLOOKUP whenever you can: it can search to the left, defaults to an exact match, and keeps working when columns are inserted or moved."
+  - q: "Can XLOOKUP return a default when nothing matches?"
+    a: "Yes. Pass a fourth argument as the if-not-found value, e.g. XLOOKUP(key, lookup, results, Not found)."
+use_cases:
+  - title: "Look up a value to the right of the key"
+    formula: "=XLOOKUP("b", {"a", "b", "c"}, {10, 20, 30})"
+    industries: [operations, sales]
+  - title: "Return a default when the key is missing"
+    formula: "=XLOOKUP("z", {"a", "b", "c"}, {10, 20, 30}, "Not found")"
+    industries: [retail, operations]
+  - title: "Find a city's region code"
+    formula: "=XLOOKUP("Berlin", {"Paris", "Berlin", "Rome"}, {"EU-W", "EU-C", "EU-S"})"
+    industries: [operations, engineering]
+industries: [operations, sales, retail, engineering]
+related: [VLOOKUP, INDEX, MATCH, IFERROR]
