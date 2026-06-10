@@ -18,7 +18,7 @@ import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SCAN_DIRS = ['learn', 'tutorials'].map((d) => join(root, 'content', 'docs', d));
+const SCAN_DIRS = ['learn', 'tutorials', 'comparisons'].map((d) => join(root, 'content', 'docs', d));
 const workDir = join(root, '.docs-test');
 
 const NODE_FLAGS = ['--experimental-wasm-modules', '--experimental-strip-types', '--no-warnings'];

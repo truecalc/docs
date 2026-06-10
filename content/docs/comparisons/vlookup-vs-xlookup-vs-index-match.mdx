@@ -1,0 +1,60 @@
+---
+title: VLOOKUP vs XLOOKUP vs INDEX/MATCH
+description: "Three ways to look up a value in a table — how they differ, which to use, and runnable examples of each."
+---
+
+import { TryIt } from '@/components/try-it';
+
+All three answer the same question: *"find a row by one value, return another value from that row."*
+They differ in how flexible and future-proof they are. Run each example and compare.
+
+## What does each one do?
+
+- **VLOOKUP** — the classic. Searches the *first* column of a table and returns a value from a
+  column to its right, counted by number.
+- **XLOOKUP** — the modern replacement. Searches one array and returns from another, in any direction,
+  with a built-in "not found" fallback.
+- **INDEX/MATCH** — the flexible pair. `MATCH` finds the position; `INDEX` returns the value at that
+  position. Works in any direction and never breaks when columns move.
+
+## The same lookup, three ways
+
+Look up the value `2` and return its label from this small table.
+
+**VLOOKUP** — table is `{1,"a";2,"b";3,"c"}`, return column `2`, exact match (`FALSE`):
+
+```formula test
+=VLOOKUP(2, {1,"a";2,"b";3,"c"}, 2, FALSE) // => b
+```
+
+<TryIt formula={'=VLOOKUP(2, {1,"a";2,"b";3,"c"}, 2, FALSE)'} />
+
+**XLOOKUP** — search `{1;2;3}`, return from `{"a";"b";"c"}`:
+
+```formula test
+=XLOOKUP(2, {1;2;3}, {"a";"b";"c"}) // => b
+```
+
+<TryIt formula={'=XLOOKUP(2, {1;2;3}, {"a";"b";"c"})'} />
+
+**INDEX/MATCH** — `MATCH` finds the position of `2`, `INDEX` returns that position from the labels:
+
+```formula test
+=INDEX({"a";"b";"c"}, MATCH(2, {1;2;3}, 0)) // => b
+```
+
+<TryIt formula={'=INDEX({"a";"b";"c"}, MATCH(2, {1;2;3}, 0))'} />
+
+## When should I use each one?
+
+- **Use XLOOKUP** for new work. It's the clearest, looks left or right, and lets you set a
+  "not found" result without nesting.
+- **Use INDEX/MATCH** when you need maximum flexibility or must support older files — it won't
+  break if someone inserts a column.
+- **Use VLOOKUP** when a sheet already uses it and it works. Just know its limits: it only looks
+  to the right, and the column number breaks if columns are added.
+
+## Which is "best"?
+
+For most new spreadsheets: **XLOOKUP**. It does what VLOOKUP does, in any direction, more safely.
+INDEX/MATCH remains the most flexible and the most compatible.
