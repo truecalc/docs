@@ -1,0 +1,60 @@
+---
+title: Build a loan amortization schedule
+description: "Use PMT, IPMT, and PPMT to break a loan payment into interest and principal."
+level: advanced
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the three numbers behind every row of a loan amortization schedule —
+the fixed payment, and how it splits into interest and principal in a given month.
+
+**What you need:** the [monthly loan payment](/tutorials/monthly-loan-payment) tutorial first.
+
+**Why this matters:** an amortization schedule is just these formulas repeated for each month.
+Master the three and you can build the whole table in any spreadsheet.
+
+## Step 1 — The fixed monthly payment (PMT)
+
+A $25,000 loan, 5% annual rate, 60 months.
+
+```formula test
+=PMT(0.05/12, 60, -25000) // => 471.7808411002748
+```
+
+<TryIt formula="=PMT(0.05/12, 60, -25000)" />
+
+**What just happened:** every month you pay this same total.
+
+## Step 2 — The interest part of month 1 (IPMT)
+
+```formula test
+=IPMT(0.05/12, 1, 60, -25000) // => 104.16666666666667
+```
+
+<TryIt formula="=IPMT(0.05/12, 1, 60, -25000)" />
+
+**What just happened:** `IPMT(rate, period, nper, pv)` returns the interest portion of the
+payment in a given period. Month 1 has the most interest.
+
+## Step 3 — The principal part of month 1 (PPMT)
+
+```formula test
+=PPMT(0.05/12, 1, 60, -25000) // => 367.6141744336081
+```
+
+<TryIt formula="=PPMT(0.05/12, 1, 60, -25000)" />
+
+**What just happened:** interest + principal = the full payment
+(104.17 + 367.61 ≈ 471.78). Each month, interest shrinks and principal grows.
+
+## Try changing…
+
+- The period (the `1`) to `30` or `60` and watch interest fall as principal rises.
+
+## You learned
+
+- `PMT` is the fixed payment; `IPMT` and `PPMT` split it into interest and principal.
+- A full amortization schedule is these formulas, one row per period.
+
+**Next:** [Break-even calculator](/tutorials/break-even)

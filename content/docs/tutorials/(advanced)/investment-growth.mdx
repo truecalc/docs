@@ -1,0 +1,60 @@
+---
+title: Measure investment growth with NPV, IRR, and FV
+description: "Three core finance functions for valuing money over time."
+level: advanced
+---
+
+import { TryIt } from '@/components/try-it';
+
+**What you'll build:** the future value of regular savings, and two ways to judge an investment.
+
+**What you need:** the loan tutorials help, but aren't required.
+
+**Why this matters:** NPV, IRR, and FV are the backbone of every financial model.
+
+## Step 1 — Future value of monthly saving (FV)
+
+Save $200/month for 5 years (60 months) at 5% annual interest.
+
+```formula test
+=FV(0.05/12, 60, -200) // => 13601.216568168567
+```
+
+<TryIt formula="=FV(0.05/12, 60, -200)" />
+
+**What just happened:** `FV(rate, nper, pmt)` grows your regular deposits with interest.
+
+## Step 2 — Net present value of a project (NPV)
+
+A project costs 100 now and returns 50, 60, 70 over three years, discounted at 10%.
+
+```formula test
+=NPV(0.1, -100, 50, 60, 70) // => 43.30305307014546
+```
+
+<TryIt formula="=NPV(0.1, -100, 50, 60, 70)" />
+
+**What just happened:** a positive NPV means the project is worth more than it costs.
+
+## Step 3 — Internal rate of return (IRR)
+
+The same cash flows, as a single return percentage.
+
+```formula test
+=IRR({-100, 30, 40, 50, 60}) // => 0.24888335662407093
+```
+
+<TryIt formula="=IRR({-100, 30, 40, 50, 60})" />
+
+**What just happened:** `IRR` is the discount rate where NPV would be zero — here about 24.9%.
+
+## Try changing…
+
+- The cash flows inside `{ }` and watch IRR move.
+
+## You learned
+
+- `FV` grows regular deposits; `NPV` values future cash flows in today's money; `IRR` is the
+  return rate that makes NPV zero.
+
+**Next:** explore the [Compare](/comparisons) pages or the [Advanced path](/paths/advanced).
