@@ -9,6 +9,7 @@
     "postinstall": "fumadocs-mdx",
     "test-docs": "node scripts/test-docs.mjs",
     "gen-docs": "node scripts/gen-docs.mjs",
+    "lint:enrichment": "node scripts/lint-enrichment.mjs",
     "gen:lastmod": "node scripts/gen-lastmod.mjs",
     "submit:indexnow": "node scripts/submit-indexnow.mjs",
     "submit:indexnow:dry-run": "node scripts/submit-indexnow.mjs --dry-run",
