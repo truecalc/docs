@@ -25,6 +25,7 @@ export function TryIt({ formula = '=1+1', label }: { formula?: string; label?: s
   const [busy, setBusy] = useState(false);
 
   async function run() {
+    if (!input.trim()) return;
     setBusy(true);
     try {
       const mod = await import('@truecalc/core');
@@ -59,7 +60,7 @@ export function TryIt({ formula = '=1+1', label }: { formula?: string; label?: s
         </button>
       </div>
       {output !== null ? (
-        <div className="mt-2 font-mono text-sm">
+        <div className="mt-2 font-mono text-sm" role="status" aria-live="polite">
           <span className="opacity-60">=&gt; </span>{output}
         </div>
       ) : null}
