@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use PRODUCT instead of just typing * between values?"
+    a: "Use PRODUCT when you want to multiply many values or a whole range at once; the * operator is clearer for a couple of fixed numbers, but PRODUCT scales to lists and arrays without repeating the operator."
+  - q: "Does PRODUCT ignore text and blank cells?"
+    a: "Yes. PRODUCT multiplies only the numeric values it finds and skips text and empty cells, so stray labels in a range will not break the calculation."
+use_cases:
+  - title: "Multiply several factors together"
+    formula: "=PRODUCT(2, 3, 4)"
+    industries: [operations, engineering]
+  - title: "Apply a markup to a base price"
+    formula: "=PRODUCT(150, 1.08)"
+    industries: [retail, sales]
+  - title: "Compound a series of growth factors"
+    formula: "=PRODUCT({1.05, 1.03, 1.07, 1.02})"
+    industries: [finance, operations]
+industries: [finance, operations, retail, engineering]
+related: [SUMPRODUCT, POWER, SUM, MULTIPLY]

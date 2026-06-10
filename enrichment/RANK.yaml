@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use RANK instead of sorting the data?"
+    a: "RANK gives the position of one value within a set without reordering anything, so it works in place for leaderboards and percentile-style reports while the original rows stay put."
+  - q: "How do I rank from smallest to largest instead of largest to smallest?"
+    a: "Pass 1 as the third argument. RANK(value, range, 1) ranks in ascending order, where the smallest value is rank 1; the default 0 ranks in descending order."
+use_cases:
+  - title: "Position of a value, highest first"
+    formula: "=RANK(20, {10, 20, 30})"
+    industries: [operations, sales]
+  - title: "Rank a score against other grades"
+    formula: "=RANK(92, {88, 92, 75, 99, 84})"
+    industries: [education, hr]
+  - title: "Rank a cost ascending so cheapest is first"
+    formula: "=RANK(150, {200, 150, 300, 100}, 1)"
+    industries: [finance, operations]
+industries: [sales, education, finance, operations]
+related: [LARGE, SMALL, MAX, MEDIAN]

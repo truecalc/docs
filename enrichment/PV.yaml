@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use PV instead of NPV?"
+    a: "Use PV when the payments are equal and periodic; use NPV when the cash flows vary from period to period."
+use_cases:
+  - title: "Present value of a stream of monthly payments"
+    formula: "=PV(0.05/12, 60, -200)"
+    industries: [finance, personal-finance]
+  - title: "Value a future lump sum in today's money"
+    formula: "=PV(0.06, 10, 0, 20000)"
+    industries: [finance, real-estate]
+  - title: "Price an annuity paying a fixed amount each year"
+    formula: "=PV(0.04, 20, -5000)"
+    industries: [finance, personal-finance]
+industries: [finance, personal-finance, real-estate]
+related: [FV, PMT, RATE, NPER, NPV]

@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use DAY instead of WEEKDAY?"
+    a: "Use DAY to get the day-of-month number (1-31) from a date; use WEEKDAY to get the day of the week (1-7)."
+use_cases:
+  - title: "Extract the day-of-month from a date"
+    formula: "=DAY(DATE(2024, 3, 15))"
+    industries: [operations, finance]
+  - title: "Find the last day number of a month with EOMONTH"
+    formula: "=DAY(EOMONTH(DATE(2024, 2, 1), 0))"
+    industries: [finance, operations]
+  - title: "Check whether a date falls on the first of the month"
+    formula: "=IF(DAY(DATE(2024, 6, 1)) = 1, "first", "not first")"
+    industries: [hr, operations]
+industries: [finance, operations, hr]
+related: [MONTH, YEAR, WEEKDAY, DATE, EOMONTH]

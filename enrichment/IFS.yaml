@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use IFS instead of nested IF statements?"
+    a: "Use IFS when you have several conditions to test in order; it is flatter and easier to read than nesting many IF functions inside each other."
+  - q: "What does IFS return if no condition is true?"
+    a: "IFS returns an #N/A error if none of the conditions match, so add a final TRUE condition as a catch-all default when you need one."
+use_cases:
+  - title: "Assign a letter grade from a score"
+    formula: "=IFS(85>=90,"A",85>=80,"B",85>=70,"C")"
+    industries: [education, hr]
+  - title: "Pick the first matching branch"
+    formula: "=IFS(1>2,"a",2>1,"b")"
+    industries: [operations, engineering]
+  - title: "Use a TRUE catch-all as the default"
+    formula: "=IFS(FALSE,"x",TRUE,"y")"
+    industries: [operations, sales]
+industries: [education, hr, operations, sales, engineering]
+related: [IF, SWITCH, IFERROR, AND, OR]

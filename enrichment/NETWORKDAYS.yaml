@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use NETWORKDAYS instead of WORKDAY?"
+    a: "Use NETWORKDAYS to count the business days between two dates; use WORKDAY to find a date a set number of business days away."
+use_cases:
+  - title: "Count business days in a month"
+    formula: "=NETWORKDAYS(DATE(2024, 1, 1), DATE(2024, 1, 31))"
+    industries: [operations, hr]
+  - title: "Measure working days in a project window"
+    formula: "=NETWORKDAYS(DATE(2024, 6, 1), DATE(2024, 6, 30))"
+    industries: [operations, engineering]
+  - title: "Count working days excluding a holiday"
+    formula: "=NETWORKDAYS(DATE(2024, 12, 23), DATE(2024, 12, 31), {DATE(2024,12,25)})"
+    industries: [hr, operations]
+industries: [operations, hr, engineering]
+related: [WORKDAY, WEEKDAY, DATE, DATEDIF]

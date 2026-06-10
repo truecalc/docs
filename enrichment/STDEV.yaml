@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use STDEV instead of STDEVP?"
+    a: "Use STDEV when your data is a sample of a larger population; it divides by n minus 1 to correct for sampling. Use STDEVP when your data covers the entire population."
+  - q: "What does the standard deviation tell me?"
+    a: "It measures how spread out the values are around the average. A small STDEV means values cluster near the mean; a large one means they vary widely, which signals more risk or inconsistency."
+use_cases:
+  - title: "Spread of a sample of measurements"
+    formula: "=STDEV(2, 4, 4, 4, 5, 5, 7, 9)"
+    industries: [science, engineering]
+  - title: "Variability of monthly returns"
+    formula: "=STDEV({100, 102, 98, 105, 95})"
+    industries: [finance, operations]
+  - title: "Consistency of process measurements"
+    formula: "=STDEV(12.1, 12.5, 11.8, 12.3, 12.0)"
+    industries: [engineering, operations]
+industries: [finance, science, engineering, operations]
+related: [AVERAGE, MEDIAN, VAR, STDEVP]

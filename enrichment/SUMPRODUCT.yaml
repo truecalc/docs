@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SUMPRODUCT instead of multiplying then summing separately?"
+    a: "SUMPRODUCT multiplies arrays element by element and adds the results in one step, so you avoid a helper column. It is ideal for weighted totals like quantity times price, or score times weight."
+  - q: "Can SUMPRODUCT compute a weighted average?"
+    a: "Yes. Divide a SUMPRODUCT of values and weights by the sum of the weights: SUMPRODUCT(values, weights) divided by SUM(weights) gives the weighted mean."
+use_cases:
+  - title: "Total revenue from quantities and unit prices"
+    formula: "=SUMPRODUCT({1,2,3}, {4,5,6})"
+    industries: [retail, sales]
+  - title: "Weighted sum of items at different rates"
+    formula: "=SUMPRODUCT({10,20,5}, {3,2,4})"
+    industries: [operations, finance]
+  - title: "Portfolio value from positions and weights"
+    formula: "=SUMPRODUCT({100,200,150}, {0.1,0.2,0.15})"
+    industries: [finance, real-estate]
+industries: [finance, retail, sales, operations]
+related: [SUM, PRODUCT, SUMIF, AVERAGE]

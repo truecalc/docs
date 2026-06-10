@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use NPER instead of RATE?"
+    a: "Use NPER to solve for the number of payment periods; use RATE to solve for the interest rate per period."
+use_cases:
+  - title: "Number of months to pay off a balance"
+    formula: "=NPER(0.05/12, -200, 10000)"
+    industries: [lending, personal-finance]
+  - title: "Periods needed to reach a savings goal"
+    formula: "=NPER(0.06/12, -300, 0, 20000)"
+    industries: [personal-finance, finance]
+  - title: "Years to grow a lump sum to a target"
+    formula: "=NPER(0.07, 0, -10000, 30000)"
+    industries: [finance, personal-finance]
+industries: [finance, lending, personal-finance]
+related: [RATE, PMT, PV, FV]

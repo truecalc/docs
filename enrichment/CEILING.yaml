@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use CEILING instead of ROUNDUP?"
+    a: "CEILING rounds up to the nearest multiple of a factor you choose, such as the next 5 or next 0.25. ROUNDUP only rounds up to a number of decimal places. Use CEILING for pricing tiers, packaging units, or time blocks."
+  - q: "How do I round a price up to the next 5 cents?"
+    a: "Use CEILING(price, 0.05). It pushes any amount up to the nearest 0.05 boundary, which is common in retail price formatting."
+use_cases:
+  - title: "Round up to the next whole unit"
+    formula: "=CEILING(4.2, 1)"
+    industries: [operations, retail]
+  - title: "Round an order quantity up to a case of 5"
+    formula: "=CEILING(23, 5)"
+    industries: [retail, operations]
+  - title: "Round a price up to the nearest 5 cents"
+    formula: "=CEILING(7.27, 0.05)"
+    industries: [retail, sales]
+industries: [operations, retail, sales, finance]
+related: [FLOOR, ROUNDUP, MROUND, INT]

@@ -1,0 +1,7 @@
+when_to_use:
+  - q: "When should I use MINIFS instead of MIN?"
+    a: "Use MINIFS to find the smallest value among only the cells that meet one or more conditions; use MIN when you want the smallest value across an entire range with no filtering."
+  - q: "What does MINIFS return when no rows match the conditions?"
+    a: "MINIFS returns 0 when no cells satisfy all of the criteria, so check whether an empty match is possible before relying on the result."
+industries: [finance, operations, sales, retail]
+related: [MAXIFS, MIN, SUMIFS, COUNTIFS, AVERAGEIF]

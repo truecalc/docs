@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use WORKDAY instead of NETWORKDAYS?"
+    a: "Use WORKDAY to find a future or past date a number of business days away; use NETWORKDAYS to count business days between two dates."
+use_cases:
+  - title: "Find the date 5 working days after a start date"
+    formula: "=WORKDAY(DATE(2024, 1, 1), 5)"
+    industries: [operations, hr]
+  - title: "Project a delivery date 10 business days out"
+    formula: "=WORKDAY(DATE(2024, 6, 3), 10)"
+    industries: [retail, operations]
+  - title: "Skip a holiday when scheduling a deadline"
+    formula: "=WORKDAY(DATE(2024, 12, 20), 3, {DATE(2024,12,25)})"
+    industries: [operations, hr]
+industries: [operations, retail, hr]
+related: [NETWORKDAYS, WEEKDAY, DATE, DAY]

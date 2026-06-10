@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use ISTEXT?"
+    a: "Use ISTEXT to test whether a cell holds text rather than a number, often inside an IF to validate that an entry is a label and not a value."
+  - q: "Does ISTEXT return TRUE for a number?"
+    a: "No — ISTEXT returns FALSE for numbers and TRUE only for text, so it pairs well with ISNUMBER to classify mixed data."
+use_cases:
+  - title: "Confirm a value is text"
+    formula: "=ISTEXT("hello")"
+    industries: [operations, education]
+  - title: "A number is not text"
+    formula: "=ISTEXT(123)"
+    industries: [operations, finance]
+  - title: "Check a single character is text"
+    formula: "=ISTEXT("x")"
+    industries: [operations, engineering]
+industries: [operations, education, finance, engineering]
+related: [ISNUMBER, ISBLANK, VALUE, EXACT]

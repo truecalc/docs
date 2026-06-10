@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use IPMT instead of PMT?"
+    a: "Use IPMT for just the interest portion of a single payment; use PMT for the full periodic payment amount."
+  - q: "How does IPMT relate to PPMT?"
+    a: "For any period, IPMT (interest) plus PPMT (principal) equals the total PMT payment."
+use_cases:
+  - title: "Interest paid in the first loan payment"
+    formula: "=IPMT(0.05/12, 1, 60, -25000)"
+    industries: [lending, finance]
+  - title: "Interest portion of a later mortgage payment"
+    formula: "=IPMT(0.04/12, 24, 360, -300000)"
+    industries: [real-estate, lending]
+  - title: "Split a payment into interest plus principal"
+    formula: "=IPMT(0.06/12, 12, 48, -15000) + PPMT(0.06/12, 12, 48, -15000)"
+    industries: [finance, lending]
+industries: [finance, lending, real-estate]
+related: [PPMT, PMT, RATE, NPER]

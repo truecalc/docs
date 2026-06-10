@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use IFNA instead of IFERROR?"
+    a: "Use IFNA to catch only the #N/A error, which usually means a lookup failed; use IFERROR when you want to catch every kind of error."
+  - q: "Why prefer IFNA over IFERROR for lookups?"
+    a: "IFNA leaves other errors like #DIV/0! visible so real mistakes are not hidden, while still replacing the #N/A from a failed lookup."
+use_cases:
+  - title: "Show a friendly message when a lookup misses"
+    formula: "=IFNA(VLOOKUP("z",{"a",1;"b",2},2,FALSE),"Not found")"
+    industries: [sales, retail]
+  - title: "Replace an #N/A with a fallback word"
+    formula: "=IFNA(NA(),"fallback")"
+    industries: [operations, education]
+  - title: "Default a missing lookup to zero"
+    formula: "=IFNA(NA(),0)"
+    industries: [finance, operations]
+industries: [sales, retail, operations, finance, education]
+related: [IFERROR, VLOOKUP, XLOOKUP, MATCH]

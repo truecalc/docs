@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use PROPER instead of UPPER or LOWER?"
+    a: "Use PROPER to capitalize the first letter of each word and lowercase the rest; use UPPER or LOWER when you want every letter in a single case."
+  - q: "Does PROPER fix inconsistent capitalization in names?"
+    a: "Yes — PROPER normalizes mixed-case text so each word starts with a capital letter, which is handy for cleaning up name and address columns."
+use_cases:
+  - title: "Clean up an inconsistently typed name"
+    formula: "=PROPER("jANE dOE")"
+    industries: [hr, sales]
+  - title: "Title-case a lowercase phrase"
+    formula: "=PROPER("hello world")"
+    industries: [operations, education]
+  - title: "Capitalize a street address"
+    formula: "=PROPER("123 main street")"
+    industries: [real-estate, operations]
+industries: [hr, sales, operations, real-estate, education]
+related: [UPPER, LOWER, TRIM, SUBSTITUTE]

@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use LOOKUP instead of VLOOKUP?"
+    a: "Use LOOKUP for a simple search across a single sorted vector returning a parallel result vector; use VLOOKUP to pull a column from a table by a key."
+  - q: "Does LOOKUP need its search data sorted?"
+    a: "Yes. LOOKUP assumes the search vector is sorted in ascending order and returns the largest value at or below the lookup value."
+use_cases:
+  - title: "Look up a value in a parallel result vector"
+    formula: "=LOOKUP(2, {1, 2, 3}, {"a", "b", "c"})"
+    industries: [operations, sales]
+  - title: "Map a score to a letter grade band"
+    formula: "=LOOKUP(85, {0, 60, 70, 80, 90}, {"F", "D", "C", "B", "A"})"
+    industries: [education, hr]
+  - title: "Find a tier price from sorted quantity breaks"
+    formula: "=LOOKUP(150, {1, 100, 500}, {9.99, 8.49, 6.99})"
+    industries: [retail, sales]
+industries: [operations, sales, education, retail]
+related: [VLOOKUP, HLOOKUP, INDEX, MATCH, CHOOSE]

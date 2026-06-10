@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use COUNTBLANK instead of COUNTA?"
+    a: "Use COUNTBLANK to count the empty cells in a range; use COUNTA to count the cells that contain something. They are complements of each other."
+  - q: "Does COUNTBLANK count cells that hold an empty string?"
+    a: "Yes — a cell holding an empty string ("") is treated as blank by COUNTBLANK, even though it is not truly empty."
+use_cases:
+  - title: "Count the empty entries in a list of responses"
+    formula: "=COUNTBLANK({1,"",3})"
+    industries: [operations, hr]
+  - title: "Find how many cells in a column are still blank"
+    formula: "=COUNTBLANK({1;"";3})"
+    industries: [operations, education]
+  - title: "Count missing values where most entries are empty"
+    formula: "=COUNTBLANK({"a","",""})"
+    industries: [hr, sales]
+industries: [operations, hr, education, sales]
+related: [COUNTA, COUNT, COUNTIF, ISBLANK]

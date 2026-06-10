@@ -1,0 +1,17 @@
+when_to_use:
+  - q: "When should I use SEARCH instead of FIND?"
+    a: "Use SEARCH when you want a case-insensitive match or wildcards; use FIND when the match must respect upper and lower case exactly."
+  - q: "Is SEARCH case-sensitive?"
+    a: "No — SEARCH ignores case, so searching for B will match either b or B in the text."
+use_cases:
+  - title: "Find a word while ignoring case"
+    formula: "=SEARCH("B","aBc")"
+    industries: [operations, education]
+  - title: "Locate a keyword inside an address"
+    formula: "=SEARCH("street","123 Main Street")"
+    industries: [real-estate, sales]
+  - title: "Detect a term in a log line regardless of case"
+    formula: "=SEARCH("error","System Error log")"
+    industries: [engineering, operations]
+industries: [operations, education, real-estate, sales, engineering]
+related: [FIND, LEFT, RIGHT, MID, SUBSTITUTE]

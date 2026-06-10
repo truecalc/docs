@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use RATE instead of NPER?"
+    a: "Use RATE to solve for the periodic interest rate; use NPER to solve for the number of periods."
+use_cases:
+  - title: "Find the periodic rate on a loan"
+    formula: "=RATE(60, -200, 10000)"
+    industries: [lending, finance]
+  - title: "Annualize a monthly loan rate"
+    formula: "=RATE(60, -200, 10000) * 12"
+    industries: [lending, personal-finance]
+  - title: "Solve the implied rate on an investment goal"
+    formula: "=RATE(10, -1000, 0, 15000)"
+    industries: [finance, personal-finance]
+industries: [finance, lending, personal-finance]
+related: [NPER, PMT, PV, FV, IRR]

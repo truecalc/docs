@@ -1,0 +1,15 @@
+when_to_use:
+  - q: "When should I use FV instead of PV?"
+    a: "Use FV to find the future value of an investment after a series of payments; use PV to find what those future cash flows are worth today."
+use_cases:
+  - title: "Future value of monthly savings deposits"
+    formula: "=FV(0.05/12, 60, -200)"
+    industries: [personal-finance, finance]
+  - title: "Grow a lump sum at an annual rate"
+    formula: "=FV(0.06, 10, 0, -10000)"
+    industries: [finance, personal-finance]
+  - title: "Project a retirement balance from monthly contributions"
+    formula: "=FV(0.07/12, 360, -500, -25000)"
+    industries: [personal-finance, finance]
+industries: [finance, personal-finance, real-estate]
+related: [PV, PMT, RATE, NPER, NPV]
