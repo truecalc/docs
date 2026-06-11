@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="14 16 68 68" width="64" height="64" role="img" aria-label="TrueCalc">
+  <title>TrueCalc</title>
+  <polygon points="62,22 76,36 76,78 62,64" fill="#B5860E"/>
+  <polygon points="20,64 62,64 76,78 34,78" fill="#8A6608"/>
+  <rect x="20" y="22" width="42" height="42" fill="#FFC91C"/>
+  <path d="M26 28 H56 V37 H46 V58 H36 V37 H26 Z" fill="#0B0C0E"/>
+</svg>

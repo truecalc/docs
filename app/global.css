@@ -2,6 +2,30 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/* ── TrueCalc brand (see truecalc/distributions branding/design.md) ──
+   Docs is light-dominant: deep gold accent on light, lemon on dark.
+   The single accent means "the thing" — links, active nav, focus. */
+:root {
+  --color-fd-primary: #c99200;     /* deep gold — light accent */
+  --color-fd-ring: #c99200;
+}
+.dark {
+  --color-fd-primary: #ffc91c;     /* lemon — dark accent */
+  --color-fd-ring: #ffc91c;
+  --color-fd-background: #0b0c0e;  /* brand black */
+}
+
+/* Brand typefaces: Hanken Grotesk for everything human, JetBrains Mono for code. */
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
 html {
   scrollbar-gutter: stable;
 }
