@@ -12,6 +12,11 @@ Content lives in `content/docs/` — three root tabs: `learn/`, `reference/`, `a
   `hhimanshu <6589036+hhimanshu@users.noreply.github.com>` — never any other email.
   Set per clone before committing:
   `git config user.name "hhimanshu" && git config user.email "6589036+hhimanshu@users.noreply.github.com"`.
+- **No private references (public repo).** Never name private/internal TrueCalc repos
+  or reference their file paths (design specs, plans, internal docs) in issues, PR
+  titles/bodies, commit messages, or published pages. Make public artifacts
+  self-contained: inline the relevant summary rather than linking an internal document.
+  Scan issue/PR/commit text for internal repo names and paths before posting.
 
 ## Content rules
 
