@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZSTRING instead of TZTEXT?"
+    a: "Use TZSTRING when you need the full RFC-9557 machine-readable wire format (e.g., for API payloads, database storage, or log pipelines) that includes both the UTC offset and the IANA timezone name. Use TZTEXT when you need a human-readable display string."
+  - q: "What does TZSTRING include that a plain ISO-8601 timestamp does not?"
+    a: "TZSTRING appends the IANA timezone name in brackets (e.g., [America/New_York]) after the UTC offset, making it an RFC-9557 zoned datetime. This lets any RFC-9557-aware parser reconstruct the exact civil time and timezone rules, not just the UTC instant."
+  - q: "Can I round-trip a zoned value through TZSTRING and TZPARSE?"
+    a: "Yes. TZPARSE is the exact inverse of TZSTRING, so TZPARSE(TZSTRING(zoned)) recovers the original zone-aware instant without any loss of timezone information."
+use_cases:
+  - title: "Serialize a zoned datetime for API transmission"
+    formula: "=TZSTRING(TZDATETIME(2026, 7, 14, 9, 0, 0, "America/New_York"))"
+    industries: [engineering, operations]
+  - title: "Log a converted instant in the destination timezone"
+    formula: "=TZSTRING(TZCONVERT(TZDATETIME(2026, 7, 14, 14, 0, 0, "UTC"), "Asia/Tokyo"))"
+    industries: [engineering, operations]
+  - title: "Store a shift start time as a portable zoned string"
+    formula: "=TZSTRING(TZDATETIME(2026, 8, 1, 6, 30, 0, "America/Chicago"))"
+    industries: [operations, hr]
+industries: [engineering, operations]
+related: [TZPARSE, TZTEXT, TZDATETIME, TZCONVERT]
+llms_description: "Use TZSTRING(zoned) to get the canonical RFC-9557 wire-format string for a zone-aware instant, e.g. "2026-07-14T09:00:00-04:00[America/New_York]". Use for storage, API payloads, and logging. Inverse of TZPARSE. For a human-readable label use TZTEXT instead."

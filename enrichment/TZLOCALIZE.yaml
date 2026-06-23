@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZLOCALIZE instead of TZDATETIME?"
+    a: "Use TZLOCALIZE when you already have a date serial in a cell or from a function like TODAY() and want to stamp a timezone onto it without reconstructing year, month, day, hour, minute, and second separately. Use TZDATETIME when you are building a zoned datetime from individual date components."
+  - q: "What happens if I pass a serial that was originally produced in a different timezone?"
+    a: "TZLOCALIZE treats the serial's encoded wall-clock reading as if it were always in the zone you specify. It does not shift the time — it reinterprets it. If the serial actually came from a different zone, use TZCONVERT after localizing to shift it to the correct target zone."
+  - q: "When should I pair TZLOCALIZE with TZCONVERT?"
+    a: "Use TZLOCALIZE first to make a plain serial zone-aware, then chain TZCONVERT to translate it to another zone. For example, localize a serial as US/Eastern and convert to UTC before storing or comparing with other timestamps."
+use_cases:
+  - title: "Stamp a date serial as a New York wall-clock reading"
+    formula: "=TZLOCALIZE(45750, "America/New_York")"
+    industries: [operations, finance]
+  - title: "Localize a fixed serial to Tokyo time with strict DST policy"
+    formula: "=TZLOCALIZE(45000, "Asia/Tokyo", "reject")"
+    industries: [operations, hr]
+  - title: "Convert a localized serial to UTC for storage"
+    formula: "=TZCONVERT(TZLOCALIZE(45200.5, "Europe/London"), "UTC")"
+    industries: [finance, operations]
+industries: [operations, finance, hr]
+related: [TZDATETIME, TZSERIAL, TZCONVERT, TZPARSE]
+llms_description: "Use TZLOCALIZE(date_serial,zone) to stamp an existing plain date/time serial (e.g. TODAY() or a numeric cell) with an IANA zone, making it zone-aware. Inverse of TZSERIAL. Optional policy arg handles DST ambiguity. Compose with TZCONVERT to shift zones."

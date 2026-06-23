@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZTEXT instead of TZSTRING?"
+    a: "Use TZTEXT when the output is for human readers — dashboards, reports, or UI labels — where a readable format matters more than machine parseability. Use TZSTRING when the value must be parsed by another function or system."
+  - q: "What happens if I omit the format argument in TZTEXT?"
+    a: "TZTEXT returns a readable default string such as "2026-07-14 09:00:00" in the local timezone of the zoned value, which is suitable for most display purposes."
+  - q: "Can I use TZTEXT to show the day name and month name in a report?"
+    a: "Yes. Pass a strftime format like "%A, %B %d at %H:%M" to produce output such as "Tuesday, July 14 at 09:00", which is ideal for scheduled-event labels and summaries."
+use_cases:
+  - title: "Display a meeting time with default readable format"
+    formula: "=TZTEXT(TZDATETIME(2026, 7, 14, 9, 0, 0, "America/New_York"))"
+    industries: [operations, hr]
+  - title: "Format a shift start time for a staff schedule label"
+    formula: "=TZTEXT(TZDATETIME(2026, 7, 14, 6, 30, 0, "America/Chicago"), "%A, %B %d at %H:%M")"
+    industries: [hr, operations]
+  - title: "Show a sales call time in the rep's local timezone"
+    formula: "=TZTEXT(TZCONVERT(TZDATETIME(2026, 7, 14, 14, 0, 0, "UTC"), "America/Los_Angeles"), "%b %d, %Y %I:%M %p")"
+    industries: [sales, operations]
+industries: [operations, hr, sales]
+related: [TZSTRING, TZPART, TZWORLDCLOCK, TZDATETIME, TZCONVERT]
+llms_description: "Use TZTEXT(zoned) to get a human-readable local time string like "2026-07-14 09:00:00". An optional strftime format string (e.g. "%A, %B %d at %H:%M") customises the output. Use for display labels in UIs and reports. For machine-parseable output use TZSTRING instead."

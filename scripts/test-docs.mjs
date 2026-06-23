@@ -72,6 +72,11 @@ function render(result) {
     case 'bool': return result.value ? 'TRUE' : 'FALSE';
     case 'error': return result.error;
     case 'empty': return '';
+    case 'date': return String(result.value);
+    case 'zoned': return result.value;
+    case 'array':
+      if (result.value.length === 1) return render(result.value[0]);
+      return result.value.map(render).join('\\n');
     default: throw new Error('Unknown result type: ' + JSON.stringify(result));
   }
 }

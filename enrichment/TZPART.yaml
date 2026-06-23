@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZPART instead of YEAR(), MONTH(), or DAY()?"
+    a: "Use TZPART when your instant is stored as a zoned value (from TZDATETIME or TZCONVERT) and you need a field expressed in the local wall-clock time of that zone, not in UTC or the spreadsheet default timezone."
+  - q: "What values does TZPART return for the weekday unit?"
+    a: "TZPART returns an integer from 1 (Sunday) through 7 (Saturday), matching the same Sunday-origin convention as the WEEKDAY function."
+  - q: "What happens if I pass a unit string that is not recognized?"
+    a: "TZPART returns an error, so make sure unit is one of: year, month, day, hour, minute, second, or weekday."
+use_cases:
+  - title: "Extract the local hour from a zoned timestamp"
+    formula: "=TZPART(TZDATETIME(2024, 3, 10, 14, 30, 0, "America/New_York"), "hour")"
+    industries: [operations, engineering]
+  - title: "Get the local day-of-month for a shift scheduled in a remote timezone"
+    formula: "=TZPART(TZCONVERT(TZDATETIME(2024, 6, 15, 23, 0, 0, "UTC"), "Asia/Tokyo"), "day")"
+    industries: [hr, operations]
+  - title: "Determine the local weekday of a cross-timezone meeting"
+    formula: "=TZPART(TZCONVERT(TZDATETIME(2024, 11, 4, 9, 0, 0, "America/Los_Angeles"), "Europe/London"), "weekday")"
+    industries: [engineering, hr]
+industries: [operations, hr, engineering]
+related: [TZSERIAL, TZDATETIME, TZTEXT, TZCONVERT, TZNOW]
+llms_description: "Use TZPART(zoned,unit) to extract a local wall-clock field from a zone-aware instant. unit is one of "year", "month", "day", "hour", "minute", "second", or "weekday" (1=Sunday). Works like YEAR()/MONTH()/HOUR() but for Zoned values. Compose with TZCONVERT to read fields in any zone."

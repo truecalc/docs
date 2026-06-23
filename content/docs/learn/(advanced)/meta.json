@@ -4,6 +4,7 @@
     "depending-on-other-cells",
     "recalculation",
     "circular-references",
-    "arrays-and-spill"
+    "arrays-and-spill",
+    "timezones"
   ]
 }

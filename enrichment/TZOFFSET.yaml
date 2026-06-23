@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZOFFSET instead of assuming a fixed offset for a time zone?"
+    a: "Use TZOFFSET whenever you need the actual offset at a specific instant. Fixed offsets like -5 or +1 break during DST transitions; TZOFFSET reads the offset already resolved inside the zoned value, so it is always accurate."
+  - q: "What happens if I call TZOFFSET on the same zone at two different times of year?"
+    a: "You may get different results. For example, New York returns -300 in winter (EST, UTC-5) and -240 in summer (EDT, UTC-4) because the offset shifts with daylight saving time."
+  - q: "When would I use TZOFFSET together with TZABBR?"
+    a: "Use them together when you need to display both the numeric offset and its abbreviation — for example, showing '−240 (EDT)' next to a timestamp in a financial or scheduling report."
+use_cases:
+  - title: "Get the UTC offset during US Eastern summer time"
+    formula: "=TZOFFSET(TZDATETIME(2024, 7, 4, 12, 0, 0, "America/New_York"))"
+    industries: [engineering, finance]
+  - title: "Get the UTC offset during US Eastern standard time"
+    formula: "=TZOFFSET(TZDATETIME(2024, 1, 15, 9, 0, 0, "America/New_York"))"
+    industries: [engineering, finance]
+  - title: "Compare offsets across two zones at the same instant"
+    formula: "=TZOFFSET(TZDATETIME(2024, 3, 31, 3, 0, 0, "Europe/London"))"
+    industries: [operations, engineering]
+industries: [engineering, finance]
+related: [TZABBR, TZISDST, TZOFFSETDIFF, TZCONVERT]
+llms_description: "Use TZOFFSET(zoned) to get the UTC offset in minutes at the instant encoded in the value, with DST fully resolved. New York in summer returns -240 (= −4 h). The offset can differ for the same zone at different times. Combine with TZOFFSETDIFF to compute inter-zone gaps."

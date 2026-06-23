@@ -21,7 +21,7 @@ const require = createRequire(import.meta.url);
 const { load: parseYaml } = require('./yaml-lite.cjs');
 
 // Advance via version-bump PRs only (CLAUDE.md version-pin rule).
-const PINNED_CORE_REF = '7fc31af9c7a42a8adbcd5d107e6097a8dd4a3fe0';
+const PINNED_CORE_REF = 'c5e47017f0768de3f344e4009941b2a0c75bd6a7';
 const FUNCTIONS_JSON_URL =
   process.env.FUNCTIONS_JSON_URL ??
   `https://raw.githubusercontent.com/truecalc/core/${PINNED_CORE_REF}/functions.json`;
@@ -124,7 +124,9 @@ function functionPage(fn, enrich) {
   const fnName = String(fn.name)
   const seoTitle = `${fnName}: Spreadsheet Function in Google Sheets & Excel`
   const seoDesc = `TrueCalc \`${fnName}\` — conformant with Google Sheets and Excel. ${desc.slice(0, 100)}`.slice(0, 160)
-  const llmsDesc = `TrueCalc ${fnName} function: ${desc.slice(0, 120)} Google Sheets/Excel conformant with fixture-verified behavior.`.slice(0, 200)
+  const llmsDesc = e?.llms_description
+    ? String(e.llms_description).slice(0, 250)
+    : `TrueCalc ${fnName} function: ${desc.slice(0, 120)} Google Sheets/Excel conformant with fixture-verified behavior.`.slice(0, 200)
   lines.push(`seoTitle: ${JSON.stringify(seoTitle)}`)
   lines.push(`seoDescription: ${JSON.stringify(seoDesc)}`)
   lines.push(`llmsDescription: ${JSON.stringify(llmsDesc)}`)

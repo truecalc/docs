@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZABBR instead of the full IANA zone name for display?"
+    a: "Use TZABBR when you need a compact label in a UI — such as a column header or tooltip — where space is limited. Keep the full IANA name in your data; use TZABBR only at the presentation layer."
+  - q: "What happens if two different zones share the same abbreviation, such as IST?"
+    a: "TZABBR returns the abbreviation that is correct for the specific zoned instant you pass, but the same string can mean India Standard Time, Irish Standard Time, or Israel Standard Time depending on the zone. Never use the returned abbreviation to identify or parse a zone — always keep the originating IANA name."
+  - q: "Does TZABBR change its output during daylight saving time?"
+    a: "Yes. A zone like America/New_York returns EST in winter and EDT in summer. TZABBR reflects whichever abbreviation is in effect at the exact instant of the zoned value you supply."
+use_cases:
+  - title: "Display the abbreviation for a New York meeting time"
+    formula: "=TZABBR(TZDATETIME(2024, 7, 15, 9, 0, 0, "America/New_York"))"
+    industries: [hr, operations]
+  - title: "Show the current zone abbreviation for a Berlin timestamp"
+    formula: "=TZABBR(TZDATETIME(2024, 12, 1, 14, 0, 0, "Europe/Berlin"))"
+    industries: [operations, hr]
+  - title: "Label a converted timestamp with its destination zone abbreviation"
+    formula: "=TZABBR(TZCONVERT(TZDATETIME(2024, 3, 10, 8, 0, 0, "UTC"), "Australia/Sydney"))"
+    industries: [operations, logistics]
+industries: [hr, operations]
+related: [TZOFFSET, TZISDST, TZTEXT, TZCONVERT, TZDATETIME]
+llms_description: "Use TZABBR(zoned) to get the timezone abbreviation in effect at this instant, e.g. "EDT", "CEST", "IST". For display only — abbreviations are not globally unique (IST is India, Ireland, and Israel). Never use for parsing; use the full IANA zone name instead."

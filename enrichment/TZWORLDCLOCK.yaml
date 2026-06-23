@@ -1,0 +1,20 @@
+when_to_use:
+  - q: "When should I use TZWORLDCLOCK instead of TZCONVERT or TZBOARD?"
+    a: "Use TZWORLDCLOCK when you need a single human-readable sentence — for an AI agent reply, a chat message, or a dashboard tooltip — that tells the reader what time it is across several zones at once. TZCONVERT returns raw date serials for further calculation; TZBOARD assembles a structured multi-row table; TZWORLDCLOCK produces finished prose you can drop directly into a message."
+  - q: "How does TZWORLDCLOCK handle zones like India that have a non-whole-hour offset?"
+    a: "TZWORLDCLOCK renders sub-hour deltas in hours-and-minutes form, for example '3:30 behind' for India Standard Time at UTC+5:30. This matches how people naturally describe half-hour and quarter-hour timezone gaps rather than expressing them as decimal fractions."
+  - q: "What happens if the anchor and one of the comparison zones are in the same UTC offset at that instant?"
+    a: "TZWORLDCLOCK shows that zone with a '0:00 difference' or equivalent phrasing, making it clear the clocks read the same time even if the zone names differ."
+use_cases:
+  - title: "Summarize a meeting time for Tokyo, Kolkata, and London audiences"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 9, 18, 10, 0, 0, "Asia/Tokyo"), "Asia/Kolkata", "Europe/London")"
+    industries: [hr, operations]
+  - title: "Generate a one-line status for a global sales call anchored in New York"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 6, 5, 14, 30, 0, "America/New_York"), "Europe/Berlin", "Asia/Singapore")"
+    industries: [sales, operations]
+  - title: "Produce a human-readable world-clock blurb for an on-call handoff"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 11, 20, 8, 0, 0, "America/Los_Angeles"), "America/Chicago", "Europe/Warsaw")"
+    industries: [engineering, hr]
+industries: [hr, operations, sales]
+related: [TZBOARD, TZCONVERT, TZOFFSETDIFF, TZDIFF]
+llms_description: "Use TZWORLDCLOCK(anchor,zone1,zone2,…) to get a friendly one-line natural-language summary comparing the anchor instant across N zones, e.g. "It is 22:00 Tue for you (Asia/Tokyo). Asia/Kolkata is 3:30 behind (18:30)." Designed for chat interfaces, AI agents, and email copy."

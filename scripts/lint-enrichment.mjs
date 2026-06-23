@@ -19,7 +19,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = join(root, 'enrichment');
 const KNOWN_INDUSTRIES = new Set([
   'finance', 'lending', 'real-estate', 'personal-finance', 'operations',
-  'sales', 'education', 'science', 'engineering', 'retail', 'hr',
+  'sales', 'education', 'science', 'engineering', 'retail', 'hr', 'logistics',
 ]);
 
 function fail(msg) { console.error(`enrichment lint: ${msg}`); process.exitCode = 1; }

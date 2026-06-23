@@ -9,6 +9,12 @@ merges into the generated function page. Required/optional fields:
   Every `formula` is CI-executed against pinned core.
 - `industries` (optional): string[] from the known tag set (see KNOWN_INDUSTRIES below).
 - `related` (optional): string[] of other function names.
+- `llms_description` (optional): a single string (≤250 chars) used as the `llmsDescription`
+  frontmatter field, which is served in `/llms.txt` and per-page `/llms.mdx/…` routes for
+  GEO (generative engine optimisation). When absent, gen-docs auto-generates a template
+  string from the function description. Write a practical, query-answering sentence that
+  helps an LLM answer "how do I do X with TrueCalc?" — include what the function returns,
+  what you pass it, and what related functions it composes with.
 
 KNOWN_INDUSTRIES: finance, lending, real-estate, personal-finance, operations, sales,
 education, science, engineering, retail, hr.
