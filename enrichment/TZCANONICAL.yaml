@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZCANONICAL instead of just passing the zone name directly?"
+    a: "Use TZCANONICAL when you receive a zone name from user input or an external system and want to surface the normalised form before storing or displaying it. It lets you catch unrecognised names early without waiting for a downstream function to error."
+  - q: "Does TZCANONICAL resolve IANA alias links such as US/Eastern to America/New_York?"
+    a: "No. TZCANONICAL returns the input unchanged when it is a valid alias. It only confirms that the name is recognised — it does not rewrite aliases to their canonical targets. Use it for normalisation checks, not alias resolution."
+  - q: "What is the difference between TZCANONICAL and TZVALID?"
+    a: "TZVALID returns a boolean (TRUE or FALSE) so you can branch on validity. TZCANONICAL returns the normalised zone string itself or #VALUE! if unrecognised. Use TZVALID first when you only need a yes/no check; use TZCANONICAL when you need the normalised name as a value."
+use_cases:
+  - title: "Normalise a zone name before storing it"
+    formula: "=TZCANONICAL(\"America/New_York\")"
+    industries: [engineering]
+  - title: "Guard a pipeline with a validity check then normalise"
+    formula: "=IF(TZVALID(\"Europe/London\"), TZCANONICAL(\"Europe/London\"), \"Unknown zone\")"
+    industries: [engineering, operations]
+  - title: "Confirm a fixed-offset string is recognised"
+    formula: "=TZCANONICAL(\"+05:30\")"
+    industries: [engineering]
+industries: [engineering]
+related: [TZVALID, TZDBVERSION, TZDATETIME, TZCONVERT]

@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZISDST instead of comparing the offset to a fixed value?"
+    a: "Use TZISDST when you need a clear TRUE/FALSE flag for DST rather than inferring it from an offset. Some zones share the same UTC offset in both standard and summer time, so offset comparison alone is unreliable."
+  - q: "What does TZISDST return for a zone that never observes daylight saving time?"
+    a: "It returns FALSE for every instant in zones like UTC, Asia/Tokyo, or Africa/Nairobi because those zones have no DST transition rules."
+  - q: "How do I use TZISDST to adjust a financial calculation only during DST?"
+    a: "Wrap the calculation in an IF: use TZISDST to detect whether DST is active, then apply the DST-adjusted rate or schedule in the true branch and the standard one in the false branch."
+use_cases:
+  - title: "Flag whether a New York timestamp falls in DST"
+    formula: "=TZISDST(TZDATETIME(2024, 7, 4, 12, 0, 0, \"America/New_York\"))"
+    industries: [finance, operations]
+  - title: "Check DST status for a London market open in winter"
+    formula: "=TZISDST(TZDATETIME(2024, 12, 1, 8, 0, 0, \"Europe/London\"))"
+    industries: [finance, engineering]
+  - title: "Conditionally label a timestamp as standard or summer time"
+    formula: "=IF(TZISDST(TZDATETIME(2024, 6, 15, 9, 0, 0, \"America/Chicago\")), \"CDT\", \"CST\")"
+    industries: [operations, logistics]
+industries: [finance, operations, engineering]
+related: [TZOFFSET, TZABBR, TZLOCALSTATUS, TZDATETIME, TZCONVERT]

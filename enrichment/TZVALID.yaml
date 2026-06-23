@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZVALID before calling TZDATETIME or TZCONVERT?"
+    a: "Use TZVALID whenever the timezone string comes from user input or an external data source. Passing an unrecognised zone name to TZDATETIME or TZCONVERT will produce an error, so validating first lets you show a friendly fallback instead."
+  - q: "Does TZVALID accept fixed-offset strings like +05:30 as well as IANA names?"
+    a: "Yes. TZVALID returns TRUE for both canonical IANA names such as America/New_York and fixed-offset strings such as +05:30 or -08:00."
+  - q: "What does TZVALID return for an empty string or a misspelled zone?"
+    a: "TZVALID returns FALSE for any string that is not a recognised IANA zone name or valid fixed-offset string, including empty strings, typos like America/New_Yrok, and abbreviations like EST."
+use_cases:
+  - title: "Guard a timezone conversion with a validity check"
+    formula: "=IF(TZVALID(\"America/Chicago\"), TZCONVERT(\"2024-06-15T14:00:00\", \"UTC\", \"America/Chicago\"), \"Invalid timezone\")"
+    industries: [engineering, operations]
+  - title: "Validate a fixed-offset zone string"
+    formula: "=TZVALID(\"+05:30\")"
+    industries: [engineering, operations]
+  - title: "Reject an unrecognised abbreviation"
+    formula: "=TZVALID(\"EST\")"
+    industries: [operations, engineering]
+industries: [engineering, operations]
+related: [TZCANONICAL, TZDBVERSION, TZDATETIME, TZCONVERT]

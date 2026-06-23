@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I call TZLOCALSTATUS before constructing a datetime?"
+    a: "Call it whenever user-entered wall-clock times may fall near a DST transition. A 'gap' result means the time does not exist and TZDATETIME will return #VALUE! with the reject policy; an 'ambiguous' result means you need to decide which UTC moment to use."
+  - q: "What is the difference between a 'gap' and a 'fold' status?"
+    a: "A 'gap' is a spring-forward transition where the clock jumps ahead and that wall-clock hour never occurs. A 'fold' is a fall-back transition where the clock repeats an hour, so that wall-clock time maps to two different UTC moments."
+  - q: "What does a 'unique' status mean for downstream calculations?"
+    a: "A 'unique' status means the local time is unambiguous and maps to exactly one UTC instant, so TZDATETIME can safely proceed with any policy."
+use_cases:
+  - title: "Check whether a scheduled time falls in a DST gap"
+    formula: "=TZLOCALSTATUS(2024, 3, 10, 2, 30, \"America/New_York\")"
+    industries: [engineering, operations]
+  - title: "Validate a fall-back ambiguous time before storing"
+    formula: "=TZLOCALSTATUS(2024, 11, 3, 1, 15, \"America/Chicago\")"
+    industries: [operations, engineering]
+  - title: "Confirm a mid-day time is unambiguous before conversion"
+    formula: "=TZLOCALSTATUS(2024, 6, 15, 14, 0, \"Europe/London\")"
+    industries: [engineering, operations]
+industries: [engineering, operations]
+related: [TZDATETIME, TZISDST, TZOFFSET, TZCONVERT]

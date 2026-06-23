@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZADD with days instead of adding 86400 seconds?"
+    a: "Use days when you want the same wall-clock time the next day regardless of DST. Adding 1 day across a DST boundary gives 23 or 25 real hours so the clock reads the same time, while adding 86400 seconds always moves exactly 86400 seconds forward."
+  - q: "What is the difference between adding hours and adding days in TZADD?"
+    a: "Hours, minutes, and seconds are absolute and operate at the UTC level, so adding 24 hours always advances the instant by exactly 24 hours. Days are calendar-aware and respect DST crossings in the stored zone, so adding 1 day lands on the same wall-clock time the following day."
+  - q: "What does the policy parameter control in TZADD?"
+    a: "The policy parameter controls how TZADD resolves the result when arithmetic lands in a DST gap or overlap — for example, choosing whether to snap forward or backward when the computed local time is ambiguous or non-existent."
+use_cases:
+  - title: "Schedule a delivery 3 days after a zoned dispatch time"
+    formula: "=TZADD(TZDATETIME(2024, 3, 8, 10, 0, 0, \"America/New_York\"), 3, \"days\")"
+    industries: [logistics, operations]
+  - title: "Calculate a meeting reminder 90 minutes before a zoned event"
+    formula: "=TZADD(TZDATETIME(2024, 6, 15, 14, 30, 0, \"Europe/London\"), -90, \"minutes\")"
+    industries: [operations, hr]
+  - title: "Advance a financial settlement date by one month"
+    formula: "=TZADD(TZDATETIME(2024, 1, 31, 9, 0, 0, \"America/Chicago\"), 1, \"months\")"
+    industries: [finance, operations]
+industries: [operations, finance, logistics]
+related: [TZDIFF, TZDATETIME, TZCONVERT, TZFLOOR, TZCEIL]

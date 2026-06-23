@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZFROMEPOCH instead of TZDATETIME?"
+    a: "Use TZFROMEPOCH when your source data is a Unix timestamp (integer seconds since 1970-01-01T00:00:00Z) from an API or database. Use TZDATETIME when you already have a human-readable date and time."
+  - q: "What does the zone argument do in TZFROMEPOCH?"
+    a: "It stamps the resulting instant with an IANA timezone for display purposes, converting the UTC epoch into local wall-clock time in that zone."
+  - q: "What happens if I pass a negative Unix timestamp to TZFROMEPOCH?"
+    a: "Negative values represent instants before 1970-01-01T00:00:00Z, so TZFROMEPOCH correctly builds dates in 1969 or earlier."
+use_cases:
+  - title: "Convert an API Unix timestamp to US Eastern time"
+    formula: "=TZFROMEPOCH(1700000000, \"America/New_York\")"
+    industries: [engineering, operations]
+  - title: "Convert a database epoch to Tokyo time"
+    formula: "=TZFROMEPOCH(1688169600, \"Asia/Tokyo\")"
+    industries: [engineering, logistics]
+  - title: "Display a Unix timestamp in UTC"
+    formula: "=TZFROMEPOCH(1672531200, \"UTC\")"
+    industries: [engineering, operations]
+industries: [engineering, operations, logistics]
+related: [TZDATETIME, TZLOCALIZE, TZPARSE, TZSERIAL]

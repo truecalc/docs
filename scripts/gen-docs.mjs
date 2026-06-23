@@ -21,7 +21,7 @@ const require = createRequire(import.meta.url);
 const { load: parseYaml } = require('./yaml-lite.cjs');
 
 // Advance via version-bump PRs only (CLAUDE.md version-pin rule).
-const PINNED_CORE_REF = '7fc31af9c7a42a8adbcd5d107e6097a8dd4a3fe0';
+const PINNED_CORE_REF = 'c5e47017f0768de3f344e4009941b2a0c75bd6a7';
 const FUNCTIONS_JSON_URL =
   process.env.FUNCTIONS_JSON_URL ??
   `https://raw.githubusercontent.com/truecalc/core/${PINNED_CORE_REF}/functions.json`;

@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZDBVERSION instead of hardcoding the expected tzdb version?"
+    a: "Use TZDBVERSION in CI assertions and compliance checks so the formula automatically adapts when the engine is updated, rather than requiring a manual string update each time."
+  - q: "What does TZDBVERSION return, and how is it formatted?"
+    a: "It returns a string like \"2025b\" — the IANA time-zone database release tag the engine was compiled with, consisting of a four-digit year followed by a lowercase letter."
+  - q: "What happens if TZDBVERSION returns an older version than expected?"
+    a: "It means the engine binary has not yet been updated to the latest tzdb release; time-zone rules for recently changed regions may be stale, which can affect TZCONVERT and TZDATETIME results."
+use_cases:
+  - title: "Assert the engine tzdb version in a CI formula"
+    formula: "=TZDBVERSION()"
+    industries: [engineering]
+  - title: "Check whether the engine meets a minimum tzdb version"
+    formula: "=EXACT(TZDBVERSION(), \"2025b\")"
+    industries: [engineering]
+  - title: "Validate tzdb version before a timezone conversion"
+    formula: "=IF(EXACT(TZDBVERSION(), \"2025b\"), TZCONVERT(\"2025-03-09T01:30:00\", \"America/New_York\", \"UTC\"), \"tzdb version mismatch\")"
+    industries: [engineering, operations]
+industries: [engineering]
+related: [TZVALID, TZCANONICAL, TZDATETIME, TZCONVERT]

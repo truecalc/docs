@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZTABLE instead of TZBOARD?"
+    a: "Prefer TZBOARD in all new formulas. Use TZTABLE only when maintaining legacy sheets that already reference it — both functions return identical results, so there is no behavioral reason to choose TZTABLE over TZBOARD."
+  - q: "What happens if I mix TZTABLE and TZBOARD calls in the same workbook?"
+    a: "They return the same structured world-clock data, so mixing them is safe. For consistency, prefer one name throughout a workbook — TZBOARD is the canonical name."
+  - q: "Does TZTABLE accept the same arguments as TZBOARD?"
+    a: "Yes. TZTABLE is a direct alias of TZBOARD and accepts the same anchor datetime and one or more zone identifiers, producing identical output."
+use_cases:
+  - title: "Display a world clock for three engineering hubs"
+    formula: "=TZTABLE(TZDATETIME(2024, 9, 10, 9, 0, 0, \"UTC\"), \"America/New_York\", \"Europe/Amsterdam\", \"Asia/Singapore\")"
+    industries: [engineering, operations]
+  - title: "Compare shift handoff times across global operations centers"
+    formula: "=TZTABLE(TZDATETIME(2024, 6, 1, 17, 0, 0, \"Europe/London\"), \"America/Chicago\", \"Asia/Tokyo\")"
+    industries: [operations, engineering]
+  - title: "Snapshot current UTC time across regional offices"
+    formula: "=TZTABLE(TZNOW(), \"America/Los_Angeles\", \"Asia/Dubai\", \"Pacific/Auckland\")"
+    industries: [operations, engineering]
+industries: [engineering, operations]
+related: [TZBOARD, TZWORLDCLOCK, TZCONVERT, TZDATETIME, TZNOW]

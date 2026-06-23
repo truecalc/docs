@@ -1,0 +1,77 @@
+---
+title: "Working with timezones"
+description: "How zone-aware instants work, why the same wall-clock time in two zones is a different moment, and how to navigate DST safely."
+---
+
+import { TryIt } from '@/components/try-it';
+
+## Plain dates have no timezone
+
+A plain date serial — the number returned by `TODAY()` or `DATE(2026,7,14)` — is just a count of days since a fixed epoch. It carries no location or timezone information.
+
+`TZDATETIME` creates a **zone-aware instant**: a specific moment pinned to a named timezone (for example, `"America/New_York"`). Once a value is zone-aware, it can travel across zones without losing meaning.
+
+<TryIt formula={"=TZSTRING(TZDATETIME(2026,7,14,9,0,0,\"America/New_York\"))"} />
+
+`TZSTRING` renders the instant as a human-readable string so you can see the zone label alongside the time.
+
+## Same wall clock does not mean the same moment
+
+9:00 am in New York and 9:00 am in Berlin look identical on a clock face, but they are six hours apart in real time. New York has not yet reached the moment Berlin already passed.
+
+`TZCONVERT` changes the **clock face** — the timezone label and displayed hour — while keeping the underlying moment identical. Nothing is added or subtracted from real time; only the lens changes.
+
+<TryIt formula={"=TZSTRING(TZCONVERT(TZDATETIME(2026,7,14,9,0,0,\"America/New_York\"),\"Europe/Berlin\"))"} />
+
+The result shows 15:00 Berlin time, which is the same instant as 9:00 New York time during summer (CEST is UTC+2, EDT is UTC−4, a 6-hour difference).
+
+## DST: gaps and folds
+
+**Daylight saving time (DST)** is the practice of shifting clocks forward in spring and back in autumn. This creates two edge cases that affect zone-aware arithmetic.
+
+A **gap** happens on spring-forward night. Clocks jump from 2:00 am directly to 3:00 am, so local times between 2:00 and 3:00 simply do not exist. Trying to construct an instant at 2:30 am on that night is ambiguous.
+
+A **fold** happens on fall-back night. Clocks repeat the hour from 1:00 am to 2:00 am, so some local times occur twice — two distinct UTC moments map to the same wall clock reading.
+
+`TZDATETIME` handles both edge cases through a **policy argument** (the optional eighth argument):
+
+- `"reject"` (default) — returns `#VALUE!` if the local time lands in a gap or fold. Safe for catching surprises.
+- `"earliest"` — picks the earlier of the two UTC moments (useful in folds).
+- `"latest"` — picks the later of the two UTC moments.
+- `"compatible"` — matches the behavior of most spreadsheet environments.
+
+Use `TZLOCALSTATUS` to diagnose a local time before constructing it. It tells you whether the time is `"unique"`, `"gap"`, or `"fold"`.
+
+<TryIt formula={"=TZLOCALSTATUS(2026,3,8,2,30,\"America/New_York\")"} />
+
+2:30 am on 8 March 2026 is the spring-forward night in the US Eastern zone, so this returns `"gap"`.
+
+## TZNOW is deterministic within a recalc
+
+`TZNOW` is a **volatile function** — a function that re-evaluates on every recalculation pass rather than only when its inputs change. Each time the workbook recalculates, `TZNOW` reads the system clock again.
+
+Within a single recalculation, however, the clock is pinned to the moment the pass began. Every cell that calls `TZNOW` in the same pass sees the same instant, so comparisons and differences between `TZNOW` calls are always consistent and never negative.
+
+<TryIt formula={"=TZSTRING(TZNOW(\"Asia/Tokyo\"))"} />
+
+## Comparing and sorting zoned values
+
+When you pass zone-aware instants to `MIN`, `MAX`, or `SORT`, TrueCalc compares them on their **absolute instant** — nanoseconds since UTC epoch — not on the wall-clock hour.
+
+`MIN(9:00 New York, 9:00 Berlin)` returns the Berlin value. Berlin 9:00 is earlier in UTC because Berlin's clocks run ahead of New York's.
+
+<TryIt formula={"=TZSTRING(MIN(TZDATETIME(2026,7,14,9,0,0,\"America/New_York\"),TZDATETIME(2026,7,14,9,0,0,\"Europe/Berlin\")))"} />
+
+Sorting a column of zone-aware instants from different timezones therefore gives a correct chronological order, regardless of the local hour shown.
+
+## Displaying across zones: TZWORLDCLOCK and TZBOARD
+
+Two functions handle the common task of showing one moment in multiple timezones at once.
+
+**`TZWORLDCLOCK`** returns a single human-friendly sentence. Use it in contexts where prose fits: chat responses, AI agent output, email subjects.
+
+<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2026,7,14,9,0,0,\"America/New_York\"),\"Europe/Berlin\",\"Asia/Kolkata\")"} />
+
+**`TZBOARD`** returns a structured array of rows, one per zone. Use it when you need to feed a table, a dashboard widget, or a downstream API that expects structured data.
+
+Choose `TZWORLDCLOCK` when you need a sentence. Choose `TZBOARD` when you need rows.

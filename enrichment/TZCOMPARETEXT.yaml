@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZCOMPARETEXT instead of TZWORLDCLOCK?"
+    a: "You should not prefer TZCOMPARETEXT in new formulas. It exists only for backward compatibility — use TZWORLDCLOCK instead, as both return the same friendly natural-language summary."
+  - q: "What does TZCOMPARETEXT return when given multiple time zones?"
+    a: "It returns the same friendly natural-language summary as TZWORLDCLOCK, describing the current time across the provided zones relative to the anchor."
+  - q: "Can I mix TZCOMPARETEXT with other timezone functions in the same workbook?"
+    a: "Yes, TZCOMPARETEXT is fully interchangeable with TZWORLDCLOCK, so you can use both in the same workbook without conflict — though migrating to TZWORLDCLOCK is recommended."
+use_cases:
+  - title: "Show world clock summary across three offices"
+    formula: "=TZCOMPARETEXT(\"2025-03-10T09:00:00\", \"America/New_York\", \"Europe/London\", \"Asia/Tokyo\")"
+    industries: [hr, operations]
+  - title: "Compare morning standup time across two regions"
+    formula: "=TZCOMPARETEXT(\"2025-06-01T10:00:00\", \"America/Los_Angeles\", \"Australia/Sydney\")"
+    industries: [operations, hr]
+  - title: "Summarize shift overlap between headquarters and remote teams"
+    formula: "=TZCOMPARETEXT(\"2025-09-15T08:00:00\", \"America/Chicago\", \"Europe/Berlin\", \"Asia/Singapore\")"
+    industries: [hr, operations]
+industries: [hr, operations]
+related: [TZWORLDCLOCK, TZBOARD, TZCONVERT, TZDATETIME, TZOFFSET]

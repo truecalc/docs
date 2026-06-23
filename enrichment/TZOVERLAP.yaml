@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZOVERLAP instead of checking time zones manually?"
+    a: "Use TZOVERLAP when you need to find a single window where all participants across multiple time zones are simultaneously within business hours — it handles DST and date-line edge cases automatically."
+  - q: "What does TZOVERLAP return when no common window exists?"
+    a: "It returns the string \"No overlap\" when there is no moment in the given day where all listed zones simultaneously fall within the specified local time range."
+  - q: "How does the optional granularity_min parameter affect the result?"
+    a: "It controls the step size used when scanning the day for an overlap window; a smaller value (e.g., 5 minutes) gives a more precise start instant at the cost of more computation, while the default is typically 30 minutes."
+use_cases:
+  - title: "Find a meeting window for New York, Berlin, and Tokyo"
+    formula: "=TZOVERLAP({\"America/New_York\",\"Europe/Berlin\",\"Asia/Tokyo\"}, 9, 18, DATE(2024, 9, 18))"
+    industries: [hr, operations]
+  - title: "Locate an overlap for a US-UK logistics call within standard hours"
+    formula: "=TZOVERLAP({\"America/Chicago\",\"Europe/London\"}, 8, 17, DATE(2024, 11, 5))"
+    industries: [logistics, operations]
+  - title: "Check for a narrow afternoon overlap with 15-minute precision"
+    formula: "=TZOVERLAP({\"America/Los_Angeles\",\"Asia/Singapore\"}, 14, 18, DATE(2024, 6, 10), 15)"
+    industries: [hr, engineering]
+industries: [hr, operations, logistics]
+related: [TZINWINDOW, TZNOW, TZWORLDCLOCK, TZDIFF]

@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZOFFSETDIFF instead of TZDIFF to compare two zone-aware times?"
+    a: "Use TZOFFSETDIFF when you want to know how many minutes one zone is ahead or behind another at a specific instant — for example, to display 'Berlin is 6 hours ahead of New York'. TZDIFF measures real elapsed time between two events; TZOFFSETDIFF measures only the offset gap between two zones."
+  - q: "What happens if both instants share the same UTC offset at that moment?"
+    a: "TZOFFSETDIFF returns 0. This can occur when two different named zones happen to have the same DST rule in effect at that instant, or when both zones are identical."
+  - q: "Can TZOFFSETDIFF return a negative number?"
+    a: "Yes. The result is signed: positive when zone A is ahead of zone B (further east or using DST while B does not), and negative when zone A is behind zone B."
+use_cases:
+  - title: "Show how many minutes Berlin is ahead of New York in summer"
+    formula: "=TZOFFSETDIFF(TZDATETIME(2024, 7, 15, 12, 0, 0, \"Europe/Berlin\"), TZDATETIME(2024, 7, 15, 12, 0, 0, \"America/New_York\"))"
+    industries: [hr, operations]
+  - title: "Check offset gap between Tokyo and London during European winter"
+    formula: "=TZOFFSETDIFF(TZDATETIME(2024, 1, 10, 9, 0, 0, \"Asia/Tokyo\"), TZDATETIME(2024, 1, 10, 9, 0, 0, \"Europe/London\"))"
+    industries: [operations, engineering]
+  - title: "Detect whether a US East Coast office is ahead or behind US West Coast"
+    formula: "=TZOFFSETDIFF(TZDATETIME(2024, 3, 12, 10, 0, 0, \"America/New_York\"), TZDATETIME(2024, 3, 12, 10, 0, 0, \"America/Los_Angeles\"))"
+    industries: [hr, engineering]
+industries: [hr, operations, engineering]
+related: [TZOFFSET, TZDIFF, TZWORLDCLOCK, TZCONVERT, TZABBR]

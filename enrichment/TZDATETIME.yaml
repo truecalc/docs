@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZDATETIME instead of TZPARSE or TZLOCALIZE?"
+    a: "Use TZDATETIME when you already have discrete year, month, day, hour, minute, and second values — such as numbers from separate cells or calculations — and want to assemble them into a zone-aware instant. TZPARSE is better when you have a date-time string to decode, and TZLOCALIZE is better when you have an existing naive timestamp to attach a zone to."
+  - q: "What happens when my local wall-clock time falls in a DST gap or fold?"
+    a: "By default the policy is reject, which returns #VALUE! to alert you that the time is ambiguous or non-existent. You can pass earliest or latest to resolve a fold (two local times map to one clock reading), or compatible to silently pick a reasonable value, depending on how your use case should handle the ambiguity."
+  - q: "Is the result of TZDATETIME a display string or a real point in time?"
+    a: "It is a Zoned instant — a pinned moment in time with a specific offset — not just a formatted string. You can pass it directly to TZCONVERT to shift zones, compare it to other zoned values, or extract components from it."
+use_cases:
+  - title: "Construct a scheduled maintenance window in UTC"
+    formula: "=TZDATETIME(2025, 3, 9, 2, 0, 0, \"UTC\")"
+    industries: [engineering, operations]
+  - title: "Build a New York business-hours deadline with DST awareness"
+    formula: "=TZDATETIME(2025, 11, 2, 9, 0, 0, \"America/New_York\", \"earliest\")"
+    industries: [operations, hr]
+  - title: "Create a Tokyo shift start for payroll calculation"
+    formula: "=TZDATETIME(2025, 4, 1, 8, 30, 0, \"Asia/Tokyo\")"
+    industries: [hr, engineering]
+industries: [operations, hr, engineering]
+related: [TZFROMEPOCH, TZLOCALIZE, TZPARSE, TZNOW, TZCONVERT]

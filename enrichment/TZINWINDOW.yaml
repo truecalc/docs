@@ -1,0 +1,19 @@
+when_to_use:
+  - q: "When should I use TZINWINDOW instead of comparing TZPART results manually?"
+    a: "Use TZINWINDOW when you need to check whether a moment falls within a time-of-day range, especially when you also want to restrict to certain days of the week — it handles both checks in a single call."
+  - q: "What does the days_mask parameter do, and what happens if I omit it?"
+    a: "days_mask is a 7-character string 'SMTWTFS' where _ excludes that weekday; omitting it means all days are included, so only the time-of-day window is checked."
+  - q: "What happens if start_local is greater than end_local?"
+    a: "TZINWINDOW evaluates the interval as given — since it checks local time-of-day against [start_local, end_local), passing a start that is larger than end will result in FALSE for most times because the range is effectively empty or wraps unexpectedly."
+use_cases:
+  - title: "Check if a moment falls within standard business hours on weekdays"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 3, 15, 14, 30, 0, \"America/New_York\"), 9/24, 17/24, \"_MTWTF_\")"
+    industries: [operations, finance]
+  - title: "Check if a shipment timestamp is within a warehouse receiving window"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 6, 10, 7, 45, 0, \"America/Chicago\"), 6/24, 10/24, \"_MTWTF_\")"
+    industries: [logistics, operations]
+  - title: "Determine if a trade timestamp falls within market open hours"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 1, 22, 15, 0, 0, \"America/New_York\"), 9.5/24, 16/24, \"_MTWTF_\")"
+    industries: [finance, operations]
+industries: [operations, logistics, finance]
+related: [TZOVERLAP, TZNOW, TZPART, TZCONVERT, TZDATETIME]
