@@ -7,7 +7,10 @@ type EvalResult =
   | { type: 'text'; value: string }
   | { type: 'bool'; value: boolean }
   | { type: 'error'; error: string }
-  | { type: 'empty' };
+  | { type: 'empty' }
+  | { type: 'date'; value: number }
+  | { type: 'zoned'; value: string }
+  | { type: 'array'; value: EvalResult[] };
 
 function renderResult(r: EvalResult): string {
   switch (r.type) {
@@ -16,6 +19,11 @@ function renderResult(r: EvalResult): string {
     case 'bool': return r.value ? 'TRUE' : 'FALSE';
     case 'error': return r.error;
     case 'empty': return '(empty)';
+    case 'date': return String(r.value);
+    case 'zoned': return r.value;
+    case 'array':
+      if (r.value.length === 1) return renderResult(r.value[0]);
+      return r.value.map(renderResult).join('\n');
   }
 }
 
