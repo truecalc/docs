@@ -29,20 +29,26 @@ on for why.)
 
 ## Where TrueCalc stands today
 
-Cross-sheet references only mean something when there are sheets — and the
-stateless evaluator has none. Today the parser does not accept the `!`
-syntax at all, which you can verify for yourself:
+The parser now accepts `Sheet!A1` syntax — but the stateless evaluator has
+no sheets to look up, so evaluating a cross-sheet reference returns empty.
+You can verify both facts:
 
 ```ts test
-import { validate } from '@truecalc/core';
+import { createEngine, validate } from '@truecalc/core';
 import assert from 'node:assert/strict';
 
+// Parser accepts the syntax.
 const check = validate('=Sheet2!A1');
-assert.equal(check.valid, false);
+assert.equal(check.valid, true);
+
+// Stateless evaluator returns empty — no sheets available.
+const engine = createEngine('google-sheets');
+const result = engine.evaluate('=Sheet2!A1', null);
+assert.equal(result.type, 'empty');
 ```
 
-This is honest behavior: rather than half-supporting the syntax, the
-engine rejects it until it can resolve it correctly.
+The parser support is in place; the runtime resolution — reading the actual
+cell value from a named sheet — arrives with the workbook.
 
 ## What's coming
 
