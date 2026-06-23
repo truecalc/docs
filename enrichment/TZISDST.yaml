@@ -7,13 +7,14 @@ when_to_use:
     a: "Wrap the calculation in an IF: use TZISDST to detect whether DST is active, then apply the DST-adjusted rate or schedule in the true branch and the standard one in the false branch."
 use_cases:
   - title: "Flag whether a New York timestamp falls in DST"
-    formula: "=TZISDST(TZDATETIME(2024, 7, 4, 12, 0, 0, \"America/New_York\"))"
+    formula: "=TZISDST(TZDATETIME(2024, 7, 4, 12, 0, 0, "America/New_York"))"
     industries: [finance, operations]
   - title: "Check DST status for a London market open in winter"
-    formula: "=TZISDST(TZDATETIME(2024, 12, 1, 8, 0, 0, \"Europe/London\"))"
+    formula: "=TZISDST(TZDATETIME(2024, 12, 1, 8, 0, 0, "Europe/London"))"
     industries: [finance, engineering]
   - title: "Conditionally label a timestamp as standard or summer time"
-    formula: "=IF(TZISDST(TZDATETIME(2024, 6, 15, 9, 0, 0, \"America/Chicago\")), \"CDT\", \"CST\")"
+    formula: "=IF(TZISDST(TZDATETIME(2024, 6, 15, 9, 0, 0, "America/Chicago")), "CDT", "CST")"
     industries: [operations, logistics]
 industries: [finance, operations, engineering]
 related: [TZOFFSET, TZABBR, TZLOCALSTATUS, TZDATETIME, TZCONVERT]
+llms_description: "Use TZISDST(zoned) to check whether daylight-saving time is in effect at this instant in the stored zone. Returns TRUE or FALSE. Useful for flagging DST-sensitive rate calculations or scheduling adjustments in finance and operations workbooks."

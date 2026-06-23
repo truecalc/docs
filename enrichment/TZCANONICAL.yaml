@@ -7,13 +7,14 @@ when_to_use:
     a: "TZVALID returns a boolean (TRUE or FALSE) so you can branch on validity. TZCANONICAL returns the normalised zone string itself or #VALUE! if unrecognised. Use TZVALID first when you only need a yes/no check; use TZCANONICAL when you need the normalised name as a value."
 use_cases:
   - title: "Normalise a zone name before storing it"
-    formula: "=TZCANONICAL(\"America/New_York\")"
+    formula: "=TZCANONICAL("America/New_York")"
     industries: [engineering]
   - title: "Guard a pipeline with a validity check then normalise"
-    formula: "=IF(TZVALID(\"Europe/London\"), TZCANONICAL(\"Europe/London\"), \"Unknown zone\")"
+    formula: "=IF(TZVALID("Europe/London"), TZCANONICAL("Europe/London"), "Unknown zone")"
     industries: [engineering, operations]
   - title: "Confirm a fixed-offset string is recognised"
-    formula: "=TZCANONICAL(\"+05:30\")"
+    formula: "=TZCANONICAL("+05:30")"
     industries: [engineering]
 industries: [engineering]
 related: [TZVALID, TZDBVERSION, TZDATETIME, TZCONVERT]
+llms_description: "Use TZCANONICAL(zone) to normalise a timezone name — returns the canonical form if valid or #VALUE! if not. Note: IANA link aliases (e.g. "US/Eastern") are not resolved to their canonical target. For a simple validity check use TZVALID; TZCANONICAL is best for display normalisation."

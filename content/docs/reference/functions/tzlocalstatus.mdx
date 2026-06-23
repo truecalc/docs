@@ -3,7 +3,7 @@ title: "TZLOCALSTATUS"
 description: "Classifies a local time as unique, gap (nonexistent) or fold (ambiguous)"
 seoTitle: "TZLOCALSTATUS: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZLOCALSTATUS` — conformant with Google Sheets and Excel. Classifies a local time as unique, gap (nonexistent) or fold (ambiguous)"
-llmsDescription: "TrueCalc TZLOCALSTATUS function: Classifies a local time as unique, gap (nonexistent) or fold (ambiguous) Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZLOCALSTATUS(year,month,day,hour,minute,zone) to classify a wall-clock time as \"unique\" (normal), \"gap\" (does not exist — spring-forward DST hole), or \"fold\" (ambiguous — fall-back DST overlap). Run before TZDATETIME when the policy argument mat"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I call TZLOCALSTATUS before constructing a datetime?","answer":"Call it whenever user-entered wall-clock times may fall near a DST transition. A 'gap' result means the time does not exist and TZDATETIME will return #VALUE! with the reject policy; an 'ambiguous' result means you need to decide which UTC moment to use."},{"question":"What is the difference between a 'gap' and a 'fold' status?","answer":"A 'gap' is a spring-forward transition where the clock jumps ahead and that wall-clock hour never occurs. A 'fold' is a fall-back transition where the clock repeats an hour, so that wall-clock time maps to two different UTC moments."},{"question":"What does a 'unique' status mean for downstream calculations?","answer":"A 'unique' status means the local time is unambiguous and maps to exactly one UTC instant, so TZDATETIME can safely proceed with any policy."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZLOCALSTATUS(2024, 3, 10, 2, 30, \\\"America/New_York\\\")"} />
+<TryIt formula={"=TZLOCALSTATUS(2024, 3, 10, 2, 30, \"America/New_York\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ A 'unique' status means the local time is unambiguous and maps to exactly one UT
 
 **Validate a fall-back ambiguous time before storing**
 
-<TryIt formula={"=TZLOCALSTATUS(2024, 11, 3, 1, 15, \\\"America/Chicago\\\")"} />
+<TryIt formula={"=TZLOCALSTATUS(2024, 11, 3, 1, 15, \"America/Chicago\")"} />
 
 **Confirm a mid-day time is unambiguous before conversion**
 
-<TryIt formula={"=TZLOCALSTATUS(2024, 6, 15, 14, 0, \\\"Europe/London\\\")"} />
+<TryIt formula={"=TZLOCALSTATUS(2024, 6, 15, 14, 0, \"Europe/London\")"} />
 
 ## Used in
 

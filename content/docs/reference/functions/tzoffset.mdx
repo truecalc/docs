@@ -3,7 +3,7 @@ title: "TZOFFSET"
 description: "Offset from UTC in minutes at this instant (DST-resolved)"
 seoTitle: "TZOFFSET: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZOFFSET` — conformant with Google Sheets and Excel. Offset from UTC in minutes at this instant (DST-resolved)"
-llmsDescription: "TrueCalc TZOFFSET function: Offset from UTC in minutes at this instant (DST-resolved) Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZOFFSET(zoned) to get the UTC offset in minutes at the instant encoded in the value, with DST fully resolved. New York in summer returns -240 (= −4 h). The offset can differ for the same zone at different times. Combine with TZOFFSETDIFF to comp"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZOFFSET instead of assuming a fixed offset for a time zone?","answer":"Use TZOFFSET whenever you need the actual offset at a specific instant. Fixed offsets like -5 or +1 break during DST transitions; TZOFFSET reads the offset already resolved inside the zoned value, so it is always accurate."},{"question":"What happens if I call TZOFFSET on the same zone at two different times of year?","answer":"You may get different results. For example, New York returns -300 in winter (EST, UTC-5) and -240 in summer (EDT, UTC-4) because the offset shifts with daylight saving time."},{"question":"When would I use TZOFFSET together with TZABBR?","answer":"Use them together when you need to display both the numeric offset and its abbreviation — for example, showing '−240 (EDT)' next to a timestamp in a financial or scheduling report."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 7, 4, 12, 0, 0, \\\"America/New_York\\\"))"} />
+<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 7, 4, 12, 0, 0, \"America/New_York\"))"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ Use them together when you need to display both the numeric offset and its abbre
 
 **Get the UTC offset during US Eastern standard time**
 
-<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 1, 15, 9, 0, 0, \\\"America/New_York\\\"))"} />
+<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 1, 15, 9, 0, 0, \"America/New_York\"))"} />
 
 **Compare offsets across two zones at the same instant**
 
-<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 3, 31, 3, 0, 0, \\\"Europe/London\\\"))"} />
+<TryIt formula={"=TZOFFSET(TZDATETIME(2024, 3, 31, 3, 0, 0, \"Europe/London\"))"} />
 
 ## Used in
 

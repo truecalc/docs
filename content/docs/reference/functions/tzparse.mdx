@@ -3,7 +3,7 @@ title: "TZPARSE"
 description: "Parses an ISO/RFC-9557 timestamp into a zone-aware instant"
 seoTitle: "TZPARSE: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZPARSE` — conformant with Google Sheets and Excel. Parses an ISO/RFC-9557 timestamp into a zone-aware instant"
-llmsDescription: "TrueCalc TZPARSE function: Parses an ISO/RFC-9557 timestamp into a zone-aware instant Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZPARSE(text) to parse an ISO 8601 or RFC-9557 timestamp string (e.g. \"2026-07-14T09:00:00-04:00[America/New_York]\") into a zone-aware instant. Optional second arg provides a fallback zone when the string has no zone annotation. Inverse of TZSTRI"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZPARSE instead of TZDATETIME?","answer":"Use TZPARSE when your input is already a timestamp string from an API, log file, or user form. Use TZDATETIME when you are constructing a timestamp from separate date and time components."},{"question":"What happens if the timestamp string has no timezone offset and I omit the zone argument?","answer":"TZPARSE will return an error because it cannot determine the correct instant without a zone. Always supply the zone argument when parsing timestamps that may lack a zone annotation."},{"question":"Does TZPARSE accept both ISO 8601 and RFC-9557 formats?","answer":"Yes. It accepts plain ISO 8601 strings like 2026-07-14T09:00:00-04:00 as well as RFC-9557 strings with a bracketed IANA zone name like 2026-07-14T09:00:00-04:00[America/New_York]."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZPARSE(\\\"2026-07-14T09:00:00-04:00\\\")"} />
+<TryIt formula={"=TZPARSE(\"2026-07-14T09:00:00-04:00\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ Yes. It accepts plain ISO 8601 strings like 2026-07-14T09:00:00-04:00 as well as
 
 **Parse a log timestamp that lacks a zone using a fallback zone**
 
-<TryIt formula={"=TZPARSE(\\\"2026-07-14T09:00:00\\\", \\\"America/Chicago\\\")"} />
+<TryIt formula={"=TZPARSE(\"2026-07-14T09:00:00\", \"America/Chicago\")"} />
 
 **Parse an RFC-9557 timestamp with a bracketed IANA zone name**
 
-<TryIt formula={"=TZPARSE(\\\"2026-07-14T09:00:00-04:00[America/New_York]\\\")"} />
+<TryIt formula={"=TZPARSE(\"2026-07-14T09:00:00-04:00[America/New_York]\")"} />
 
 ## Used in
 

@@ -7,13 +7,14 @@ when_to_use:
     a: "The offset is discarded entirely. TZSERIAL returns the local wall-clock time as-is, so 09:30 in Tokyo and 09:30 in London both return the same serial number representing 09:30."
 use_cases:
   - title: "Extract the hour from a zone-aware datetime"
-    formula: "=HOUR(TZSERIAL(TZDATETIME(2024, 6, 15, 9, 30, 0, \"America/New_York\")))"
+    formula: "=HOUR(TZSERIAL(TZDATETIME(2024, 6, 15, 9, 30, 0, "America/New_York")))"
     industries: [operations, engineering]
   - title: "Get the day of the month from a zoned value"
-    formula: "=DAY(TZSERIAL(TZDATETIME(2024, 3, 27, 14, 0, 0, \"Europe/London\")))"
+    formula: "=DAY(TZSERIAL(TZDATETIME(2024, 3, 27, 14, 0, 0, "Europe/London")))"
     industries: [finance, operations]
   - title: "Calculate days remaining in the month using a zoned datetime"
-    formula: "=EOMONTH(TZSERIAL(TZDATETIME(2024, 11, 10, 8, 0, 0, \"Asia/Tokyo\")), 0) - TZSERIAL(TZDATETIME(2024, 11, 10, 8, 0, 0, \"Asia/Tokyo\"))"
+    formula: "=EOMONTH(TZSERIAL(TZDATETIME(2024, 11, 10, 8, 0, 0, "Asia/Tokyo")), 0) - TZSERIAL(TZDATETIME(2024, 11, 10, 8, 0, 0, "Asia/Tokyo"))"
     industries: [finance, engineering]
 industries: [operations, finance, engineering]
 related: [TZLOCALIZE, TZPART, TZSTRING, TZDATETIME]
+llms_description: "Use TZSERIAL(zoned) to strip the zone from a zone-aware instant and return the local wall-clock time as a plain date/time serial. Lets you feed zone-aware values into ordinary functions like YEAR(), HOUR(), or NETWORKDAYS(). Inverse of TZLOCALIZE."

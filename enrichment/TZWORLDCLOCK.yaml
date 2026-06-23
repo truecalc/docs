@@ -7,13 +7,14 @@ when_to_use:
     a: "TZWORLDCLOCK shows that zone with a '0:00 difference' or equivalent phrasing, making it clear the clocks read the same time even if the zone names differ."
 use_cases:
   - title: "Summarize a meeting time for Tokyo, Kolkata, and London audiences"
-    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 9, 18, 10, 0, 0, \"Asia/Tokyo\"), \"Asia/Kolkata\", \"Europe/London\")"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 9, 18, 10, 0, 0, "Asia/Tokyo"), "Asia/Kolkata", "Europe/London")"
     industries: [hr, operations]
   - title: "Generate a one-line status for a global sales call anchored in New York"
-    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 6, 5, 14, 30, 0, \"America/New_York\"), \"Europe/Berlin\", \"Asia/Singapore\", \"Australia/Sydney\")"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 6, 5, 14, 30, 0, "America/New_York"), "Europe/Berlin", "Asia/Singapore")"
     industries: [sales, operations]
   - title: "Produce a human-readable world-clock blurb for an on-call handoff"
-    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 11, 20, 8, 0, 0, \"America/Los_Angeles\"), \"America/Chicago\", \"Europe/Warsaw\", \"Asia/Tokyo\")"
+    formula: "=TZWORLDCLOCK(TZDATETIME(2024, 11, 20, 8, 0, 0, "America/Los_Angeles"), "America/Chicago", "Europe/Warsaw")"
     industries: [engineering, hr]
 industries: [hr, operations, sales]
 related: [TZBOARD, TZCONVERT, TZOFFSETDIFF, TZDIFF]
+llms_description: "Use TZWORLDCLOCK(anchor,zone1,zone2,…) to get a friendly one-line natural-language summary comparing the anchor instant across N zones, e.g. "It is 22:00 Tue for you (Asia/Tokyo). Asia/Kolkata is 3:30 behind (18:30)." Designed for chat interfaces, AI agents, and email copy."

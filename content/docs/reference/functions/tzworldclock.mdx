@@ -3,7 +3,7 @@ title: "TZWORLDCLOCK"
 description: "Friendly one-line summary comparing the time across N zones"
 seoTitle: "TZWORLDCLOCK: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZWORLDCLOCK` — conformant with Google Sheets and Excel. Friendly one-line summary comparing the time across N zones"
-llmsDescription: "TrueCalc TZWORLDCLOCK function: Friendly one-line summary comparing the time across N zones Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZWORLDCLOCK(anchor,zone1,zone2,…) to get a friendly one-line natural-language summary comparing the anchor instant across N zones, e.g. \"It is 22:00 Tue for you (Asia/Tokyo). Asia/Kolkata is 3:30 behind (18:30).\" Designed for chat interfaces, AI"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZWORLDCLOCK instead of TZCONVERT or TZBOARD?","answer":"Use TZWORLDCLOCK when you need a single human-readable sentence — for an AI agent reply, a chat message, or a dashboard tooltip — that tells the reader what time it is across several zones at once. TZCONVERT returns raw date serials for further calculation; TZBOARD assembles a structured multi-row table; TZWORLDCLOCK produces finished prose you can drop directly into a message."},{"question":"How does TZWORLDCLOCK handle zones like India that have a non-whole-hour offset?","answer":"TZWORLDCLOCK renders sub-hour deltas in hours-and-minutes form, for example '3:30 behind' for India Standard Time at UTC+5:30. This matches how people naturally describe half-hour and quarter-hour timezone gaps rather than expressing them as decimal fractions."},{"question":"What happens if the anchor and one of the comparison zones are in the same UTC offset at that instant?","answer":"TZWORLDCLOCK shows that zone with a '0:00 difference' or equivalent phrasing, making it clear the clocks read the same time even if the zone names differ."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 9, 18, 10, 0, 0, \\\"Asia/Tokyo\\\"), \\\"Asia/Kolkata\\\", \\\"Europe/London\\\")"} />
+<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 9, 18, 10, 0, 0, \"Asia/Tokyo\"), \"Asia/Kolkata\", \"Europe/London\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ TZWORLDCLOCK shows that zone with a '0:00 difference' or equivalent phrasing, ma
 
 **Generate a one-line status for a global sales call anchored in New York**
 
-<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 6, 5, 14, 30, 0, \\\"America/New_York\\\"), \\\"Europe/Berlin\\\", \\\"Asia/Singapore\\\", \\\"Australia/Sydney\\\")"} />
+<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 6, 5, 14, 30, 0, \"America/New_York\"), \"Europe/Berlin\", \"Asia/Singapore\")"} />
 
 **Produce a human-readable world-clock blurb for an on-call handoff**
 
-<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 11, 20, 8, 0, 0, \\\"America/Los_Angeles\\\"), \\\"America/Chicago\\\", \\\"Europe/Warsaw\\\", \\\"Asia/Tokyo\\\")"} />
+<TryIt formula={"=TZWORLDCLOCK(TZDATETIME(2024, 11, 20, 8, 0, 0, \"America/Los_Angeles\"), \"America/Chicago\", \"Europe/Warsaw\")"} />
 
 ## Used in
 

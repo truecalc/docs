@@ -7,13 +7,14 @@ when_to_use:
     a: "It is a Zoned instant — a pinned moment in time with a specific offset — not just a formatted string. You can pass it directly to TZCONVERT to shift zones, compare it to other zoned values, or extract components from it."
 use_cases:
   - title: "Construct a scheduled maintenance window in UTC"
-    formula: "=TZDATETIME(2025, 3, 9, 2, 0, 0, \"UTC\")"
+    formula: "=TZDATETIME(2025, 3, 9, 2, 0, 0, "UTC")"
     industries: [engineering, operations]
   - title: "Build a New York business-hours deadline with DST awareness"
-    formula: "=TZDATETIME(2025, 11, 2, 9, 0, 0, \"America/New_York\", \"earliest\")"
+    formula: "=TZDATETIME(2025, 11, 2, 9, 0, 0, "America/New_York", "earliest")"
     industries: [operations, hr]
   - title: "Create a Tokyo shift start for payroll calculation"
-    formula: "=TZDATETIME(2025, 4, 1, 8, 30, 0, \"Asia/Tokyo\")"
+    formula: "=TZDATETIME(2025, 4, 1, 8, 30, 0, "Asia/Tokyo")"
     industries: [hr, engineering]
 industries: [operations, hr, engineering]
 related: [TZFROMEPOCH, TZLOCALIZE, TZPARSE, TZNOW, TZCONVERT]
+llms_description: "Use TZDATETIME(year,month,day,hour,minute,second,zone) to build a zone-aware instant from numeric parts in any IANA timezone. Returns a Zoned value you can pass to TZCONVERT, TZDIFF, or TZWORLDCLOCK. Optional policy arg controls DST gap/fold behaviour (default: reject → #VALUE!)."

@@ -7,13 +7,14 @@ when_to_use:
     a: "The policy parameter controls how TZADD resolves the result when arithmetic lands in a DST gap or overlap — for example, choosing whether to snap forward or backward when the computed local time is ambiguous or non-existent."
 use_cases:
   - title: "Schedule a delivery 3 days after a zoned dispatch time"
-    formula: "=TZADD(TZDATETIME(2024, 3, 8, 10, 0, 0, \"America/New_York\"), 3, \"days\")"
+    formula: "=TZADD(TZDATETIME(2024, 3, 8, 10, 0, 0, "America/New_York"), 3, "days")"
     industries: [logistics, operations]
   - title: "Calculate a meeting reminder 90 minutes before a zoned event"
-    formula: "=TZADD(TZDATETIME(2024, 6, 15, 14, 30, 0, \"Europe/London\"), -90, \"minutes\")"
+    formula: "=TZADD(TZDATETIME(2024, 6, 15, 14, 30, 0, "Europe/London"), -90, "minutes")"
     industries: [operations, hr]
   - title: "Advance a financial settlement date by one month"
-    formula: "=TZADD(TZDATETIME(2024, 1, 31, 9, 0, 0, \"America/Chicago\"), 1, \"months\")"
+    formula: "=TZADD(TZDATETIME(2024, 1, 31, 9, 0, 0, "America/Chicago"), 1, "months")"
     industries: [finance, operations]
 industries: [operations, finance, logistics]
 related: [TZDIFF, TZDATETIME, TZCONVERT, TZFLOOR, TZCEIL]
+llms_description: "Use TZADD(zoned,amount,unit) to add time to a zone-aware instant. Seconds/minutes/hours are absolute (UTC-level). Days/weeks/months/years are calendar-aware and respect DST crossings in the stored zone, preserving wall-clock time. Optional policy arg handles DST conflicts."

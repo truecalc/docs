@@ -3,7 +3,7 @@ title: "TZTABLE"
 description: "Alias of TZBOARD"
 seoTitle: "TZTABLE: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZTABLE` — conformant with Google Sheets and Excel. Alias of TZBOARD"
-llmsDescription: "TrueCalc TZTABLE function: Alias of TZBOARD Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "TZTABLE is an alias of TZBOARD — use TZBOARD in new formulas. Returns structured world-clock data (one row per zone with local time, offset, DST flag, etc.) for dashboards and API responses. Prefer TZBOARD; TZTABLE is retained for backward compatibil"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZTABLE instead of TZBOARD?","answer":"Prefer TZBOARD in all new formulas. Use TZTABLE only when maintaining legacy sheets that already reference it — both functions return identical results, so there is no behavioral reason to choose TZTABLE over TZBOARD."},{"question":"What happens if I mix TZTABLE and TZBOARD calls in the same workbook?","answer":"They return the same structured world-clock data, so mixing them is safe. For consistency, prefer one name throughout a workbook — TZBOARD is the canonical name."},{"question":"Does TZTABLE accept the same arguments as TZBOARD?","answer":"Yes. TZTABLE is a direct alias of TZBOARD and accepts the same anchor datetime and one or more zone identifiers, producing identical output."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZTABLE(TZDATETIME(2024, 9, 10, 9, 0, 0, \\\"UTC\\\"), \\\"America/New_York\\\", \\\"Europe/Amsterdam\\\", \\\"Asia/Singapore\\\")"} />
+<TryIt formula={"=TZTABLE(TZDATETIME(2024, 9, 10, 9, 0, 0, \"UTC\"), \"America/New_York\", \"Europe/Amsterdam\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ Yes. TZTABLE is a direct alias of TZBOARD and accepts the same anchor datetime a
 
 **Compare shift handoff times across global operations centers**
 
-<TryIt formula={"=TZTABLE(TZDATETIME(2024, 6, 1, 17, 0, 0, \\\"Europe/London\\\"), \\\"America/Chicago\\\", \\\"Asia/Tokyo\\\")"} />
+<TryIt formula={"=TZTABLE(TZDATETIME(2024, 6, 1, 17, 0, 0, \"Europe/London\"), \"America/Chicago\", \"Asia/Tokyo\")"} />
 
-**Snapshot current UTC time across regional offices**
+**Snapshot a UTC instant across regional offices**
 
-<TryIt formula={"=TZTABLE(TZNOW(), \\\"America/Los_Angeles\\\", \\\"Asia/Dubai\\\", \\\"Pacific/Auckland\\\")"} />
+<TryIt formula={"=TZTABLE(TZDATETIME(2026, 6, 23, 12, 0, 0, \"UTC\"), \"America/Los_Angeles\", \"Asia/Dubai\")"} />
 
 ## Used in
 

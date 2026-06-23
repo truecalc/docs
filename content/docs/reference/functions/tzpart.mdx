@@ -3,7 +3,7 @@ title: "TZPART"
 description: "Local wall-clock field: year|month|day|hour|minute|second|weekday"
 seoTitle: "TZPART: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZPART` — conformant with Google Sheets and Excel. Local wall-clock field: year|month|day|hour|minute|second|weekday"
-llmsDescription: "TrueCalc TZPART function: Local wall-clock field: year|month|day|hour|minute|second|weekday Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZPART(zoned,unit) to extract a local wall-clock field from a zone-aware instant. unit is one of \"year\", \"month\", \"day\", \"hour\", \"minute\", \"second\", or \"weekday\" (1=Sunday). Works like YEAR()/MONTH()/HOUR() but for Zoned values. Compose with TZCO"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZPART instead of YEAR(), MONTH(), or DAY()?","answer":"Use TZPART when your instant is stored as a zoned value (from TZDATETIME or TZCONVERT) and you need a field expressed in the local wall-clock time of that zone, not in UTC or the spreadsheet default timezone."},{"question":"What values does TZPART return for the weekday unit?","answer":"TZPART returns an integer from 1 (Sunday) through 7 (Saturday), matching the same Sunday-origin convention as the WEEKDAY function."},{"question":"What happens if I pass a unit string that is not recognized?","answer":"TZPART returns an error, so make sure unit is one of: year, month, day, hour, minute, second, or weekday."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZPART(TZDATETIME(2024, 3, 10, 14, 30, 0, \\\"America/New_York\\\"), \\\"hour\\\")"} />
+<TryIt formula={"=TZPART(TZDATETIME(2024, 3, 10, 14, 30, 0, \"America/New_York\"), \"hour\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ TZPART returns an error, so make sure unit is one of: year, month, day, hour, mi
 
 **Get the local day-of-month for a shift scheduled in a remote timezone**
 
-<TryIt formula={"=TZPART(TZCONVERT(TZDATETIME(2024, 6, 15, 23, 0, 0, \\\"UTC\\\"), \\\"Asia/Tokyo\\\"), \\\"day\\\")"} />
+<TryIt formula={"=TZPART(TZCONVERT(TZDATETIME(2024, 6, 15, 23, 0, 0, \"UTC\"), \"Asia/Tokyo\"), \"day\")"} />
 
 **Determine the local weekday of a cross-timezone meeting**
 
-<TryIt formula={"=TZPART(TZCONVERT(TZDATETIME(2024, 11, 4, 9, 0, 0, \\\"America/Los_Angeles\\\"), \\\"Europe/London\\\"), \\\"weekday\\\")"} />
+<TryIt formula={"=TZPART(TZCONVERT(TZDATETIME(2024, 11, 4, 9, 0, 0, \"America/Los_Angeles\"), \"Europe/London\"), \"weekday\")"} />
 
 ## Used in
 

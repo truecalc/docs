@@ -7,13 +7,14 @@ when_to_use:
     a: "TZINWINDOW evaluates the interval as given — since it checks local time-of-day against [start_local, end_local), passing a start that is larger than end will result in FALSE for most times because the range is effectively empty or wraps unexpectedly."
 use_cases:
   - title: "Check if a moment falls within standard business hours on weekdays"
-    formula: "=TZINWINDOW(TZDATETIME(2025, 3, 15, 14, 30, 0, \"America/New_York\"), 9/24, 17/24, \"_MTWTF_\")"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 3, 15, 14, 30, 0, "America/New_York"), 9/24, 17/24, "_MTWTF_")"
     industries: [operations, finance]
   - title: "Check if a shipment timestamp is within a warehouse receiving window"
-    formula: "=TZINWINDOW(TZDATETIME(2025, 6, 10, 7, 45, 0, \"America/Chicago\"), 6/24, 10/24, \"_MTWTF_\")"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 6, 10, 7, 45, 0, "America/Chicago"), 6/24, 10/24, "_MTWTF_")"
     industries: [logistics, operations]
   - title: "Determine if a trade timestamp falls within market open hours"
-    formula: "=TZINWINDOW(TZDATETIME(2025, 1, 22, 15, 0, 0, \"America/New_York\"), 9.5/24, 16/24, \"_MTWTF_\")"
+    formula: "=TZINWINDOW(TZDATETIME(2025, 1, 22, 15, 0, 0, "America/New_York"), 9.5/24, 16/24, "_MTWTF_")"
     industries: [finance, operations]
 industries: [operations, logistics, finance]
 related: [TZOVERLAP, TZNOW, TZPART, TZCONVERT, TZDATETIME]
+llms_description: "Use TZINWINDOW(zoned,start,end) to check if a zone-aware instant's local time falls within [start,end). start/end are fractional days (9/24 = 9am, 17/24 = 5pm). Optional 7-char days_mask (e.g. "_MTWTF_") restricts to weekdays. Core building block for business-hours checks."

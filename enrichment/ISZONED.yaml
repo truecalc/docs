@@ -7,13 +7,14 @@ when_to_use:
     a: "Yes. Wrap ISZONED in an IF to detect whether a value is zone-aware and fall back to a safe default or localization step when it is not."
 use_cases:
   - title: "Check whether a timestamp is zone-aware before converting"
-    formula: "=ISZONED(TZDATETIME(2024, 3, 10, 9, 0, 0, \"America/New_York\"))"
+    formula: "=ISZONED(TZDATETIME(2024, 3, 10, 9, 0, 0, "America/New_York"))"
     industries: [engineering, operations]
   - title: "Branch logic based on whether a value is zoned"
-    formula: "=IF(ISZONED(TZDATETIME(2024, 6, 15, 14, 30, 0, \"Europe/London\")), \"zoned\", \"plain\")"
+    formula: "=IF(ISZONED(TZDATETIME(2024, 6, 15, 14, 30, 0, "Europe/London")), "zoned", "plain")"
     industries: [engineering, finance]
   - title: "Confirm a localized instant is recognized as zoned"
-    formula: "=ISZONED(TZLOCALIZE(45000, \"Asia/Tokyo\"))"
+    formula: "=ISZONED(TZLOCALIZE(45000, "Asia/Tokyo"))"
     industries: [engineering, logistics]
 industries: [engineering, operations, finance]
 related: [TZLOCALIZE, TZDATETIME, TZVALID, TZCONVERT, TZOFFSET]
+llms_description: "Use ISZONED(value) to check whether a value is a zone-aware instant (created by TZDATETIME, TZCONVERT, TZNOW, etc.). Returns TRUE or FALSE. Use in IF() to branch logic that may receive either a plain date serial or a Zoned value from user input or another formula."

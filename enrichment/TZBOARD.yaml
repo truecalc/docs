@@ -7,13 +7,14 @@ when_to_use:
     a: "TZBOARD returns #VALUE! for unrecognized zone identifiers. Use TZVALID to check a zone string before passing it to TZBOARD if your zone names come from user input or external data."
 use_cases:
   - title: "Build a world-clock board anchored to New York for three global offices"
-    formula: "=TZBOARD(TZDATETIME(2025, 6, 15, 9, 0, 0, \"America/New_York\"), \"Europe/London\", \"Asia/Tokyo\", \"Australia/Sydney\")"
+    formula: "=TZBOARD(TZDATETIME(2025, 6, 15, 9, 0, 0, "America/New_York"), "Europe/London", "Asia/Tokyo")"
     industries: [engineering, operations]
   - title: "Generate a financial-markets status board anchored to London open"
-    formula: "=TZBOARD(TZDATETIME(2025, 3, 17, 8, 0, 0, \"Europe/London\"), \"America/New_York\", \"Asia/Hong_Kong\", \"Asia/Tokyo\")"
+    formula: "=TZBOARD(TZDATETIME(2025, 3, 17, 8, 0, 0, "Europe/London"), "America/New_York", "Asia/Hong_Kong")"
     industries: [finance, operations]
   - title: "Produce an on-call handoff board anchored to UTC midnight"
-    formula: "=TZBOARD(TZDATETIME(2025, 9, 1, 0, 0, 0, \"UTC\"), \"America/Los_Angeles\", \"Europe/Berlin\", \"Asia/Kolkata\")"
+    formula: "=TZBOARD(TZDATETIME(2025, 9, 1, 0, 0, 0, "UTC"), "America/Los_Angeles", "Europe/Berlin")"
     industries: [engineering, operations]
 industries: [engineering, operations, finance]
 related: [TZWORLDCLOCK, TZCONVERT, TZOFFSET, TZABBR, TZISDST]
+llms_description: "Use TZBOARD(anchor,zone1,zone2,…) to get structured world-clock data: one row per zone with fields {zone, local, offset, delta, rollover, abbrev, dst}. Use to power dashboards, API responses, and custom table renderers. For a human-readable sentence use TZWORLDCLOCK instead."

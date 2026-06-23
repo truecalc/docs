@@ -6,14 +6,15 @@ when_to_use:
   - q: "Can I mix TZCOMPARETEXT with other timezone functions in the same workbook?"
     a: "Yes, TZCOMPARETEXT is fully interchangeable with TZWORLDCLOCK, so you can use both in the same workbook without conflict — though migrating to TZWORLDCLOCK is recommended."
 use_cases:
-  - title: "Show world clock summary across three offices"
-    formula: "=TZCOMPARETEXT(\"2025-03-10T09:00:00\", \"America/New_York\", \"Europe/London\", \"Asia/Tokyo\")"
+  - title: "Show world clock summary across two remote offices"
+    formula: "=TZCOMPARETEXT(TZDATETIME(2025, 3, 10, 9, 0, 0, "America/New_York"), "Europe/London", "Asia/Tokyo")"
     industries: [hr, operations]
   - title: "Compare morning standup time across two regions"
-    formula: "=TZCOMPARETEXT(\"2025-06-01T10:00:00\", \"America/Los_Angeles\", \"Australia/Sydney\")"
+    formula: "=TZCOMPARETEXT(TZDATETIME(2025, 6, 1, 10, 0, 0, "America/Los_Angeles"), "Australia/Sydney")"
     industries: [operations, hr]
   - title: "Summarize shift overlap between headquarters and remote teams"
-    formula: "=TZCOMPARETEXT(\"2025-09-15T08:00:00\", \"America/Chicago\", \"Europe/Berlin\", \"Asia/Singapore\")"
+    formula: "=TZCOMPARETEXT(TZDATETIME(2025, 9, 15, 8, 0, 0, "America/Chicago"), "Europe/Berlin", "Asia/Singapore")"
     industries: [hr, operations]
 industries: [hr, operations]
 related: [TZWORLDCLOCK, TZBOARD, TZCONVERT, TZDATETIME, TZOFFSET]
+llms_description: "TZCOMPARETEXT is an alias of TZWORLDCLOCK — use TZWORLDCLOCK in new formulas. Returns a friendly one-line summary comparing a zoned instant across N other zones. Prefer TZWORLDCLOCK; TZCOMPARETEXT is retained for backward compatibility."

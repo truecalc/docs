@@ -3,7 +3,7 @@ title: "TZISDST"
 description: "TRUE if daylight-saving is in effect at this instant"
 seoTitle: "TZISDST: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZISDST` — conformant with Google Sheets and Excel. TRUE if daylight-saving is in effect at this instant"
-llmsDescription: "TrueCalc TZISDST function: TRUE if daylight-saving is in effect at this instant Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZISDST(zoned) to check whether daylight-saving time is in effect at this instant in the stored zone. Returns TRUE or FALSE. Useful for flagging DST-sensitive rate calculations or scheduling adjustments in finance and operations workbooks."
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZISDST instead of comparing the offset to a fixed value?","answer":"Use TZISDST when you need a clear TRUE/FALSE flag for DST rather than inferring it from an offset. Some zones share the same UTC offset in both standard and summer time, so offset comparison alone is unreliable."},{"question":"What does TZISDST return for a zone that never observes daylight saving time?","answer":"It returns FALSE for every instant in zones like UTC, Asia/Tokyo, or Africa/Nairobi because those zones have no DST transition rules."},{"question":"How do I use TZISDST to adjust a financial calculation only during DST?","answer":"Wrap the calculation in an IF: use TZISDST to detect whether DST is active, then apply the DST-adjusted rate or schedule in the true branch and the standard one in the false branch."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZISDST(TZDATETIME(2024, 7, 4, 12, 0, 0, \\\"America/New_York\\\"))"} />
+<TryIt formula={"=TZISDST(TZDATETIME(2024, 7, 4, 12, 0, 0, \"America/New_York\"))"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ Wrap the calculation in an IF: use TZISDST to detect whether DST is active, then
 
 **Check DST status for a London market open in winter**
 
-<TryIt formula={"=TZISDST(TZDATETIME(2024, 12, 1, 8, 0, 0, \\\"Europe/London\\\"))"} />
+<TryIt formula={"=TZISDST(TZDATETIME(2024, 12, 1, 8, 0, 0, \"Europe/London\"))"} />
 
 **Conditionally label a timestamp as standard or summer time**
 
-<TryIt formula={"=IF(TZISDST(TZDATETIME(2024, 6, 15, 9, 0, 0, \\\"America/Chicago\\\")), \\\"CDT\\\", \\\"CST\\\")"} />
+<TryIt formula={"=IF(TZISDST(TZDATETIME(2024, 6, 15, 9, 0, 0, \"America/Chicago\")), \"CDT\", \"CST\")"} />
 
 ## Used in
 

@@ -3,7 +3,7 @@ title: "TZBOARD"
 description: "Technical world-clock board: one row per zone {zone,local,offset,delta,rollover,abbrev,dst}"
 seoTitle: "TZBOARD: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZBOARD` — conformant with Google Sheets and Excel. Technical world-clock board: one row per zone {zone,local,offset,delta,rollover,abbrev,dst}"
-llmsDescription: "TrueCalc TZBOARD function: Technical world-clock board: one row per zone {zone,local,offset,delta,rollover,abbrev,dst} Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZBOARD(anchor,zone1,zone2,…) to get structured world-clock data: one row per zone with fields {zone, local, offset, delta, rollover, abbrev, dst}. Use to power dashboards, API responses, and custom table renderers. For a human-readable sentence "
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZBOARD instead of TZWORLDCLOCK?","answer":"Use TZBOARD when you need structured data — one record per zone with fields like offset, delta, abbreviation, and DST flag — so you can render your own table, feed a dashboard component, or pass the result to downstream code. Use TZWORLDCLOCK when you only need a human-readable sentence summarizing the same zones."},{"question":"What does the delta field in TZBOARD output represent?","answer":"Delta is the signed hour difference between each listed zone and the anchor zone. It lets you quickly see how far ahead or behind each zone is relative to your reference point, which is useful for scheduling meetings or computing deadlines across offices."},{"question":"What happens if I pass a zone identifier that TZBOARD does not recognize?","answer":"TZBOARD returns #VALUE! for unrecognized zone identifiers. Use TZVALID to check a zone string before passing it to TZBOARD if your zone names come from user input or external data."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=TZBOARD(TZDATETIME(2025, 6, 15, 9, 0, 0, \\\"America/New_York\\\"), \\\"Europe/London\\\", \\\"Asia/Tokyo\\\", \\\"Australia/Sydney\\\")"} />
+<TryIt formula={"=TZBOARD(TZDATETIME(2025, 6, 15, 9, 0, 0, \"America/New_York\"), \"Europe/London\", \"Asia/Tokyo\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ TZBOARD returns #VALUE! for unrecognized zone identifiers. Use TZVALID to check 
 
 **Generate a financial-markets status board anchored to London open**
 
-<TryIt formula={"=TZBOARD(TZDATETIME(2025, 3, 17, 8, 0, 0, \\\"Europe/London\\\"), \\\"America/New_York\\\", \\\"Asia/Hong_Kong\\\", \\\"Asia/Tokyo\\\")"} />
+<TryIt formula={"=TZBOARD(TZDATETIME(2025, 3, 17, 8, 0, 0, \"Europe/London\"), \"America/New_York\", \"Asia/Hong_Kong\")"} />
 
 **Produce an on-call handoff board anchored to UTC midnight**
 
-<TryIt formula={"=TZBOARD(TZDATETIME(2025, 9, 1, 0, 0, 0, \\\"UTC\\\"), \\\"America/Los_Angeles\\\", \\\"Europe/Berlin\\\", \\\"Asia/Kolkata\\\")"} />
+<TryIt formula={"=TZBOARD(TZDATETIME(2025, 9, 1, 0, 0, 0, \"UTC\"), \"America/Los_Angeles\", \"Europe/Berlin\")"} />
 
 ## Used in
 

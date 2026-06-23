@@ -3,7 +3,7 @@ title: "TZVALID"
 description: "TRUE if the text is a valid IANA zone name or fixed offset"
 seoTitle: "TZVALID: Spreadsheet Function in Google Sheets & Excel"
 seoDescription: "TrueCalc `TZVALID` — conformant with Google Sheets and Excel. TRUE if the text is a valid IANA zone name or fixed offset"
-llmsDescription: "TrueCalc TZVALID function: TRUE if the text is a valid IANA zone name or fixed offset Google Sheets/Excel conformant with fixture-verified behavior."
+llmsDescription: "Use TZVALID(zone) to check whether a text string is a recognised IANA zone name (e.g. \"America/New_York\") or fixed-offset string (e.g. \"+05:30\"). Returns TRUE or FALSE. Use to validate user-supplied zone names before passing them to TZDATETIME, TZCON"
 category: "timezone"
 jsonLdFaq: [{"question":"When should I use TZVALID before calling TZDATETIME or TZCONVERT?","answer":"Use TZVALID whenever the timezone string comes from user input or an external data source. Passing an unrecognised zone name to TZDATETIME or TZCONVERT will produce an error, so validating first lets you show a friendly fallback instead."},{"question":"Does TZVALID accept fixed-offset strings like +05:30 as well as IANA names?","answer":"Yes. TZVALID returns TRUE for both canonical IANA names such as America/New_York and fixed-offset strings such as +05:30 or -08:00."},{"question":"What does TZVALID return for an empty string or a misspelled zone?","answer":"TZVALID returns FALSE for any string that is not a recognised IANA zone name or valid fixed-offset string, including empty strings, typos like America/New_Yrok, and abbreviations like EST."}]
 ---
@@ -14,7 +14,7 @@ import { TryIt } from '@/components/try-it';
 
 ## Try it
 
-<TryIt formula={"=IF(TZVALID(\\\"America/Chicago\\\"), TZCONVERT(\\\"2024-06-15T14:00:00\\\", \\\"UTC\\\", \\\"America/Chicago\\\"), \\\"Invalid timezone\\\")"} />
+<TryIt formula={"=IF(TZVALID(\"America/Chicago\"), TZSTRING(TZCONVERT(TZDATETIME(2024, 6, 15, 14, 0, 0, \"UTC\"), \"America/Chicago\")), \"Invalid timezone\")"} />
 
 ## When to use it
 
@@ -34,11 +34,11 @@ TZVALID returns FALSE for any string that is not a recognised IANA zone name or 
 
 **Validate a fixed-offset zone string**
 
-<TryIt formula={"=TZVALID(\\\"+05:30\\\")"} />
+<TryIt formula={"=TZVALID(\"+05:30\")"} />
 
 **Reject an unrecognised abbreviation**
 
-<TryIt formula={"=TZVALID(\\\"EST\\\")"} />
+<TryIt formula={"=TZVALID(\"EST\")"} />
 
 ## Used in
 

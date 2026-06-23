@@ -7,13 +7,14 @@ when_to_use:
     a: "Use TZCONVERT when you need the actual local time in another zone. Use TZDIFF when you only need the numeric hour difference between two zones."
 use_cases:
   - title: "Convert a New York morning meeting to Berlin local time"
-    formula: "=TZCONVERT(TZDATETIME(2024, 3, 15, 9, 0, 0, \"America/New_York\"), \"Europe/Berlin\")"
+    formula: "=TZCONVERT(TZDATETIME(2024, 3, 15, 9, 0, 0, "America/New_York"), "Europe/Berlin")"
     industries: [operations, hr]
   - title: "Show a Tokyo market open in London time"
-    formula: "=TZCONVERT(TZDATETIME(2024, 6, 1, 9, 0, 0, \"Asia/Tokyo\"), \"Europe/London\")"
+    formula: "=TZCONVERT(TZDATETIME(2024, 6, 1, 9, 0, 0, "Asia/Tokyo"), "Europe/London")"
     industries: [finance, operations]
   - title: "Convert a UTC timestamp to a customer's local zone"
-    formula: "=TZCONVERT(TZDATETIME(2024, 11, 5, 14, 30, 0, \"UTC\"), \"America/Los_Angeles\")"
+    formula: "=TZCONVERT(TZDATETIME(2024, 11, 5, 14, 30, 0, "UTC"), "America/Los_Angeles")"
     industries: [operations, hr, finance]
 industries: [operations, hr, finance]
 related: [TZDATETIME, TZOFFSET, TZDIFF, TZWORLDCLOCK, TZSTRING]
+llms_description: "Use TZCONVERT(zoned,target_zone) to view the same instant in a different IANA timezone — the underlying UTC moment is unchanged, only the local clock display shifts. The core "what time is it there?" function. Compose with TZDATETIME or TZNOW as input and TZSTRING for output."

@@ -7,13 +7,14 @@ when_to_use:
     a: "Use them together when you need to display both the numeric offset and its abbreviation — for example, showing '−240 (EDT)' next to a timestamp in a financial or scheduling report."
 use_cases:
   - title: "Get the UTC offset during US Eastern summer time"
-    formula: "=TZOFFSET(TZDATETIME(2024, 7, 4, 12, 0, 0, \"America/New_York\"))"
+    formula: "=TZOFFSET(TZDATETIME(2024, 7, 4, 12, 0, 0, "America/New_York"))"
     industries: [engineering, finance]
   - title: "Get the UTC offset during US Eastern standard time"
-    formula: "=TZOFFSET(TZDATETIME(2024, 1, 15, 9, 0, 0, \"America/New_York\"))"
+    formula: "=TZOFFSET(TZDATETIME(2024, 1, 15, 9, 0, 0, "America/New_York"))"
     industries: [engineering, finance]
   - title: "Compare offsets across two zones at the same instant"
-    formula: "=TZOFFSET(TZDATETIME(2024, 3, 31, 3, 0, 0, \"Europe/London\"))"
+    formula: "=TZOFFSET(TZDATETIME(2024, 3, 31, 3, 0, 0, "Europe/London"))"
     industries: [operations, engineering]
 industries: [engineering, finance]
 related: [TZABBR, TZISDST, TZOFFSETDIFF, TZCONVERT]
+llms_description: "Use TZOFFSET(zoned) to get the UTC offset in minutes at the instant encoded in the value, with DST fully resolved. New York in summer returns -240 (= −4 h). The offset can differ for the same zone at different times. Combine with TZOFFSETDIFF to compute inter-zone gaps."
