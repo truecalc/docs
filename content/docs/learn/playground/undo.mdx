@@ -1,0 +1,41 @@
+---
+title: "Undo and redo edits"
+description: "Ctrl+Z reverts the last change; Ctrl+Y (or Ctrl+Shift+Z) re-applies it."
+---
+
+## What it does
+
+Every edit — typing a value, filling, pasting, clearing — is one undoable step. Press **Ctrl+Z** to revert the last step and **Ctrl+Y** (or **Ctrl+Shift+Z**) to re-apply it. A fresh edit after undoing clears the redo history, exactly like Google Sheets.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10" />
+
+## How it works
+
+Each edit records how to reverse it and how to re-apply it, so undo and redo simply replay the recorded step and recompute the affected cells through TrueCalc. Undo and redo act on whole edits rather than individual keystrokes, and a fresh edit after undoing discards the redo history.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Ctrl+Z undoes the last edit — restoring the cell's prior contents — and Ctrl+Y (or Ctrl+Shift+Z) redoes it. Undo/redo apply to whole edits, not keystrokes, and a new edit clears the redo stack.
+
+#### Ctrl+Z reverts an edit
+
+**Given**
+- **A1** = `10`
+
+**When** I type `=A1*2` into **A2**, then press `Control+z`
+
+**Then**
+- **A2** shows `null`
+
+#### Ctrl+Y re-applies an undone edit
+
+**Given**
+- **A1** = `10`
+
+**When** I type `=A1*2` into **A2**, then press `Control+z`, then press `Control+y`
+
+**Then**
+- **A2** shows `20`
+- **A2** has formula `=A1*2`

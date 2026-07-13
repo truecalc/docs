@@ -1,0 +1,40 @@
+---
+title: "Bold a cell"
+description: "Ctrl+B (or the toolbar Bold button) toggles bold on the selection."
+---
+
+## What it does
+
+Select cells and press **Ctrl+B** — or click the **Bold (B)** button in the toolbar — to toggle bold. Bold is **presentation**, separate from the cell's value: bolding `=A1+B1` styles the number without touching the formula. It undoes and redoes like any other edit.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=hello" />
+
+## How it works
+
+Bold is stored alongside the cell's value and rides the same undo/redo history, but it never reaches the calc engine — TrueCalc still owns the value; formatting is pure presentation. It is the foundation for the rest of the formatting toolbar (italic, font, color, borders, alignment, merge…), which add more attributes along the same edit and render path.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Ctrl+B toggles bold on the selected cells. Bold is a presentation attribute independent of the cell's value or formula, and it undoes/redoes like any edit. Toggling again removes it.
+
+#### Ctrl+B bolds the selected cell
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+b`
+
+**Then**
+- **A1** is bold
+
+#### Ctrl+B a second time removes bold
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+b`, then press `Control+b`
+
+**Then**
+- **A1** is bold=false
