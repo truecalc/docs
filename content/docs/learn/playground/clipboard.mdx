@@ -1,0 +1,69 @@
+---
+title: "Copy, cut, and paste"
+description: "Copy adjusts references to the paste target; cut moves a cell verbatim."
+---
+
+## What it does
+
+Select a cell and press **Ctrl+C** to copy or **Ctrl+X** to cut, then select a target and press **Ctrl+V** to paste.
+
+- **Copy + paste** adjusts the formula's relative references by the paste offset — `=A1+B1` copied from **C1** to **C3** becomes `=A3+B3`, while `$`-anchored parts stay put (`=$A$1+B1` → `=$A$1+B3`). The source is left untouched and the clipboard stays loaded, so you can paste it again.
+- **Cut + paste** _moves_ the cell: the formula is written to the destination **verbatim** (no reference adjustment) and the source cell is cleared. The clipboard is consumed after that one paste.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;B1=20;C1==A1+B1;A3=5;B3=7" />
+
+## How it works
+
+TrueCalc owns the calc. Copy and cut record the source cell's raw input; paste branches on which one it was. A copy adjusts the input (relative references shift, `$`-anchored references stay fixed) and writes the adjusted text to the target. A cut skips adjustment entirely — it writes the raw text unchanged and clears the source as a single undoable move — because a move should preserve exactly what the formula pointed at. Every result recomputes through the single engine, so the grid matches Google Sheets.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, copying a formula and pasting it adjusts the formula's relative references by the row/column offset (copying "=A1+B1" from C1 to C3 yields "=A3+B3"), while $-anchored parts stay fixed ("=$A$1+B1" → "=$A$1+B3"); copy leaves the source and the clipboard intact, so it can be pasted again. Cutting and pasting instead MOVES the cell: the formula is written to the destination verbatim (no reference adjustment) and the source is cleared, and the clipboard is consumed after that one paste.
+
+#### Copy a relative formula and paste — references shift by the offset
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+- **A3** = `5`
+- **B3** = `7`
+
+**When** I click **C1**, then press `Control+c`, then click **C3**, then press `Control+v`
+
+**Then**
+- **C3** shows `12`
+- **C1** shows `30`
+- **C3** has formula `=A3+B3`
+- **C1** has formula `=A1+B1`
+
+#### Copy shifts references by both the row and the column offset
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+- **B3** = `7`
+- **C3** = `5`
+
+**When** I click **C1**, then press `Control+c`, then click **D3**, then press `Control+v`
+
+**Then**
+- **D3** shows `12`
+- **D3** has formula `=B3+C3`
+
+#### Cut and paste — the formula moves verbatim and the source is cleared
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+
+**When** I click **C1**, then press `Control+x`, then click **C3**, then press `Control+v`
+
+**Then**
+- **C3** shows `30`
+- **C1** shows `null`
+- **C3** has formula `=A1+B1`

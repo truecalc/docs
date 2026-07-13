@@ -1,0 +1,64 @@
+---
+title: "Edit a cell"
+description: "Type into a cell to set a literal or a formula; the formula is stored and its computed value is shown."
+---
+
+## What it does
+
+Select a cell and start typing (or press **Enter**/**F2** to open the in-cell editor) to set its contents. A bare value — `42`, `hello` — is stored as a literal. A leading `=` makes it a **formula**: TrueCalc stores the formula text and shows the computed result. Press **Enter** to commit and move down, or **Escape** to cancel.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10" />
+
+## How it works
+
+When you commit an edit, TrueCalc stores exactly what you typed. If it starts with `=` it is kept as the cell's formula and recomputed whenever a cell it depends on changes; otherwise it is stored as a literal. The same engine both keeps the formula text and computes the shown result, so editing behaves like Google Sheets.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, typing a bare number into a cell stores that literal and displays it. Typing a leading "=" makes the entry a formula: the cell stores the formula text and displays its computed result (e.g. with A1=10, entering "=A1*2" shows 20 while the formula bar still reads "=A1*2"). Typing into a non-empty cell replaces its prior contents — a literal overwrites a formula and vice-versa — and pressing Enter commits and moves the selection down.
+
+#### Typing a literal number displays that number
+
+**Given**
+
+
+**When** I type `42` into **A1**
+
+**Then**
+- **A1** shows `42`
+
+#### Typing a formula shows the computed value and stores the formula
+
+**Given**
+- **A1** = `10`
+
+**When** I type `=A1*2` into **A2**
+
+**Then**
+- **A2** shows `20`
+- **A2** has formula `=A1*2`
+
+#### Typing into a non-empty cell replaces its prior contents
+
+**Given**
+- **A1** = `10`
+- **A2** = `=A1*2`
+
+**When** I type `7` into **A2**
+
+**Then**
+- **A2** shows `7`
+
+#### A committed formula stores its text while displaying its result
+
+**Given**
+- **A1** = `10`
+- **B1** = `3`
+
+**When** I type `=A1*B1` into **C1**
+
+**Then**
+- **C1** shows `30`
+- **C1** has formula `=A1*B1`

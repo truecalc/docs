@@ -1,0 +1,36 @@
+---
+title: "Fill a formula across cells"
+description: "Drag to extend a formula; references adjust automatically."
+---
+
+## What it does
+
+Drag the fill handle at the bottom-right of a selection (or press **Ctrl+D** to fill down, **Ctrl+R** to fill right) to extend a formula. Relative references shift automatically, and TrueCalc recomputes every filled cell.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;A2==A1+1" />
+
+## How it works
+
+TrueCalc owns the calc. Filling adjusts the formula **text** — relative references shift, `$`-anchored ones stay fixed — and recomputes through the single engine. There is no second engine to reconcile, which is exactly why fill behaves like Google Sheets here.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, filling "=A1+1" down from A2 yields "=A2+1", "=A3+1", "=A4+1" — relative references shift by row, producing a column of values.
+
+#### Filling a formula down adjusts relative references
+
+**Given**
+- **A1** = `10`
+- **A2** = `=A1+1`
+
+**When** I fill from **A2** to **A5**
+
+**Then**
+- **A3** shows `12`
+- **A4** shows `13`
+- **A5** shows `14`
+- **A3** has formula `=A2+1`
+- **A4** has formula `=A3+1`
+- **A5** has formula `=A4+1`
