@@ -1,0 +1,130 @@
+---
+title: "Formula autocomplete"
+description: "Typing \"=\" then letters shows a dropdown of matching functions, navigable with the arrow keys; typing past an opening parenthesis replaces it with a one-line signature hint for the active argument."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Type `=` into a cell (or the formula bar) and keep typing letters — a dropdown
+opens beneath the cell listing every TrueCalc function whose name starts with
+what you've typed, each with a one-line summary and a **Learn more** link to
+its docs reference page. Press **ArrowDown**/**ArrowUp** to move a highlighted
+row through the list (it stops at either end — no wraparound). Click a
+suggestion, or press **Enter**/**Tab** while a row is highlighted, to insert
+that function's name and an opening `(`, ready for you to keep typing its
+arguments. The dropdown follows the caret: it only shows while you're
+mid-way through typing a bare name, and disappears as soon as you type past
+it.
+
+Once the caret is positioned INSIDE an active call's argument list — past its
+opening `(`, before its matching `)` — the name dropdown is replaced by a
+single-line **signature hint**: the function's full syntax (e.g.
+`SUM(value1,...)`), with the argument you're currently on highlighted. It
+tracks you live as you type or move across commas, and disappears once the
+caret leaves the call. The two popovers never show at once — Sheets shows one
+or the other, and so does Studio.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, typing "=" then letters into a cell (or the formula bar) opens a suggestion dropdown listing every function whose name starts with what you've typed so far, each with a short one-line description. ArrowDown/ ArrowUp move a highlighted row through the list (clamped at either end, no wraparound); clicking a suggestion — or pressing Enter/Tab while a row is highlighted — inserts that function's name followed by an opening parenthesis, replacing the partial text you typed, and leaves the cursor positioned to type arguments. The popover opens directly beneath wherever you're actually typing — under the cell for an in-cell edit, or under the formula bar itself when the edit was started by focusing the bar, even though the active cell may be scrolled far down the sheet. The dropdown tracks the caret: it stays open while you're typing a bare name and closes once you've moved past it (e.g. after the opening parenthesis). Once the caret is positioned INSIDE an active function call's argument list (past its opening parenthesis, before its matching close), Sheets replaces the name dropdown with a single-line signature hint showing that one function's syntax (e.g. "SUM(value1, [value2, …])") with the current argument position bolded, updating live as you type or move between comma-separated arguments — the two popovers are mutually exclusive, never shown together. The "Learn more" doc link on each name-list suggestion is Studio's own addition — Sheets has no equivalent to TrueCalc's public function reference pages, so there is no Sheets ground truth for that part; everything else above is the parity target.
+
+#### Typing "=SU" shows a dropdown of matching functions
+
+**Given**
+
+**When** I click **A1**, then press `=`, then press `S`, then press `U`
+
+**Then**
+- `[data-slot="formula-autocomplete"]` is visible containing "SUM"
+
+#### Selecting a suggestion inserts the function name and an opening parenthesis
+
+**Given**
+- **A1** = `5`
+
+**When** I click **A2**, then press `=`, then press `S`, then press `U`, then pick **SUM** from the autocomplete dropdown, then click **A1**, then press `)`, then press `Enter`
+
+**Then**
+- **A2** shows `5`
+- **A2** has formula `=SUM(A1)`
+
+#### ArrowDown highlights the second suggestion in the dropdown
+
+**Given**
+
+**When** I click **A1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `ArrowDown`
+
+**Then**
+- `[data-slot="formula-autocomplete"] [aria-selected="true"]` is visible containing "SUMIF"
+
+#### ArrowDown then Enter inserts the SECOND match, not the top one
+
+**Given**
+- **A1** = `5`
+
+**When** I click **A2**, then press `=`, then press `S`, then press `U`, then press `M`, then press `ArrowDown`, then press `Enter`, then click **A1**, then press `)`, then press `Enter`
+
+**Then**
+- **A2** has formula `=SUMIF(A1)`
+
+#### Typing "=SUM(" shows a Tier 2 signature hint for SUM, and the name-list dropdown closes
+
+**Given**
+
+**When** I click **A1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`
+
+**Then**
+- `[data-slot="formula-signature-help"]` is visible containing "SUM(value1,...)"
+- `[data-slot="formula-autocomplete"]` is hidden
+
+#### The signature hint tracks the argument position across commas
+
+**Given**
+
+**When** I click **A1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `I`, then press `F`, then press `(`, then press `A`, then press `1`, then press `,`
+
+**Then**
+- `[data-slot="formula-signature-help"]` is visible containing "criterion"
+
+#### ArrowDown in the FORMULA BAR (not just the in-cell editor) also highlights the second suggestion
+
+**Given**
+
+**When** I click **A1**, then click the formula bar, then press `=`, then press `S`, then press `U`, then press `M`, then press `ArrowDown`
+
+**Then**
+- `[data-slot="formula-autocomplete"] [aria-selected="true"]` is visible containing "SUMIF"
+
+#### Tab in the formula bar accepts the highlighted match, not always the top one
+
+**Given**
+- **A1** = `5`
+
+**When** I click **A2**, then click the formula bar, then press `=`, then press `S`, then press `U`, then press `M`, then press `ArrowDown`, then press `Tab`, then click **A1**, then press `)`, then press `Enter`
+
+**Then**
+- **A2** has formula `=SUMIF(A1)`
+
+#### Typing in the FORMULA BAR anchors the dropdown near the bar, not the far-scrolled-down selected cell (product-owner finding — bar/cell anchor)
+
+**Given**
+
+**When** I click **A20**, then click the formula bar, then press `=`, then press `S`, then press `U`
+
+**Then**
+- `[data-slot="formula-autocomplete"]` is visible containing "SUM" near the top of the screen (≤250px)
+
+#### Re-editing a cell whose formula is unchanged from a prior edit session doesn't reuse a stale caret for the popover
+
+**Given**
+
+**When** I click **A1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then press `Enter`, then click **A1**, then press `F2`, then press `Home`, then press `ArrowRight`, then press `ArrowRight`, then press `ArrowRight`, then press `ArrowRight`, then press `Escape`, then press `F2`, then press `ArrowDown`, then press `Enter`
+
+**Then**
+- **A1** has formula `=SUM(A2`

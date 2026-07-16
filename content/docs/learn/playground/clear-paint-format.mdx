@@ -1,0 +1,72 @@
+---
+title: "Clear formatting + Paint format"
+description: "Ctrl+\\ (or the toolbar \"Tx\" button) resets a range's format to default without touching its value; the toolbar Paint format roller copies one range's full format onto another (single click = one-shot, double click = sticky until Escape or re-clicking the roller).\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Clear formatting** — select a range and press **Ctrl+\\** (or click the **Tx** button in the toolbar) to reset every presentation attribute back to default: no bold/italic/strike, no font/color/fill overrides, no borders, no explicit number format, no alignment/wrap override. The cell's **value or formula is never touched** — clearing the format on `=A1+B1` resets its styling without changing what it computes to. It undoes and redoes like any other edit, and applying it to a range is **one** undoable command.
+
+**Paint format** — the roller icon in the toolbar copies a range's **full** format onto another range, exactly like Google Sheets' format painter:
+
+- **Single click** arms a **one-shot** paint: your very next click (or shift-click to extend to a range) applies the copied format and the tool immediately disarms.
+- **Double click** arms a **sticky** paint: it stays armed across repeated applies — keep clicking new targets — until you press **Escape** or click the roller again.
+
+Applying **replaces** the target's format wholesale, the same way Sheets does: if the target had its own border or fill that the source didn't carry, painting removes it too — this isn't a merge of the two formats. Painting onto a range bigger than the captured source tiles the source pattern across it (Sheets' own repeat-the-pattern behavior). A multi-cell apply is **one** undoable command regardless of size.
+
+## Verification
+
+The scenario runner can drive Ctrl+\\ end-to-end (a real keyboard chord), so clear-formatting's scenarios above are fully automated. Paint format's arm/apply gesture is a toolbar click followed by a click on a DIFFERENT target cell — the runner has no verb for driving a toolbar action button yet (the same gap `format-fill-color.mdx` documents for its color swatch), so it's browser-verified instead: arming via a single click on the roller shows the pressed toolbar state and the source range gets a dashed "copying" outline; clicking a target cell applies the source's format, replaces the target's own prior formatting, and the roller un-presses itself (one-shot); double-clicking the roller instead keeps it pressed across repeated target clicks until Escape.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Format → Clear formatting (Ctrl+\ / Cmd+\ on Mac) resets every presentation attribute on the selection — bold/italic/strikethrough, fonts, colors, borders, number format, alignment, wrap — back to the default, without touching the cell's value or formula. It undoes/redoes like any edit. The Paint format toolbar button (the roller icon) captures the CURRENT selection's format pattern: a single click arms a ONE-SHOT paint that applies to the next click/drag target and immediately disarms; a double click arms a STICKY paint that stays armed — repeatedly applying to each subsequent click/drag target — until Escape is pressed or the roller is clicked again. Applying replaces the target's format wholesale (not a merge): a target's own fill/border/etc. that the source didn't carry is cleared too. A multi-cell target range is one undoable command regardless of size.
+
+#### Ctrl+\ resets a bold+bordered cell's format, value unchanged
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+b`, then press `Control+Shift+7`, then press `Control+Backslash`
+
+**Then**
+- **A1** shows `hello`
+- **A1** is bold=false, borders=false
+
+#### Ctrl+\ on a formula cell clears format only — value and formula survive
+
+**Given**
+- **A1** = `5`
+- **A2** = `=A1*2`
+
+**When** I click **A2**, then press `Control+b`, then press `Control+Backslash`
+
+**Then**
+- **A2** shows `10`
+- **A2** has formula `=A1*2`
+- **A2** is bold=false
+
+#### Ctrl+\ a second time is a no-op (already-default format stays default)
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+Backslash`, then press `Control+Backslash`
+
+**Then**
+- **A1** shows `hello`
+- **A1** is bold=false
+
+#### Selecting a formula cell leaves its value and formula unchanged (presentation-independence)
+
+**Given**
+- **A1** = `5`
+- **A2** = `=A1*2`
+
+**When** I click **A2**
+
+**Then**
+- **A2** shows `10`
+- **A2** has formula `=A1*2`

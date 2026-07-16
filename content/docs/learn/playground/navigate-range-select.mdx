@@ -1,0 +1,181 @@
+---
+title: "Navigate & range-select"
+description: "Click/shift-click/shift-arrow select a single cell or a range, which renders as a translucent highlight; Arrow/Tab/Enter move the active cell, and Ctrl+Arrow jumps to the edge of the contiguous data block (Sheets parity).\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Click** a cell to select it. **Shift+click** or **Shift+Arrow** another cell
+to extend the selection into a range — it renders as a translucent highlight
+with a solid outline, anchored where you first clicked. **Arrow keys**, **Tab**,
+and **Enter** move the active cell (Tab right, Enter down after committing an
+edit).
+
+**Ctrl+Arrow** (**Cmd+Arrow** on Mac) jumps to the edge of a block of data,
+Sheets-style — the fast way to skip to the end of a column or row of numbers
+instead of holding the arrow key. Both chords work on every platform, but
+macOS reserves Ctrl+Arrow for switching Mission Control spaces and never
+delivers the keystroke to the browser at all, so Cmd+Arrow is the one that
+actually works on a Mac (matching Sheets' and Excel's own Mac bindings):
+
+- If the active cell AND the next cell in that direction both have content, it
+ jumps to the **last** cell of that contiguous run.
+- If the next cell is empty, it jumps forward to the **first** cell that has
+ content — or to the sheet's current edge if there's no more data ahead.
+- If the active cell is empty but the next cell has content, it lands on that
+ **immediately-adjacent** cell — the classic "double Ctrl+Down": from a blank
+ cell above a column of data, one press reaches the top, a second reaches the
+ bottom.
+- Already at the edge? Ctrl+Arrow doesn't move.
+- Ctrl+Shift+Arrow does the same jump while extending the range selection,
+ instead of relocating the lone active cell.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=1;B1=2;C1=3" />
+
+Click A1, then press **Ctrl+→** to jump straight to C1 (the end of that run) —
+compare with holding the plain right arrow, which walks one cell at a time.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shift-clicking or shift-arrowing another cell extends the selection into a rectangular range (anchored at the first click, with the moving corner following the pointer/ arrow), rendered as a translucent blue fill with a solid outline. Arrow keys, Tab, and Enter move the active cell one cell at a time (Tab right, Enter down after a commit). Ctrl+Arrow ("jump to data edge") is the fast-navigation chord: from the active cell, in the arrow's direction, it (a) jumps to the LAST cell of the contiguous non-empty run when BOTH the active cell and the adjacent cell have content, (b) jumps to the FIRST non-empty cell ahead when the adjacent cell is empty (regardless of whether the active cell itself has content), (c) lands on the immediately-adjacent cell when the active cell is empty but the adjacent cell has content — the classic "double Ctrl+Down" from a blank cell above a data column: one press reaches the TOP of the data, a second (now from a non-empty active cell) reaches the bottom — or (d) jumps to the edge of the sheet when there is no more data in that direction. At the sheet's edge already, Ctrl+Arrow is a no-op. Ctrl+Shift+ Arrow applies the same jump to the moving corner of the selection, extending the range instead of relocating the lone active cell.
+
+#### Clicking a cell makes it the sole active selection
+
+**Given**
+
+**When** I click **B2**
+
+**Then**
+- the active cell is **B2**
+
+#### Tab moves the active cell one column right
+
+**Given**
+
+**When** I click **A1**, then press `Tab`
+
+**Then**
+- the active cell is **B1**
+
+#### Committing an edit with Enter moves the active cell down
+
+**Given**
+- **A1** = `5`
+
+**When** I type `9` into **A1**
+
+**Then**
+- **A1** shows `9`
+- the active cell is **A2**
+
+#### Shift+Arrow extends the active cell without losing track of the anchor cell
+
+**Given**
+
+**When** I click **B2**, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`
+
+**Then**
+- the active cell is **B4**
+
+#### Ctrl+Right, adjacent cell non-empty: jumps to the far edge of the contiguous run
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+
+**When** I click **A1**, then press `Control+ArrowRight`
+
+**Then**
+- the active cell is **C1**
+
+#### Ctrl+Right, adjacent cell empty: jumps forward to the first non-empty cell
+
+**Given**
+- **D2** = `9`
+
+**When** I click **A2**, then press `Control+ArrowRight`
+
+**Then**
+- the active cell is **D2**
+
+#### Ctrl+Down, active cell itself empty: same forward-jump rule applies
+
+**Given**
+- **A6** = `9`
+
+**When** I click **A2**, then press `Control+ArrowDown`
+
+**Then**
+- the active cell is **A6**
+
+#### Ctrl+Right with no more data ahead: jumps to the sheet's current edge
+
+**Given**
+
+**When** I click **A3**, then press `Control+ArrowRight`
+
+**Then**
+- the active cell is **Z3**
+
+#### Ctrl+Down mirrors the same rule vertically
+
+**Given**
+- **A5** = `1`
+- **A6** = `2`
+- **A7** = `3`
+
+**When** I click **A5**, then press `Control+ArrowDown`
+
+**Then**
+- the active cell is **A7**
+
+#### Ctrl+Arrow already at the sheet's edge is a no-op
+
+**Given**
+- **Z1** = `edge`
+
+**When** I select **Z1**, then press `Control+ArrowRight`
+
+**Then**
+- the active cell is **Z1**
+
+#### Ctrl+Down, active cell empty and adjacent cell non-empty: lands on the TOP of the data, not the bottom
+
+**Given**
+- **A2** = `1`
+- **A3** = `2`
+- **A4** = `3`
+
+**When** I click **A1**, then press `Control+ArrowDown`
+
+**Then**
+- the active cell is **A2**
+
+#### Ctrl+Shift+Down extends the range selection while jumping to the data edge
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I click **A1**, then press `Control+Shift+ArrowDown`
+
+**Then**
+- the active cell is **A3**
+
+#### Cmd+Down (Mac binding) jumps to the data edge, same as Ctrl+Down
+
+**Given**
+- **A5** = `1`
+- **A6** = `2`
+- **A7** = `3`
+
+**When** I click **A5**, then press `Meta+ArrowDown`
+
+**Then**
+- the active cell is **A7**

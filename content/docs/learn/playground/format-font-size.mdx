@@ -1,0 +1,34 @@
+---
+title: "Change a cell's font size"
+description: "Ctrl+Shift+Period grows the font, Ctrl+Shift+Comma shrinks it (or use the toolbar stepper)."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and press **Ctrl+Shift+Period** to grow the font one step, or **Ctrl+Shift+Comma** to shrink it — or use the **[−] size [+]** stepper in the toolbar. Font size is **presentation**, separate from the cell's value: resizing `=A1+B1` styles the number without touching the formula. It undoes and redoes like any other edit, and stays within a sensible [6, 96] range.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Font size is a per-cell presentation attribute, independent of the cell's value or formula, that undoes/redoes like any edit. Increasing bumps the size up one step and decreasing bumps it down one step, off the cell's current size. In the Google editors the keyboard shortcut to grow the font is Ctrl+Shift+Period and to shrink it is Ctrl+Shift+Comma. Studio's unformatted default is 10px (matching Google Sheets), so a single increase yields 11 and a single decrease yields 9; sizes are clamped to a sensible [6, 96] range.
+
+#### Ctrl+Shift+Period grows the font one step
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+Period`
+
+**Then**
+- **A1** is fontSize=11
+
+#### Ctrl+Shift+Comma shrinks the font one step
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+Comma`
+
+**Then**
+- **A1** is fontSize=9
