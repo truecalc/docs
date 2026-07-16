@@ -1,0 +1,51 @@
+---
+title: "Colored formula references"
+description: "While editing a formula, each referenced cell/range is colored in the formula text and outlined in the same color on the grid."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Start editing a formula — type `=` in a cell (or double-click a formula cell) —
+and every reference lights up. Each distinct cell or range in the formula is
+given a **color** from a small palette: the reference **text** is colored in the
+in-cell editor and the **formula bar**, and the referenced cell — or a range like
+`A1:B2` drawn as one **block** — is **outlined in the same color** on the grid.
+This is the Google-Sheets/Excel behavior that makes a formula's inputs legible at
+a glance.
+
+Colors are assigned **in order of first appearance** and are **stable**: reuse
+`A1` twice and both tokens share one color and one outline; `$A$1` and `A1` point
+at the same cell, so they share a color too. In **point mode** (arrow keys or a
+click insert a reference while editing), the pointed cell is highlighted in its
+reference's color as it moves. Highlighting is **edit-scoped** — it appears only
+while editing and vanishes on commit or `Esc`, changing nothing about the value.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, while you edit a formula (a value beginning with `=`), each distinct cell/range reference is assigned a color from a small rotating palette in order of first appearance. The reference token in the formula text is shown in that color, and the referenced cell (or range, as a block) is outlined in the same color on the grid. A reference reused in the same formula keeps its color; absolute (`$A$1`) and relative (`A1`) references to the same cell share a color. Highlighting is presentation only — it appears only while editing and leaves no trace after the formula is committed.
+
+#### A formula reference colors its token and shows the live formula in the bar
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+
+**When** I type `=A1+B1` into **C1**
+
+**Then**
+- **C1** shows `30`
+- **C1** has formula `=A1+B1`
+
+#### References resolve through the engine after commit (highlighting is presentation only)
+
+**Given**
+- **A1** = `5`
+- **B2** = `7`
+
+**When** I type `=A1+B2+A1` into **D1**
+
+**Then**
+- **D1** shows `17`
+- **D1** has formula `=A1+B2+A1`

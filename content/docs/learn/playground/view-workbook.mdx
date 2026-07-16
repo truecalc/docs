@@ -1,0 +1,48 @@
+---
+title: "View a workbook"
+description: "A workbook's cell values render on the canvas grid — numbers and dates right-aligned, text left-aligned, formula errors shown distinctly — with only the visible cells drawn so scrolling stays smooth on a large sheet."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Every cell with content shows its computed value on the canvas grid, laid out the way Google Sheets lays it out: numbers and dates hug the right edge of the cell, text hugs the left — no explicit formatting needed, this is the automatic default. A formula that errors (`=1/0`, a broken reference, …) shows its error code (`#DIV/0!`, `#REF!`, `#VALUE!`, …) instead of a value, painted in a distinct error color so a broken formula is obvious without reading the text. Scrolling a large workbook stays smooth because only the rows/columns currently in (or near) the viewport are drawn.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=42;A2=hello;A3==1/0" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, a cell's displayed value is type-driven by default: numbers and dates align to the right of the cell, text (and blank/unrecognized content) aligns to the left — matching the same automatic rule Sheets uses before any explicit alignment override is applied. A formula that errors (e.g. "=1/0") shows its error code ("#DIV/0!") in place of a value, rendered in a visually distinct (red) color so it reads as an error at a glance rather than as ordinary text. Sheets only ever draws/lays out the rows and columns in or near the viewport — scrolling a sheet with thousands of rows stays smooth because off-screen cells are never rendered.
+
+#### A literal number renders with no explicit alignment override (right-aligned by the type-based default — see How it works)
+
+**Given**
+- **A1** = `42`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `42`
+
+#### A literal text value renders with no explicit alignment override (left-aligned by the type-based default — see How it works)
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `hello`
+
+#### A formula error displays its error code distinctly from a normal value
+
+**Given**
+- **A1** = `=1/0`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `#DIV/0!`

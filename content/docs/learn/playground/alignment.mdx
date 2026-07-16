@@ -1,0 +1,87 @@
+---
+title: "Align cells and wrap text"
+description: "Horizontal (left/center/right) and vertical (top/middle/bottom) alignment plus text wrap are per-cell format attributes; the toolbar sets them (Ctrl+Shift+L/E/R for horizontal), an explicit alignment overrides the type-based default, and a wrapped cell grows its row to fit its lines."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a cell or range and use the toolbar's **alignment** controls — a horizontal
+group (**left / center / right**), a vertical group (**top / middle / bottom**), and a
+**wrap** toggle — to place text inside each cell like Google Sheets. Horizontal
+alignment also has keyboard shortcuts: **Ctrl+Shift+L** (left), **Ctrl+Shift+E**
+(center), **Ctrl+Shift+R** (right).
+
+**Horizontal** alignment defaults to the cell type — numbers, dates, and booleans hug
+the right, text hugs the left. Choosing an explicit alignment **overrides** that default
+(left-align a number and it moves left); re-choosing the alignment a cell already has
+clears it back to automatic. **Vertical** alignment defaults to **bottom** (Sheets'
+default) and is visible when the row is taller than one line.
+
+**Wrap** breaks a value too wide for its column onto multiple lines at word boundaries
+(a word longer than the column breaks mid-word) and **grows the row** so every line is
+visible. With wrap off, long text is clipped at the cell edge and the row keeps its
+default height.
+
+All three are **presentation** attributes, separate from the cell's value: aligning or
+wrapping `=A1+B1` repositions the number without touching the formula. They are per-cell,
+survive value edits, and undo/redo like any other edit.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, horizontal alignment defaults to type-based (numbers/dates/booleans hug the right, text the left); an explicit Left/Center/Right (toolbar or Ctrl+Shift+L/E/R) overrides that default and re-selecting the current alignment clears it back to automatic. Vertical alignment (Top/Middle/Bottom, toolbar only) defaults to BOTTOM and is visible when a row is taller than one line. Text wrap breaks a value too wide for its column onto multiple lines at word boundaries (a word longer than the column breaks mid-word) and GROWS the row so every line is visible; with wrap off the text overflows/clips and the row stays default height. All three are per-cell presentation attributes: they survive value/formula edits, never change the computed value, and undo/redo like any edit. (Text rotation, also offered by Sheets, is a deferred follow-up — not built in this slice.)
+
+#### Ctrl+Shift+E centers the selected cell
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+Shift+e`
+
+**Then**
+- **A1** is align=center
+
+#### an explicit left-align overrides a number's automatic right-align
+
+**Given**
+- **A1** = `42`
+
+**When** I click **A1**, then press `Control+Shift+l`
+
+**Then**
+- **A1** shows `42`
+- **A1** is align=left
+
+#### alignment is presentation only — the value and formula are untouched
+
+**Given**
+- **A1** = `=2+3`
+
+**When** I click **A1**, then press `Control+Shift+r`
+
+**Then**
+- **A1** shows `5`
+- **A1** has formula `=2+3`
+- **A1** is align=right
+
+#### alignment survives a value edit
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+e`, then type `changed` into **A1**
+
+**Then**
+- **A1** shows `changed`
+- **A1** is align=center
+
+#### alignment undoes and redoes with the command log
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+r`, then undo, then redo
+
+**Then**
+- **A1** is align=right

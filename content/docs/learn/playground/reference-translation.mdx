@@ -1,0 +1,99 @@
+---
+title: "References adjust correctly on fill and paste"
+description: "Fill or paste a formula and its references retarget the Google-Sheets way — relative shift, $-anchored stay put (and now compute), text and function names untouched."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Fill a formula across a range (drag the fill handle, or **Ctrl+D** / **Ctrl+R**) or copy-and-paste it, and every reference retargets exactly the way Google Sheets does:
+
+- **Relative** references (`A1`) shift by the offset — down a row, across a column, or both.
+- **`$`-anchored** parts stay put: `$A$1` never moves, `$A1` keeps its column, `A$1` keeps its row — and they now **compute** as well as hold their text.
+- **Range** endpoints each adjust (`SUM(A1:A3)` → `SUM(A2:A4)`), and **cross-sheet** references keep their sheet (`Sheet1!A1` → `Sheet1!A2`).
+- References that only _look_ like cells are left alone: text inside a **string literal** (`"see A1"`), **function names** (`SUM`, even `LOG10`), and **`LET`/`LAMBDA`-bound names** are never rewritten.
+- A relative reference pushed **off the top or left edge** becomes `#REF!`, matching Sheets.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;A2=5;A3=6;B1==A1*2" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, filling or pasting a formula shifts each RELATIVE reference by the offset while `$`-anchored column/row parts stay fixed: "=U50+1" pasted one row down is "=U51+1"; "=$U$50+U50+$U50+U$50" pasted +2 rows/+3 cols is "=$U$50+X52+$U52+X$50"; range endpoints (SUM(U50:U51)→SUM(X52:X53)) and cross-sheet refs (Sheet1!U50→Sheet1!V51) adjust too; references inside a string literal ("lit U50") and function names (SUM) are never touched; and a relative reference pushed above row 1 or left of column A becomes #REF!.
+
+#### Relative references shift when filling down
+
+**Given**
+- **A1** = `10`
+- **A2** = `5`
+- **A3** = `6`
+- **B1** = `=A1*2`
+
+**When** I fill from **B1** to **B3**
+
+**Then**
+- **B2** shows `10`
+- **B3** shows `12`
+- **B2** has formula `=A2*2`
+- **B3** has formula `=A3*2`
+
+#### Relative references shift when filling right
+
+**Given**
+- **A1** = `2`
+- **B1** = `3`
+- **C1** = `4`
+- **A2** = `=A1*10`
+
+**When** I fill from **A2** to **C2**
+
+**Then**
+- **B2** shows `30`
+- **C2** shows `40`
+- **B2** has formula `=B1*10`
+- **C2** has formula `=C1*10`
+
+#### Absolute references stay fixed and evaluate when filling down
+
+**Given**
+- **A1** = `10`
+- **B1** = `=$A$1*2`
+
+**When** I fill from **B1** to **B3**
+
+**Then**
+- **B2** shows `20`
+- **B3** shows `20`
+- **B2** has formula `=$A$1*2`
+- **B3** has formula `=$A$1*2`
+
+#### Mixed references adjust only their relative part when filling down
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **B1** = `=$A1`
+
+**When** I fill from **B1** to **B3**
+
+**Then**
+- **B2** shows `2`
+- **B3** shows `3`
+- **B2** has formula `=$A2`
+- **B3** has formula `=$A3`
+
+#### A reference inside a string literal is not adjusted when filling down
+
+**Given**
+- **B1** = `="see A1"`
+
+**When** I fill from **B1** to **B3**
+
+**Then**
+- **B2** shows `see A1`
+- **B3** shows `see A1`
+- **B2** has formula `="see A1"`
+- **B3** has formula `="see A1"`
