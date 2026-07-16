@@ -3,17 +3,11 @@ title: "Bold a cell"
 description: "Ctrl+B (or the toolbar Bold button) toggles bold on the selection."
 ---
 
+{/* GENERATED — do not edit by hand */}
+
 ## What it does
 
 Select cells and press **Ctrl+B** — or click the **Bold (B)** button in the toolbar — to toggle bold. Bold is **presentation**, separate from the cell's value: bolding `=A1+B1` styles the number without touching the formula. It undoes and redoes like any other edit.
-
-## Try it
-
-<TrueCalc mode="standalone" seed="A1=hello" />
-
-## How it works
-
-Bold is stored alongside the cell's value and rides the same undo/redo history, but it never reaches the calc engine — TrueCalc still owns the value; formatting is pure presentation. It is the foundation for the rest of the formatting toolbar (italic, font, color, borders, alignment, merge…), which add more attributes along the same edit and render path.
 
 ## Verified behavior
 

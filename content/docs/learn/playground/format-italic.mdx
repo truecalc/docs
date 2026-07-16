@@ -1,0 +1,34 @@
+---
+title: "Italicize a cell"
+description: "Ctrl+I (or the toolbar Italic button) toggles italic on the selection."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and press **Ctrl+I** — or click the **Italic (I)** button in the toolbar — to toggle italic. Italic is **presentation**, separate from the cell's value: italicizing `=A1+B1` styles the number without touching the formula. It undoes and redoes like any other edit.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Ctrl+I toggles italic on the selected cells. Italic is a presentation attribute independent of the cell's value or formula, and it undoes/redoes like any edit. Toggling again removes it.
+
+#### Ctrl+I italicizes the selected cell
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+i`
+
+**Then**
+- **A1** is italic
+
+#### Ctrl+I a second time removes italic
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+i`, then press `Control+i`
+
+**Then**
+- **A1** is italic=false

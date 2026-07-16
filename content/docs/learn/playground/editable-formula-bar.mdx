@@ -1,0 +1,66 @@
+---
+title: "Editable formula bar"
+description: "Click the formula bar to edit the active cell's value or formula — Enter commits and moves down, Escape reverts, and it shares the one in-cell editing model (enter/edit mode, point mode, reference highlighting)."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+The formula bar above the grid is **editable**. Click it and the active cell opens
+for editing right there: type a literal or a formula, press **Enter** to commit
+(the cell recomputes and the selection moves **one row down**), or **Escape** to
+revert. It shows the cell's **raw content** — the `=…` formula, not the computed
+value — so it is where you read and rewrite a cell's formula.
+
+Editing in the bar is **the same edit** as editing in the cell — one editing
+session shown in two places. So everything the in-cell editor does, the bar does
+too: **enter-vs-edit mode**, caret-gated **formula point mode** (arrow keys steer
+a cell reference when the formula is expecting one), and **reference highlighting**
+— while you edit a formula, each distinct reference is **colored** in the bar and
+**outlined in the matching color** on the grid.
+
+## Try it
+
+With **A1 = 10** and **B1 = 20**, click **C1**, then click the **formula bar** and
+type `=A1+B1`. The references `A1` and `B1` light up in the bar (and outline on the
+grid) as you type. Press **Enter**: C1 shows **30**, the formula bar reads
+`=A1+B1`, and the selection drops to **C2**. Click **C1** again and press
+**Escape** midway through an edit to see it revert unchanged.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets the formula bar shows the active cell's raw content (a literal, or the `=…` formula rather than the computed value) and is editable: clicking it places a text caret and lets you edit that cell as an alternative to editing in the cell. Pressing Enter commits the value to the active cell, recomputes, and moves the selection one row down; Escape abandons the edit and leaves the cell unchanged. The formula bar and the in-cell editor are the SAME edit kept in sync — two views of one editing session, not two independent editors — so editing a formula in the bar behaves exactly like editing it in the cell, including caret-gated point mode (arrow keys steer a reference when the formula expects one) and reference highlighting (each distinct reference token is colored to match the colored outlines on the grid). Editing changes content only, never the cell's number format.
+
+#### Editing a formula in the bar's model commits it to the active cell and recomputes
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+
+**When** I type `=A1+B1` into **C1**
+
+**Then**
+- **C1** shows `30`
+- **C1** has formula `=A1+B1`
+
+#### Committing an edit replaces the cell's prior content
+
+**Given**
+- **A1** = `=5+5`
+
+**When** I type `42` into **A1**
+
+**Then**
+- **A1** shows `42`
+
+#### While editing a formula, its reference tokens are colored in the formula bar
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+
+**When** I click **C1**, then press `=`, then press `A`, then press `1`
+
+**Then**
+- `[data-testid="formula-content"] span[data-ref-color]` is visible

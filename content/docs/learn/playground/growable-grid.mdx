@@ -1,0 +1,62 @@
+---
+title: "Growable grid dimensions"
+description: "The grid grows to fit its content and the cursor's reach — importing or pasting past the default 100×26, or navigating off the bottom/right edge, extends the grid instead of hiding data."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+The grid used to be a fixed **100 rows × 26 columns**. The engine underneath is
+sparse (no dimension limit), so anything written past that rectangle — an
+imported CSV with more than 100 rows or more than 26 columns, a large paste — was
+**stored but unreachable**: you couldn't see it, scroll to it, or select it.
+
+Now the grid **grows to fit its content**. Its extent is derived from the active
+sheet: the larger of the compact default, the furthest cell that carries content,
+and wherever the cursor currently is. It's recomputed on every change — an edit,
+a **paste**, an **import**, undo/redo, a **sheet switch**, and a workbook load — so
+paint, scrolling, selection, and navigation (which all key off the extent) follow
+the data automatically.
+
+- **Import grows to fit.** After importing, the grid always includes the full
+ imported range. A 500-row / 40-column file is fully visible and scrollable.
+- **Grow on the edge.** Arrowing or Tabbing off the bottom/right edge adds a row
+ or column, Sheets-style, so you can always reach — and type into — the next
+ cell.
+- **Per sheet.** Each sheet sizes to its own content; switching sheets recomputes
+ the extent.
+
+Growth is bounded: imports are already capped by the import guardrail, so there
+is no unbounded dense span to size against.
+
+## Try it
+
+Import a CSV with a few hundred rows, or a wide one, and scroll down/right — every
+imported cell is there. Or select the last row and press the down arrow: the grid
+extends so the cursor keeps moving.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets the grid is not a fixed rectangle: it grows to fit your data. Importing or pasting a range that extends past the current last row/column enlarges the sheet so every imported cell is visible and scrollable — nothing is silently hidden below or to the right. Pressing the arrow keys or Tab at the bottom/right edge adds more rows/columns (Sheets appends rows as you reach the bottom), so you can always navigate to, and type into, a cell beyond the current edge. Each sheet in a multi-sheet workbook sizes to its OWN content.
+
+#### Imported data below the default extent is visible and reachable
+
+**Given**
+
+**When** I import `x,y,z`, then select **A150**
+
+**Then**
+- **A150** shows `x`
+- **B150** shows `y`
+- **C150** shows `z`
+- the active cell is **A150**
+
+#### Arrowing past the last default row grows the grid
+
+**Given**
+
+**When** I select **A100**, then press `ArrowDown`
+
+**Then**
+- the active cell is **A101**

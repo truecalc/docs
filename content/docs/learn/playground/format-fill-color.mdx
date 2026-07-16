@@ -1,0 +1,30 @@
+---
+title: "Set fill color"
+description: "The toolbar Fill color swatch sets the background (fill) color on the selection."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and click the **Fill color** swatch in the toolbar, then pick a color — the selected cells get that background color. Fill color is **presentation**, separate from the cell's value: filling `=A1+B1` paints the cell background without touching the formula or its computed value. It undoes and redoes like any other edit. Fill color is **toolbar-only** — Google Sheets has no keyboard shortcut for it, so Studio doesn't either.
+
+## Verification
+
+The scenario runner cannot drive a toolbar color swatch (it has no verb for it yet — a known gap tracked as a follow-up), so the manifest scenario above only asserts the driveable invariant (selecting a cell never changes its value/formula). The fill-application path itself is verified two other ways: the operation's unit tests assert `fillColorPatch('#fff2cc') === { fill: '#fff2cc' }` and the `styleContributor` wiring, and it is **browser-verified** — `applyFormat({ fill: '#fff2cc' })` paints the selected cell's background cream and undo reverts it. Full runner-driven E2E coverage lands once a toolbar-action verb exists.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, the Fill color control (the paint-bucket swatch in the toolbar) sets the background/fill color of the selected cells to a chosen color. Fill color is a presentation attribute independent of the cell's value or formula: it changes the cell's background, not what it computes to, and it undoes/redoes like any edit. Setting it does not alter the cell's stored value or formula. Google Sheets has no keyboard shortcut for fill color — it is toolbar-only.
+
+#### Selecting a formula cell leaves its value and formula unchanged (presentation-independence)
+
+**Given**
+- **A1** = `5`
+- **A2** = `=A1*2`
+
+**When** I click **A2**
+
+**Then**
+- **A2** shows `10`
+- **A2** has formula `=A1*2`

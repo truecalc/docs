@@ -1,0 +1,71 @@
+---
+title: "Import data (CSV, TSV, custom separator, XLSX)"
+description: "Bring an external file into the grid — delimited text or a spreadsheet — with values, dates, and formulas coming in through the same coercion as typing, as one undoable step."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Save, load, export → Import data…** brings an external file into Studio. Pick a file and the options dialog opens:
+
+- **Delimited text** — CSV, TSV, or a **custom single-character separator**. CSV-vs-TSV is auto-detected as the default; a custom field lets you type any separator (`;`, `|`, …).
+- **XLSX** — a real spreadsheet workbook. The first sheet imports by default; a multi-tab workbook lets you pick one sheet or bring in **all sheets** (one Studio sheet each).
+
+You choose the **destination**: a **new sheet** (named from the file — the default), or the **current sheet starting at your selection**.
+
+Everything happens **on your device** — the file is read with the browser's FileReader (delimited) or as an in-memory ArrayBuffer (XLSX) and never uploaded, so import works offline and in try mode.
+
+## Try it
+
+<TrueCalc mode="standalone" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, File → Import lets you bring in a CSV/TSV/custom-separator text file or an.xlsx workbook. Imported cells are interpreted exactly as if typed: a bare number becomes a number, a date string like "7/15/2026" becomes a real (computable) date, and a cell beginning "=" becomes a formula that evaluates. A delimited parser respects double-quoted fields, so a quoted field keeps embedded separators, embedded newlines, and doubled quotes ("") as literal text. You choose where the data lands (a new sheet, or the current sheet at the selection) and, for a multi-tab workbook, which sheet(s) to bring in. The whole import is a single action that one Undo reverts.
+
+#### Imported cells get the right types (number, date, formula)
+
+**Given**
+
+**When** I import `10,20,=A1+B1\n7/15/2026`
+
+**Then**
+- **A1** shows `10`
+- **B1** shows `20`
+- **C1** shows `30`
+- **A2** shows `46218`
+- **C1** has formula `=A1+B1`
+- **A2** is numberFormat=date
+
+#### One Undo reverts the whole import
+
+**Given**
+
+**When** I import `10,20,=A1+B1\n7/15/2026`, then click **A1**, then undo
+
+**Then**
+- **A1** shows `null`
+- **B1** shows `null`
+- **C1** shows `null`
+- **A2** shows `null`
+
+#### Quoted fields keep embedded separators
+
+**Given**
+
+**When** I import `"a,b",c`
+
+**Then**
+- **A1** shows `a,b`
+- **B1** shows `c`
+
+#### A custom separator splits columns
+
+**Given**
+
+**When** I import `p	q` (separator `	`)
+
+**Then**
+- **A1** shows `p`
+- **B1** shows `q`

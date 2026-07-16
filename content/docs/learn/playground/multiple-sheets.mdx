@@ -1,0 +1,90 @@
+---
+title: "Multiple sheets (tabs and cross-sheet references)"
+description: "A workbook holds several named sheets shown as tabs (add / switch / rename / delete / reorder); a formula on one sheet can reference another (=Sheet2!A1), computing and recalculating across sheets."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A workbook is no longer a single grid — it holds an ordered set of **sheets**, shown as **tabs** along a bottom bar (the Google-Sheets convention). You can:
+
+- **Switch** sheets by clicking a tab. Each sheet has its own independent cells and formats.
+- **Add** a sheet with the **`+`** button — it appends the next free `Sheet<N>` and switches to it.
+- **Rename** a sheet by double-clicking its tab (or the tab menu → Rename). A blank or colliding name is rejected inline.
+- **Delete** a sheet from its tab menu (unavailable when only one sheet remains — a workbook always keeps at least one).
+- **Reorder** with the tab menu's **Move left / Move right** (clamped at the ends).
+
+And a formula on one sheet can **reference another**: `=Sheet2!A1` (a name with spaces is quoted, `='Q2 Data'!A1`). The value computes, and editing the precedent on the other sheet immediately recalculates the dependent. Add / rename / delete / reorder are all **undoable**; switching the active tab is a view change, not an undo step.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets a workbook is a set of sheets shown as tabs along the bottom bar. The "+" button appends a new sheet named the next free Sheet<N> and switches to it; clicking a tab activates that sheet (each sheet has its own independent cells and formats); a tab's menu (or right-click) offers Rename, Delete, and Move left / Move right (reorder), with Delete unavailable when only one sheet remains and Move clamped at the ends. A formula references another sheet with the SheetName!A1 qualifier (a name with spaces is quoted: ='Q2 Data'!A1); the referenced value computes, and editing the precedent on the other sheet immediately recalculates the dependent. Filling or copy-pasting a cross-sheet formula shifts the row/column by the usual relative-reference rules while the sheet name stays fixed. Deleting a sheet that other formulas reference makes those dependents show #REF!. Add / rename / delete / reorder are all undoable; switching the active tab is a view change, not an undo step. Two behaviors Studio defers (documented divergences, not silently missing): a rename does not yet rewrite references to that sheet living on OTHER sheets, and clicking another sheet's tab mid-formula to point-insert its reference isn't wired (typing the reference works fully).
+
+#### A reference to another sheet computes (=Sheet2!A1)
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `5` into **A1**, then switch to sheet **Sheet1**, then type `=Sheet2!A1` into **A1**
+
+**Then**
+- **A1** shows `5`
+- **A1** has formula `=Sheet2!A1`
+
+#### Editing the precedent on Sheet2 recalcs the dependent on Sheet1
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `5` into **A1**, then switch to sheet **Sheet1**, then type `=Sheet2!A1` into **A1**, then switch to sheet **Sheet2**, then type `9` into **A1**, then switch to sheet **Sheet1**
+
+**Then**
+- **A1** shows `9`
+
+#### Filling a cross-sheet formula down keeps the sheet name and shifts the row
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `5` into **A1**, then type `6` into **A2**, then switch to sheet **Sheet1**, then type `=Sheet2!A1` into **A1**, then fill from **A1** to **A2**
+
+**Then**
+- **A1** shows `5`
+- **A2** shows `6`
+- **A1** has formula `=Sheet2!A1`
+- **A2** has formula `=Sheet2!A2`
+
+#### Add appends a new sheet and switches to it
+
+**Given**
+
+**When** I add a sheet (switching to it)
+
+**Then**
+- `[aria-label="Sheet tabs"]` is visible containing "Sheet2"
+
+#### Deleting a referenced sheet makes the dependent
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `5` into **A1**, then switch to sheet **Sheet1**, then type `=Sheet2!A1` into **A1**, then delete sheet **Sheet2**
+
+**Then**
+- **A1** shows `#REF!`
+
+#### Undo restores a deleted sheet with its data and the reference recomputes
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `5` into **A1**, then switch to sheet **Sheet1**, then type `=Sheet2!A1` into **A1**, then delete sheet **Sheet2**, then click **A1**, then undo
+
+**Then**
+- **A1** shows `5`
+
+#### Renaming the active sheet keeps its own cells reachable
+
+**Given**
+
+**When** I add a sheet (switching to it), then type `7` into **A1**, then rename sheet **Sheet2** to **Data**
+
+**Then**
+- **A1** shows `7`
+- `[aria-label="Sheet tabs"]` is visible containing "Data"

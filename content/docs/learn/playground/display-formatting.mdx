@@ -1,0 +1,118 @@
+---
+title: "Format how a cell's value is displayed"
+description: "Show a number as currency, percent, a plain grouped number, or a date — and step its decimal places — without ever changing the underlying value."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and press **Ctrl+Shift+4** for currency (`$1,234.50`), **Ctrl+Shift+5** for
+percent (`0.1257` → `12.57%`), **Ctrl+Shift+1** for a plain grouped number (`1,234.50`),
+**Ctrl+Shift+3** to read a serial as a date (`45852` → `7/14/2025`), or **Ctrl+Shift+2**
+for a date + time (`46218.5` → `7/15/2026 12:00:00`) — or use the toolbar's
+**$ · % · decrease/increase-decimals · 123 · date · date-time** group. Re-applying an
+
+A value that carries a time-of-day reads as a date + time **automatically**, no format
+needed: `=NOW` comes back from the engine as a Date-typed fractional serial and shows
+as `7/15/2026 0:39:39` (Google Sheets' default), while a whole-day date like `=TODAY`
+shows as just `7/15/2026`.
+active category (or clicking its pressed button) reverts to automatic.
+
+Formatting is **presentation only**: it changes how the value reads, never the value
+itself. Format a `=A1/B1` cell as a percent and the formula and its computed ratio are
+untouched — only the display changes. Errors always show their code clearly (`#DIV/0!`,
+`#REF!`, `#VALUE!`, …), whatever number format the cell carries.
+
+## Verified behavior
+
+_Matches Google Sheets:_ A cell's number format is grid-owned PRESENTATION: it changes only the displayed string, never the stored value or formula (the formula bar still shows the raw value, and the format undoes/redoes like any edit). Applying currency to 1234.5 shows $1,234.50; to -42 shows -$42.00 (Google Sheets puts the minus before the $, not accounting parentheses). Percent scales by 100 and suffixes % with two decimals and no thousands grouping, so 0.1257 shows 12.57%. The Number format is thousands-grouped with two decimals (1,234.50). A date format renders a serial as M/D/YYYY (serial 45852 → 7/14/2025; Sheets' serial epoch is 1899-12-30). A datetime format renders a serial as M/D/YYYY H:MM:SS (the fraction is the time of day: 46218.5 → 7/15/2026 12:00:00; the whole-day 46218 → 7/15/2026 0:00:00). Google Sheets also DEFAULTS a value that carries a time-of-day to a datetime display: =NOW returns a Date-typed fractional serial and reads as date + time out of the box, while a whole-day date (=TODAY) reads as just the date. Increase/ decrease-decimals add or remove one decimal place from the current number format. Re-applying an already-active category clears it back to automatic. In Google Sheets the shortcuts are Number Ctrl+Shift+1, Date Ctrl+Shift+3, Currency Ctrl+Shift+4, Percent Ctrl+Shift+5, Time Ctrl+Shift+2 (Studio's datetime format takes that slot); decrease/increase-decimals are toolbar-only. A formula error shows its code clearly (#DIV/0!, #REF!, #VALUE!, …), regardless of any number format.
+
+#### Currency format is applied without changing the value
+
+**Given**
+- **A1** = `1234.5`
+
+**When** I click **A1**, then press `Control+Shift+4`
+
+**Then**
+- **A1** shows `1234.5`
+- **A1** is numberFormat=currency
+
+#### Percent format is applied without changing the value
+
+**Given**
+- **A1** = `0.1257`
+
+**When** I click **A1**, then press `Control+Shift+5`
+
+**Then**
+- **A1** shows `0.1257`
+- **A1** is numberFormat=percent
+
+#### Date format is applied to a serial without changing the value
+
+**Given**
+- **A1** = `45852`
+
+**When** I click **A1**, then press `Control+Shift+3`
+
+**Then**
+- **A1** shows `45852`
+- **A1** is numberFormat=date
+
+#### Number format is applied without changing the value
+
+**Given**
+- **A1** = `1234.5`
+
+**When** I click **A1**, then press `Control+Shift+1`
+
+**Then**
+- **A1** shows `1234.5`
+- **A1** is numberFormat=number
+
+#### Datetime format is applied to a serial without changing the value
+
+**Given**
+- **A1** = `46218.5`
+
+**When** I click **A1**, then press `Control+Shift+2`
+
+**Then**
+- **A1** shows `46218.5`
+- **A1** is numberFormat=datetime
+
+#### NOW is a Date-typed serial anchored to today (its time-of-day fraction reads as a datetime)
+
+**Given**
+- **A1** = `=NOW`
+- **B1** = `=INT(A1)=TODAY`
+
+**When** I click **A1**
+
+**Then**
+- **B1** shows `true`
+- **A1** has formula `=NOW`
+
+#### Re-applying the same category clears it back to automatic
+
+**Given**
+- **A1** = `1234.5`
+
+**When** I click **A1**, then press `Control+Shift+4`, then press `Control+Shift+4`
+
+**Then**
+- **A1** shows `1234.5`
+- **A1** is numberFormat=false
+
+#### A format is undoable and leaves the value untouched
+
+**Given**
+- **A1** = `0.1257`
+
+**When** I click **A1**, then press `Control+Shift+5`, then undo
+
+**Then**
+- **A1** shows `0.1257`
+- **A1** is numberFormat=false
