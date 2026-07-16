@@ -1,0 +1,49 @@
+---
+title: "Add borders to cells"
+description: "The Borders toolbar popover applies Google-Sheets border modes (all/inner/outer/side/clear) in a chosen color + line style; Ctrl+Shift+7 toggles all borders."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and open the **Borders** button (the grid icon) in the toolbar to apply borders like Google Sheets. The popover offers a grid of **ten modes** — all borders, inner, inner-horizontal, inner-vertical, outer (box), the four single sides, and clear — plus a **border color** and a **line style** (thin / medium / thick / dashed / dotted / double). Pick a color and style, then click a mode to stroke the matching edges across the selection.
+
+Applying a mode is **additive across positions but a clean replace on each targeted edge** (verified against Sheets): adding a top border then a left border leaves both drawn, and applying _outer_ over _all borders_ keeps the interior lines — but re-applying a mode over an edge re-paints just that edge in the current pen (change the style to thick and re-apply and the edge becomes uniformly thick, never a doubled line). **Clear** removes every border. The keyboard chord **Ctrl+Shift+7** applies all borders (and toggles them off when the cell is already a full box).
+
+Borders are **presentation**, separate from the cell's value: bordering `=A1+B1` draws around the number without touching the formula. They undo and redo like any other edit.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets the Borders toolbar button opens a popover with a grid of ten border modes — all, inner, inner-horizontal, inner-vertical, outer (box), the four single sides (left/top/right/bottom), and clear — plus a border-color picker and a line-style picker (thin/medium/thick/dashed/dotted/double, default thin solid black). Applying a mode sets the targeted edges of the selection to the current color+style and leaves other existing edges untouched (additive per edge); Clear removes all borders. Ctrl+Shift+7 applies all borders and toggles them off when the cell is already fully bordered. Borders are a presentation attribute independent of the cell's value or formula, and they undo/redo like any edit.
+
+#### Ctrl+Shift+7 adds all borders (thin solid black) to the selected cell
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+7`
+
+**Then**
+- **A1** is borders=`{"top":{"style":"solid","weight":"thin","color":"#000000"},"right":{"style":"solid","weight":"thin","color":"#000000"},"bottom":{"style":"solid","weight":"thin","color":"#000000"},"left":{"style":"solid","weight":"thin","color":"#000000"}}`
+
+#### Ctrl+Shift+7 a second time removes the borders
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then press `Control+Shift+7`, then press `Control+Shift+7`
+
+**Then**
+- **A1** is borders=false
+
+#### borders are presentation only — the value is untouched
+
+**Given**
+- **A1** = `=2+3`
+
+**When** I click **A1**, then press `Control+Shift+7`
+
+**Then**
+- **A1** shows `5`
+- **A1** has formula `=2+3`

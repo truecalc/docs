@@ -1,0 +1,43 @@
+---
+title: "Click-to-revert and where your data lives"
+description: "Clicking a history entry's Restore button non-destructively restores the document to that state — recording a new version and keeping every prior version (Google Sheets \"Restore this version\"), repeated identical ops collapse into one timeline row, and the chrome states plainly that the workbook + its history live in the browser only and warns before an unsaved tab closes."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+The **History** panel is now interactive. Each entry carries an explicit, always-visible **"Restore" button** (Google Sheets Version History's "Restore this version" pattern — discoverable without hovering, keyboard-accessible); pressing it **non-destructively restores the document to that state** — it records a _new_ version at the top of the timeline and keeps every prior version, so nothing is lost (undo the restore to step back out of it). **Hovering** an entry previews it: the cells it touched light up on the grid (a transient amber highlight that clears when you move away), and the entry shows **what changed** — a `before → after` for a single value edit (e.g. `10 → 20`), or a short summary for a formatting change ("fill color") or a multi-cell edit ("3 cells"). Consecutive identical operations on the same cell (the 8× repeated date-format on `C5` seen in dogfooding) **collapse into a single row** with a `×N` badge, so the timeline stays legible. Timestamps are **human-readable** — "just now", "2 min ago", "Today 3:45 PM", "Yesterday", then a date like "Jul 14" for older entries — with the exact absolute time available on hover.
+
+The chrome now also tells you, at a glance, **where the current document and its history actually live**. Today the playground is standalone: the workbook is held **in your browser only** and is lost if you close the tab. A footer strip states this ("Not saved — this workbook lives in your browser and is lost if you close the tab."), the History panel header says "History is kept in this browser only", and closing the tab with unsaved edits **warns you first**.
+
+## Deferred to storage persistence
+
+The **persistent** half of this design waits on history persistence and the anonymous→account handoff. The restore semantics here are already the final, non-destructive ones; what's deferred is making the history and its versions _durable_:
+
+- **Persistent, cross-device version history** — the same non-destructive restore, but with versions saved server-side so they survive reload and other devices, rather than living only in this browser session. This PR ships the in-browser non-destructive restore; durability is.
+- **Account-saved history**, the `local` and `account` indicator states going live, and the **"Sign in to save"** upgrade CTA from standalone.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Restoring to a past state matches Google Sheets File → Version history: picking a version and clicking "Restore this version" does NOT discard the versions in between — it makes a NEW current version equal to the chosen one and keeps the full history intact, and the restore is itself undoable. The standalone restore here is exactly that (non-destructive, create-a-new-version), driven from the timeline. The undo/redo of individual edits follows Sheets' Ctrl+Z — whole-edit steps, and a fresh edit clears the redo branch. The "where your data lives" signaling has no direct Sheets cell-behavior to replicate: Sheets always runs in one persistent, Drive-saved mode ("All changes saved in Drive") and never exposes a browser-only/at-risk mode, so the mode indicator + data-loss guard are a TrueCalc-original response to the playground being client-side with no account (a light oracle pass — this is Studio UX, not a cell computation).
+
+#### Undo steps back through edits and a new edit clears the redo branch (the restore substrate)
+
+**Given**
+- **A1** = `1`
+
+**When** I type `2` into **A1**, then type `3` into **A1**, then undo, then undo, then type `9` into **A1**, then redo
+
+**Then**
+- **A1** shows `9`
+
+#### The chrome states the workbook lives in the browser and is lost on close
+
+**Given**
+- **A1** = `1`
+
+**When** I click **A1**
+
+**Then**
+- `[aria-label="Storage status"]` is visible containing "lives in your browser"

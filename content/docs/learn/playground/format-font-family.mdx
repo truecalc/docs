@@ -1,0 +1,28 @@
+---
+title: "Change a cell's font family"
+description: "The toolbar Font dropdown sets the selection's font family (Default / Serif / Mono)."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Pick a font family for the selected cells from the **Font** dropdown in the toolbar — **Default** (`system-ui`), **Serif** (Georgia), or **Mono** (Courier New). Font family is **presentation**, separate from the cell's value: changing the family of `=A1+B1` styles the number without touching the formula. It undoes and redoes like any other edit.
+
+## Testing note
+
+The manifest scenario runner drives the canvas and keyboard only — it has no verb for clicking a toolbar control — so the family-change interaction is not yet expressible as a runnable scenario. It is verified end-to-end via agent-browser (change the Font `select`, then assert `window.__store.formatAt('A1').fontFamily`) and by colocated unit tests over the control's pure `apply`/`getValue` and the render `styleContributor`. Adding a `select` verb to the runner would let this feature carry a full runnable scenario like font size does.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Font family is a per-cell presentation attribute, independent of the cell's value or formula, that undoes/redoes like any edit. In the Google editors it is chosen from a toolbar Font dropdown (there is no keyboard shortcut); choosing a family applies it to the whole selection, and an unformatted cell renders in the grid's default family until one is chosen.
+
+#### Selecting an unformatted cell keeps its value (default family)
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `x`

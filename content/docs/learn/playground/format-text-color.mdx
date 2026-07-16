@@ -1,0 +1,30 @@
+---
+title: "Set text color"
+description: "The toolbar Text color swatch sets the text (foreground) color on the selection."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and click the **Text color** swatch in the toolbar, then pick a color — the selected cells' text is drawn in that color. Text color is **presentation**, separate from the cell's value: coloring `=A1+B1` restyles the number without touching the formula or its computed value. It undoes and redoes like any other edit. Text color is **toolbar-only** — Google Sheets has no keyboard shortcut for it, so Studio doesn't either.
+
+## Verification
+
+The scenario runner cannot drive a toolbar color swatch (it has no verb for it yet — a known gap tracked as a follow-up), so the manifest scenario above only asserts the driveable invariant (selecting a cell never changes its value/formula). The color-application path itself is verified two other ways: the operation's unit tests assert `textColorPatch('#ff0000') === { color: '#ff0000' }` and the `styleContributor` wiring, and it is **browser-verified** — `applyFormat({ color: '#ff0000' })` renders the selected cell's text red and undo reverts it. Full runner-driven E2E coverage lands once a toolbar-action verb exists.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, the Text color control (the "A" swatch in the toolbar) sets the foreground/text color of the selected cells to a chosen color. Text color is a presentation attribute independent of the cell's value or formula: it changes how the value is drawn, not what it computes to, and it undoes/redoes like any edit. Setting it does not alter the cell's stored value or formula. Google Sheets has no keyboard shortcut for text color — it is toolbar-only.
+
+#### Selecting a formula cell leaves its value and formula unchanged (presentation-independence)
+
+**Given**
+- **A1** = `5`
+- **A2** = `=A1*2`
+
+**When** I click **A2**
+
+**Then**
+- **A2** shows `10`
+- **A2** has formula `=A1*2`

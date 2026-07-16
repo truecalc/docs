@@ -3,6 +3,8 @@ title: "Fill a formula across cells"
 description: "Drag to extend a formula; references adjust automatically."
 ---
 
+{/* GENERATED — do not edit by hand */}
+
 ## What it does
 
 Drag the fill handle at the bottom-right of a selection (or press **Ctrl+D** to fill down, **Ctrl+R** to fill right) to extend a formula. Relative references shift automatically, and TrueCalc recomputes every filled cell.
@@ -10,10 +12,6 @@ Drag the fill handle at the bottom-right of a selection (or press **Ctrl+D** to 
 ## Try it
 
 <TrueCalc mode="standalone" seed="A1=10;A2==A1+1" />
-
-## How it works
-
-TrueCalc owns the calc. Filling adjusts the formula **text** — relative references shift, `$`-anchored ones stay fixed — and recomputes through the single engine. There is no second engine to reconcile, which is exactly why fill behaves like Google Sheets here.
 
 ## Verified behavior
 

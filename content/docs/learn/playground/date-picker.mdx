@@ -1,0 +1,112 @@
+---
+title: "Pick a date from a calendar"
+description: "Double-clicking a date cell opens a calendar popover; picking a day writes that date (serial + date format) through the normal edit path — the Google Sheets affordance, not a text edit."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Double-click a cell that holds a **date** and Studio opens a small **calendar popover**
+right at the cell — exactly like Google Sheets. Pick a day and that date lands in the cell:
+because the cell is a real date, it stores the date **serial** and keeps its date format, so
+it still reads as **`7/20/2026`** and **`=A1+1`** still gives the next day. It's the fast,
+visual way to enter or fix a date — the companion to typing a date and
+rendering one.
+
+The calendar opens on the **month of the cell's current date**, with that day highlighted;
+an empty date cell opens on the current month. Month and year controls page the view, and
+the header shows the displayed **Month Year**.
+
+It's fully **keyboard-accessible**: arrow keys move the highlighted day (left/right a day,
+up/down a week — crossing month boundaries), **Enter** picks it, and **Escape** closes the
+popover without changing the cell. A **non-date** cell is untouched — double-clicking it
+opens the normal in-cell editor, never the picker.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, double-clicking a DATE-formatted cell opens a small CALENDAR popover anchored at the cell, showing the month of the cell's current date with that day selected (an empty date cell opens on the current month with nothing selected). Picking a day writes that date into the cell: because the cell is a real date, the stored value is the date SERIAL (days since the 1899-12-30 epoch; 2026-07-15 = 46218) and the cell keeps its date number format, so it still displays as M/D/YYYY (US locale) and `=<cell>+1` still gives the next day — real calc, not text. The popover has month and year navigation (a header showing the displayed Month Year) and is keyboard-accessible: arrow keys move the highlighted day (left/right by a day, up/down by a week, crossing month boundaries), Enter picks the highlighted day, and Escape closes WITHOUT committing (the cell keeps its prior value). A NON-date cell double-click opens the normal in-cell editor instead — the picker is specific to date cells, and the picker and the inline editor are never open at the same time. The value ground truth is anchored to the same engine DATEVALUE authority as (7/15/2026 = 46218, 7/16 = 46219, 7/20 = 46223, 7/22 = 46225): a picked day is written as a US M/D/YYYY literal, which re-parses to the serial through the existing date-literal coercion. This is the visual, faster companion to (typing a date) and (rendering a date).
+
+#### Double-clicking a date cell opens the calendar popover
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**
+
+**Then**
+- `[data-slot="date-picker"]` is visible containing "July 2026"
+
+#### Reopening the picker re-seeds the view to the cell's month, not a navigated one
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then press `PageDown`, then double-click **A1** again to reopen the calendar
+
+**Then**
+- `[data-slot="date-picker"]` is visible containing "July 2026"
+
+#### Picking a day commits the serial and keeps the date format
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then pick day **20** in the calendar
+
+**Then**
+- **A1** shows `46223`
+- **A1** is numberFormat=date
+
+#### A picked date still computes — =A1+1 is the next day
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then pick day **20** in the calendar, then type `=A1+1` into **A2**
+
+**Then**
+- **A1** shows `46223`
+- **A2** shows `46224`
+
+#### Keyboard — ArrowRight then Enter picks the next day
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then press `ArrowRight`, then press `Enter`
+
+**Then**
+- **A1** shows `46219`
+- **A1** is numberFormat=date
+
+#### Keyboard — ArrowDown then Enter picks a week later
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then press `ArrowDown`, then press `Enter`
+
+**Then**
+- **A1** shows `46225`
+
+#### Escape closes the picker without committing
+
+**Given**
+- **A1** = `7/15/2026`
+
+**When** I double-click **A1**, then press `Escape`
+
+**Then**
+- **A1** shows `46218`
+- `[data-slot="date-picker"]` is hidden
+
+#### A non-date cell double-click does not open the picker
+
+**Given**
+- **A1** = `hello`
+
+**When** I double-click **A1**
+
+**Then**
+- `[data-slot="date-picker"]` is hidden

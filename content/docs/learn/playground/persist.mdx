@@ -1,0 +1,46 @@
+---
+title: "Save, load, and export a workbook"
+description: "Save/Load round-trip the whole workbook (cells + formats) through browser storage; Export writes it out as JSON, CSV, or XLSX."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A **File** control in the toolbar (the save icon, rightmost group) opens a menu:
+
+- **Save to browser** — writes the whole workbook (every cell's raw input + every cell's format) to local storage, in one slot.
+- **Load from browser** — reads that slot back and **replaces** the current workbook with it exactly: cells and formats not in the saved copy are cleared, not merged.
+- **Import JSON file…** — the same replace, from a `.json` file picked via a file input (for moving a workbook between browsers/machines, not just within one).
+- **Export JSON** — downloads the same canonical JSON as Save writes, as a file.
+- **Export CSV** — downloads the resolved grid values as CSV.
+- **Export XLSX** — downloads a `.xlsx` workbook (values + formulas + cell formatting) built with `exceljs`, lazy-loaded only when this button is used so it never bloats the app's initial bundle.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets autosaves continuously to Drive, and separately offers File → Download as a one-way export (XLSX / CSV / … ) of the current sheet's values and formulas. Studio has no server, so "save" here is the equivalent local primitive: File → Save writes the ENTIRE workbook — every cell's raw input (literal or formula) and every cell's presentation format (bold, italic, color, fill, …) — to the browser's local storage, keyed by one slot ("the workbook"); File → Load reads that slot back and REPLACES the current workbook with it exactly, byte-for-byte, the same way opening a saved Sheets file replaces what's on screen. Export mirrors Sheets' Download menu: JSON is Studio's own canonical schema (not a Sheets format, so there is no Sheets ground truth to match — it exists so the saved data is inspectable/portable); CSV is the resolved (computed) grid values, comma/quote/newline-escaped per RFC 4180, matching what Sheets' "Download → csv" produces for a single sheet; XLSX carries both the resolved value AND the formula text per cell (SheetJS `{t, v, f}` cells), like Sheets' "Download → xlsx" — opening it in Excel shows the same formula, best-effort (TrueCalc's formula syntax is Sheets-flavored and is written through unadjusted, so an Excel-specific function could fail to recalculate there; the resolved value is unaffected either way).
+
+#### A literal, a formula, and a format together are exactly what gets captured
+
+**Given**
+- **A1** = `10`
+
+**When** I type `=A1*2` into **A2**, then click **A2**, then press `Control+b`
+
+**Then**
+- **A1** shows `10`
+- **A2** shows `20`
+- **A2** has formula `=A1*2`
+- **A2** is bold
+
+#### Undo after formatting still leaves a value/formula round-trip-able
+
+**Given**
+- **A1** = `5`
+
+**When** I type `=A1+1` into **B1**, then click **B1**, then press `Control+b`, then undo
+
+**Then**
+- **B1** shows `6`
+- **B1** has formula `=A1+1`
+- **B1** is bold=false
