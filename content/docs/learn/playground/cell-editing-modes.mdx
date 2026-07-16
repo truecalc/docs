@@ -1,0 +1,99 @@
+---
+title: "Enter mode vs edit mode"
+description: "Typing seeds a fresh value and arrows commit + move; F2 / Enter / double-click open the cell for editing so arrows move the caret; in a formula an arrow only steers a reference when the caret sits at a reference-valid position — so editing a formula never corrupts it."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+There are two ways to start editing a cell, and they treat the arrow keys
+differently — exactly like Google Sheets:
+
+- **Enter mode** — *type a character*. It replaces the cell's contents, and pressing
+ an **arrow commits the value and moves the selection** one cell in that direction
+ (the fast data-entry flow: `42` → Down → `7` → Down …).
+- **Edit mode** — press **F2**, press **Enter** on a selected cell, or
+ **double-click**. The existing content opens with a **caret**, and **arrows move
+ the caret** through the text (**Home** / **End** jump to the ends). Double-click
+ drops the caret near where you clicked.
+
+## Editing a formula (point mode)
+
+While editing a **formula**, an arrow key does one of two things depending on where
+the caret is:
+
+- **Steer a reference** ("point mode") — only when the caret is at the **end** of the
+ text, right after `=`, an operator (`+ - * / ^ & < > =`), `(` or `,`. This is how you
+ build a formula by pointing: type `=`, arrow to a cell; type `+`, arrow to the next.
+- **Move the caret** — everywhere else. Moving the caret through a completed formula
+ such as `=B2+B1+C1` **never** rewrites a reference into it.
+
+This caret gate is the fix for a data-corruption bug: previously *any* arrow, at any
+caret position, rewrote a reference into a formula you were only trying to move the
+caret through (`=B2+B1` → `=B2+B1+D42+C1`).
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1==B2+B1+C1;B1=10;B2=20;C1=3" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets there are two ways an in-cell edit begins, and they behave differently. TYPING a character starts "enter" mode: the character replaces the cell's contents and pressing an arrow commits the value and moves the selection one cell in that direction. F2, Enter on a selected cell, or a DOUBLE-CLICK start "edit" mode: the existing text opens with a caret and arrows move the caret through it (Home/End jump to the ends). While editing a FORMULA, an arrow steers a cell reference ("point mode") ONLY when the caret sits at the end of the text right after "=", an operator, "(" or "," — i.e. the formula is expecting a reference next. Anywhere else the arrow moves the caret, so moving through an existing formula such as =B2+B1+C1 never rewrites a reference into it. Every edit is undoable.
+
+#### Typing a value then pressing an arrow commits it (enter mode)
+
+**Given**
+
+**When** I click **A1**, then press `4`, then press `2`, then press `ArrowDown`
+
+**Then**
+- **A1** shows `42`
+
+#### Editing a formula with arrows moves the caret and never corrupts it
+
+**Given**
+- **A1** = `=B2+B1+C1`
+- **B1** = `10`
+- **B2** = `20`
+- **C1** = `3`
+
+**When** I click **A1**, then press `F2`, then press `ArrowLeft`, then press `ArrowLeft`, then press `ArrowRight`, then press `Enter`
+
+**Then**
+- **A1** shows `33`
+- **A1** has formula `=B2+B1+C1`
+
+#### Arrowing from the start through a formula inserts no references
+
+**Given**
+- **A1** = `=B2+B1`
+- **B1** = `10`
+- **B2** = `20`
+
+**When** I click **A1**, then press `F2`, then press `Home`, then press `ArrowRight`, then press `ArrowRight`, then press `ArrowRight`, then press `Enter`
+
+**Then**
+- **A1** shows `30`
+- **A1** has formula `=B2+B1`
+
+#### Point mode — typing = then arrowing inserts a reference
+
+**Given**
+- **B1** = `10`
+
+**When** I click **A1**, then press `=`, then press `ArrowRight`, then press `Enter`
+
+**Then**
+- **A1** shows `10`
+- **A1** has formula `=B1`
+
+#### An edit is undoable
+
+**Given**
+- **A1** = `5`
+
+**When** I click **A1**, then press `9`, then press `Enter`, then undo
+
+**Then**
+- **A1** shows `5`

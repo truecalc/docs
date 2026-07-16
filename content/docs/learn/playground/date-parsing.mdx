@@ -1,0 +1,116 @@
+---
+title: "Type a date and get a real date"
+description: "Typing a date string (7/15/2026, 2026-07-15, Jul 15 2026) stores a computable date serial and auto-formats the cell as a date — instead of leaving it as inert text."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Type a date the way you'd say it — **`7/15/2026`**, **`2026-07-15`**, **`Jul 15 2026`** —
+and Studio stores a real **date serial** and formats the cell as a date, exactly like
+Google Sheets. The value computes: put **`=A1+1`** next to a typed date and you get the
+**next day**. Without this, a typed date was inert **text**, and applying the date format
+ did nothing to it.
+
+Recognition is conservative — it never turns your text into a number by accident. A lone
+month name (`Jan`), ordinary words, and a bare number (`46218`, already numeric) are left
+exactly as typed. The month comes first (US locale): `7/15/2026` is July 15; `15/7/2026`
+has no 15th month, so it stays text. Impossible dates (`2/29/2026`, `13/13/2026`) stay
+text too.
+
+**Accepted formats** (all map `2026-07-15` → serial `46218`): `M/D/YYYY`, `M/D/YY`,
+`YYYY-MM-DD`, `YYYY/MM/DD`, `Mon D[,] YYYY`, `Month D[,] YYYY`, `D-Mon-YYYY`.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, typing a recognized date literal creates a REAL date, not text: the cell stores a date serial (days since the 1899-12-30 epoch; 2026-07-15 = 46218) and Sheets AUTO-APPLIES a date number format on recognition, so it displays as a date (M/D/YYYY in this US-locale workbook) and is right-aligned. Because the value is a serial, =<cell>+1 gives the next day. Editing the cell (or reading the formula bar) shows the DATE (7/15/2026), never the raw serial — and because that date string is an accepted input, committing it unchanged re-parses to the same serial (round-trip). Only dates are shown formatted while editing; other number formats show the raw number (you edit 1234.5, not $1,234.50). The accepted formats (US M/D/Y locale) include M/D/YYYY, M/D/YY, YYYY-MM-DD, YYYY/MM/DD, Mon D[,] YYYY, Month D[,] YYYY, and D-Mon-YYYY — all mapping 2026-07-15 to serial 46218. Validity is enforced (2/29/2024 is a date; 2/29/2026 and 13/13/2026 are not, and stay text), and the month comes first (15/7/2026 is not a date in this locale). A lone month name (Jan), ordinary text, and a bare number (46218 is already numeric) are NOT auto-converted. This is the input-parsing companion to, which rendered a serial as a date but did nothing to typed text. Separately, a Date-TYPED engine value — =TODAY, =DATE(y,m,d), or date arithmetic that stays a date like =DATE(...)+1 — displays as a date automatically, with no explicit numberFormat, because the engine owns the date-ness (Sheets: arithmetic on a date stays a date). (A known gap: =<typed-date-cell>+1 currently shows the serial, because Studio stores a typed date as a plain-number serial rather than a Date-typed value — the engine has no date-typed literal input yet; tracked as a core follow-up.)
+
+#### Typing M/D/YYYY stores a serial and auto-applies a date format
+
+**Given**
+
+**When** I type `7/15/2026` into **A1**
+
+**Then**
+- **A1** shows `46218`
+- **A1** is numberFormat=date
+
+#### ISO YYYY-MM-DD is recognized the same way
+
+**Given**
+
+**When** I type `2026-07-15` into **A1**
+
+**Then**
+- **A1** shows `46218`
+- **A1** is numberFormat=date
+
+#### A month-name date (Mon D YYYY) is recognized
+
+**Given**
+
+**When** I type `Jul 15 2026` into **A1**
+
+**Then**
+- **A1** shows `46218`
+- **A1** is numberFormat=date
+
+#### A typed date computes as a serial — =A1+1 is the next day
+
+**Given**
+
+**When** I type `7/15/2026` into **A1**, then type `=A1+1` into **A2**
+
+**Then**
+- **A1** shows `46218`
+- **A2** shows `46219`
+
+#### A lone month name stays text (no false positive)
+
+**Given**
+
+**When** I type `Jan` into **A1**
+
+**Then**
+- **A1** shows `Jan`
+- **A1** is numberFormat=false
+
+#### A bare serial number is not auto-dated (stays a plain number)
+
+**Given**
+
+**When** I type `46218` into **A1**
+
+**Then**
+- **A1** shows `46218`
+- **A1** is numberFormat=false
+
+#### The coerced value and its auto date-format undo together
+
+**Given**
+
+**When** I type `7/15/2026` into **A1**, then undo
+
+**Then**
+- **A1** shows `null`
+- **A1** is numberFormat=false
+
+#### Re-committing the date the editor shows round-trips to the same serial
+
+**Given**
+
+**When** I type `7/15/2026` into **A1**, then type `7/15/2026` into **A1**
+
+**Then**
+- **A1** shows `46218`
+- **A1** is numberFormat=date
+
+#### A Date-typed formula result (=DATE+1) stays a date the ValueFormatter shows automatically
+
+**Given**
+
+**When** I type `=DATE(2026,7,15)+1` into **A1**
+
+**Then**
+- **A1** shows `46219`

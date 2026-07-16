@@ -1,0 +1,35 @@
+---
+title: "Command history panel"
+description: "A togglable side panel lists every committed operation with a human label, the cells it touched, and a timestamp; clicking an entry reverts the document to that state."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A togglable **History** panel (the clock-arrow icon at the right of the toolbar) lists every committed operation — typed edits, fills, pastes, clears, and every formatting toggle — as a labeled row: a human-readable story ("Bold on B2", "Filled A2:A5"), the affected cell(s) in monospace, and a timestamp. Clicking a row **reverts the document to that state** and highlights what changed. The log isn't persisted across reloads yet.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets has a Version History feature (File > Version history), but it operates on named SNAPSHOTS of the whole spreadsheet at a point in time — it does not list individual operations (each keystroke, each formatting toggle) as discrete, clickable, labeled entries the way this panel does. There is no Sheets equivalent to reproduce: this is a TrueCalc-original feature, built from the Store's own command log rather than replicated oracle behavior.
+
+#### An edit and a bold each add one entry to the command log
+
+**Given**
+- **A1** = `10`
+
+**When** I type `20` into **A2**, then click **A2**, then press `Control+b`
+
+**Then**
+- **A2** shows `20`
+- **A2** is bold
+
+#### Undoing a command removes it from the visible (committed) log
+
+**Given**
+- **A1** = `10`
+
+**When** I type `20` into **A2**, then undo
+
+**Then**
+- **A2** shows `null`

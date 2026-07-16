@@ -1,0 +1,48 @@
+---
+title: "Rows grow to fit the tallest cell font"
+description: "Enlarging a cell's font grows its row to fit; reducing it (or clearing the cell) shrinks the row back."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Rows size themselves to their content. Type into a cell and make its font bigger — with the **[−] size [+]** stepper or **Ctrl+Shift+Period** — and the **whole row grows** so the larger text fits instead of overflowing into its neighbours. Shrink the font (or clear the cell) and the row **shrinks back**. The row always fits its **tallest** cell, so a big font in column A grows the entire row across every column.
+
+Only cells that actually **hold content** drive the height: a cell formatted large but left empty leaves its row at the default height — matching Google Sheets.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets every row auto-fits its content: a row's height is the height of its tallest cell, so increasing a cell's font size grows the whole row to fit the larger text and reducing it (or clearing the cell) shrinks the row back. Only NON-EMPTY cells count — a cell that carries a large font but no content does not grow its row. The tallest cell in the row wins (a big font in column A grows the entire row across every column). Row height is a layout consequence of the per-cell font-size presentation attribute; it never changes the cell's value or formula and undoes/redoes with the edit that caused it. Studio floors row height at its 24px default (Sheets' default is ~21px) so unrelated rows never reflow, and models the grown height with a line-box formula rather than pixel-matching Sheets' proprietary canvas metrics.
+
+#### Enlarging a cell's font records the size that grows its row
+
+**Given**
+- **A1** = `Big`
+
+**When** I click **A1**, then press `Control+Shift+Period`
+
+**Then**
+- **A1** is fontSize=11
+
+#### Reducing the font records the size that shrinks the row back
+
+**Given**
+- **A1** = `Big`
+
+**When** I click **A1**, then press `Control+Shift+Comma`
+
+**Then**
+- **A1** is fontSize=9
+
+#### Row auto-fit is presentation — it never touches the value
+
+**Given**
+- **A1** = `=6*7`
+
+**When** I click **A1**, then press `Control+Shift+Period`
+
+**Then**
+- **A1** shows `42`
+- **A1** has formula `=6*7`
+- **A1** is fontSize=11

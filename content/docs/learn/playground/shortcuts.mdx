@@ -1,0 +1,35 @@
+---
+title: "Keyboard shortcuts + the '?' cheat sheet"
+description: "Every keyboard shortcut is declared once, by its own operation; the same declaration drives both the key handler and a discoverable panel (press '?').\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Press **?** (Shift+/) anywhere in the grid to open a categorized list of every
+keyboard shortcut — grouped as **Edit**, **Formatting**, and **Help** — each
+row showing its action and its chord (e.g. "Bold — Ctrl+B"). Press **Escape**
+or click outside to close it.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Individually, Studio's bindings already match Google Sheets: Ctrl+B bold, Ctrl+I italic, Ctrl+C/X/V copy/cut/paste, Ctrl+Z undo, Ctrl+Y (or Ctrl+Shift+Z) redo, Ctrl+D/R fill down/right, and Ctrl+Shift+7 all-borders are the same chords Sheets uses (each verified in its own feature manifest — format-bold.mdx, clipboard.mdx, undo.mdx, fill.mdx, format-borders.mdx — this manifest doesn't re-assert them, only that they're all reachable from one categorized list). The cheat-sheet TRIGGER itself is a deliberate divergence: Google Sheets opens its shortcut reference on Ctrl+/ (Cmd+/ on Mac). Studio binds a bare '?' (Shift+/) instead, following the newer cross-app convention (Gmail, Slack, GitHub, Trello, Notion) — chosen so it doesn't compete with Ctrl+/, which several browsers/extensions already reserve. Excel has no single-key shortcut-list binding to match either way (its shortcuts live in a Help-pane search), so there's no Excel parity claim to make here.
+
+#### Shift+/ opens a categorized panel listing the registry's shortcuts
+
+**Given**
+
+**When** I click **A1**, then press `Shift+?`
+
+**Then**
+- `[data-testid="shortcuts-panel"]` is visible containing "Bold"
+
+#### Escape closes the panel
+
+**Given**
+
+**When** I click **A1**, then press `Shift+?`, then press `Escape`
+
+**Then**
+- `[data-testid="shortcuts-panel"]` is hidden
