@@ -1,0 +1,76 @@
+---
+title: "Column and row resize (drag, auto-fit, and multi-select)"
+description: "Dragging a column/row header border resizes it; double-clicking a border auto-fits it to content; resizing/auto-fitting one of several selected columns/rows (or a select-all) resizes them all together. Sizes persist across save/reload."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Drag to resize.** Hover the border between two column-letter (or row-number) headers — the cursor turns into a resize handle — and drag to set that column's width (or row's height). A dashed guide line tracks the pointer while you drag; the size commits when you release.
+
+**Double-click to auto-fit.** Double-clicking a column-header border sizes the column to fit its widest non-empty cell's content (using the same canvas text-measurement the grid renders with), plus a small margin. Double-clicking a row-header border does the same for height — though rows already auto-fit their content live as you type, so this mainly matters after a manual drag: it reverts the row to that automatic content-fit height.
+
+**Multi-select resize.** Select several columns (or rows), or the whole sheet via the top-left corner box, then drag or double-click any ONE of the selected borders — every selected column/row resizes together. A drag applies the same width/height to all of them; an auto-fit fits each one independently to its own content, so a multi-column auto-fit can land on different widths per column.
+
+**Persists.** A resized column/row is an explicit size override, distinct from the default/auto-fit geometry. It round-trips through Save/Load and Export JSON (`colWidths`/`rowHeights`, keyed by column/row index, schema v5) and Export XLSX (column width in Excel's "characters" unit; row height in points).
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, dragging the border between two column-letter headers (or row-number headers) resizes the column/row to the left (or row above) of the dragged border, with a live vertical/horizontal guide line while dragging. Double-clicking that same border auto-fits the column/row to the widest (or tallest) NON-EMPTY cell's rendered content in it, plus a small padding margin; double-clicking an empty column/row's border is a no-op (it stays/reverts to the default width/height). Selecting multiple columns (via a shift/drag multi-column header selection) or row headers, or selecting the whole sheet (the top-left corner box), then dragging or double-clicking ANY ONE of the selected borders resizes/auto-fits every selected column/row together — a drag applies the SAME width/height to all of them, while an auto-fit sizes EACH one independently to its own widest content (so a multi-column auto-fit can produce different final widths per column). A resized column/row is an explicit override that persists with the file (reload / re-share shows the same widths) and is exported with the sheet. This is long-standing, widely-documented Sheets/Excel behavior, not something ambiguous enough to need live verification against the reference workbook; a follow-up can add the `features/column-row-resize.oracle.md` study-sheets brief if a review finds a discrepancy.
+
+#### Dragging a column border sets an explicit width that persists across save and reload
+
+**Given**
+
+**When** I drag column **B**'s header border by 60px, then save, reload the page, and load the workbook back
+
+**Then**
+- column **B** is exactly 160px wide
+
+#### Double-clicking a column border auto-fits it to its widest content
+
+**Given**
+- **B1** = `A considerably long piece of text that overflows the default column width`
+
+**When** I double-click column **B**'s header border (auto-fit)
+
+**Then**
+- column **B** is at least 300px wide
+
+#### Auto-fit on an empty column is a no-op (stays at the default width)
+
+**Given**
+
+**When** I double-click column **D**'s header border (auto-fit)
+
+**Then**
+- column **D** is exactly 100px wide
+
+#### Dragging a row border sets an explicit height, independent of content auto-fit
+
+**Given**
+
+**When** I drag row **3**'s header border by 40px
+
+**Then**
+- row **3** is exactly 61px tall
+
+#### Double-clicking a row border reverts a prior drag back to the
+
+**Given**
+
+**When** I drag row **2**'s header border by 40px, then double-click row **2**'s header border (auto-fit)
+
+**Then**
+- row **2** is exactly 21px tall
+
+#### Selecting multiple columns, then dragging one selected border, resizes them all together
+
+**Given**
+
+**When** I click the **B** column header, then press `Shift+ArrowRight`, then drag column **C**'s header border by 50px
+
+**Then**
+- column **B** is exactly 150px wide
+- column **C** is exactly 150px wide

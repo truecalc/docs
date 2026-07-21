@@ -1,0 +1,117 @@
+---
+title: "Text rotation"
+description: "A cell's text can be rotated to a Sheets preset (Tilt up 45°, Tilt down -45°, Rotate up 90°, Rotate down -90°) or a custom angle, from either the toolbar's Text rotation popover or Format → Text rotation; the grid draws the rotated text with a real canvas rotate transform, and an explicit rotation is a per-cell presentation attribute — it survives value/formula edits, undoes/redoes like any edit, and resets with Clear formatting.\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a cell or range and open the toolbar's **Text rotation** popover (or
+**Format → Text rotation**) to rotate the cell's text to one of Sheets' four
+angle presets — **Tilt up** (45°), **Tilt down** (-45°), **Rotate up** (90°),
+**Rotate down** (-90°) — or type a **custom angle** from -90° to 90°. **None**
+clears the rotation back to the default (unrotated).
+
+A positive angle pivots the text at the cell's bottom-left corner and reads
+counter-clockwise (ascending for a tilt, bottom-to-top for a 90° rotation); a
+negative angle pivots at the top-left and reads clockwise. Rotation is a
+**presentation** attribute, separate from the cell's value: rotating `=A1+B1`
+angles the drawn number without touching the formula. It is per-cell, survives
+value edits, undoes/redoes like any other edit, and resets with **Clear
+formatting**.
+
+**Not built in this slice** (see the oracle brief for the full reasoning):
+
+- **Stack vertically** — a distinct one-character-per-line layout Sheets also
+ offers, not an angle, so it doesn't fit the `rotation: number` field this
+ issue asked for.
+- **Row-height growth for a rotated cell** — Sheets visibly grows the row to
+ fit the rotated bounding box; Studio's rotated text instead clips at the
+ cell's existing rect, the same fallback any other overflowing cell gets.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, the toolbar's "Text rotation" popover offers six presets (None, Tilt up, Tilt down, Stack vertically, Rotate up, Rotate down) plus a free custom-angle input; Tilt up = 45°, Tilt down = -45°, Rotate up = 90°, Rotate down = -90° (verified live — features/format-rotation.oracle.md — by reading the custom-angle dropdown's highlighted value while each preset was active, never self-confirmed). A positive angle pivots the text at the cell's bottom-left corner and reads counter-clockwise (ascending left-to-right for a tilt, bottom-to-top for a 90° rotation); a negative angle pivots at the top-left and reads clockwise. Sheets grows the row to fit the rotated bounding box. "Stack vertically" is a distinct layout (one character per line, no angled baseline at all) — not a point on the angle continuum — and is out of scope for this slice; so is row-height growth for rotation. Rotation is a per-cell presentation attribute like every other CellFormat field: it never touches the value or formula, and undoes/redoes with the command log.
+
+#### Tilt up sets a 45° rotation (Format menu)
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then click menu item **format.rotateTiltUp**
+
+**Then**
+- **A1** is rotation=45
+
+#### Tilt up sets a 45° rotation (toolbar) — the SAME seam as the Format menu, driven end to end
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then open the text-rotation dropdown, then pick **tiltUp** from the text-rotation dropdown
+
+**Then**
+- **A1** is rotation=45
+
+#### Rotate down sets a -90° rotation and is presentation only — value/formula untouched
+
+**Given**
+- **A1** = `=2+3`
+
+**When** I click **A1**, then click menu item **format.rotateDown**
+
+**Then**
+- **A1** shows `5`
+- **A1** has formula `=2+3`
+- **A1** is rotation=-90
+
+#### rotation survives a value edit
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then click menu item **format.rotateTiltDown**, then type `changed` into **A1**
+
+**Then**
+- **A1** shows `changed`
+- **A1** is rotation=-45
+
+#### rotation undoes and redoes with the command log
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then click menu item **format.rotateUp**, then undo, then redo
+
+**Then**
+- **A1** is rotation=90
+
+#### Clear formatting resets rotation back to none
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then click menu item **format.rotateTiltUp**, then click menu item **format.clearFormatting**
+
+**Then**
+- **A1** is rotation=false
+
+#### the None preset explicitly clears an existing rotation
+
+**Given**
+- **A1** = `x`
+
+**When** I click **A1**, then click menu item **format.rotateTiltUp**, then click menu item **format.rotateNone**
+
+**Then**
+- **A1** is rotation=false
+
+#### rotating a wide cell's text grows its row, matching Sheets
+
+**Given**
+- **A1** = `a fairly long piece of rotated text`
+
+**When** I click **A1**, then click menu item **format.rotateTiltUp**
+
+**Then**

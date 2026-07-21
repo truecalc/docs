@@ -11,7 +11,7 @@ Pick a font family for the selected cells from the **Font** dropdown in the tool
 
 ## Testing note
 
-The manifest scenario runner drives the canvas and keyboard only — it has no verb for clicking a toolbar control — so the family-change interaction is not yet expressible as a runnable scenario. It is verified end-to-end via agent-browser (change the Font `select`, then assert `window.__store.formatAt('A1').fontFamily`) and by colocated unit tests over the control's pure `apply`/`getValue` and the render `styleContributor`. Adding a `select` verb to the runner would let this feature carry a full runnable scenario like font size does.
+The manifest scenario runner drives the canvas and keyboard only — it has no verb for clicking a toolbar control — so the family-change interaction is not yet expressible as a runnable scenario. It is verified end-to-end via agent-browser (change the Font `select`, then assert `window.truecalc.store.formatAt('A1').fontFamily`) and by colocated unit tests over the control's pure `apply`/`getValue` and the render `styleContributor`. Adding a `select` verb to the runner would let this feature carry a full runnable scenario like font size does.
 
 ## Verified behavior
 

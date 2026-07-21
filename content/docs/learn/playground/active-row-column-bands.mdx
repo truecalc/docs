@@ -1,0 +1,39 @@
+---
+title: "Settings toggle — active row/column band tint"
+description: "A Settings-panel checkbox lets the user opt IN to a whole-row/whole-column tint on the active cell's row and column (beyond the always-on header emphasis); the choice previews live and survives a reload. Off by default, matching Google Sheets."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Google Sheets emphasizes only the active cell's row/column **header labels**
+(e.g. selecting C4 highlights the "C" and "4" header cells). Studio's
+active-band render layer can additionally wash the whole active
+row and column across the grid **body** — a Studio-only enhancement, off by
+default so the out-of-the-box experience still matches Sheets. This issue
+surfaces that already-built layer as a **Settings → Selection → "Highlight
+active row & column"** checkbox: toggling it previews live (no reload) and
+persists across a reload, exactly like every other Settings field.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10" />
+
+Open **File → Settings…**, scroll to **Selection**, and toggle "Highlight
+active row & column" — the active cell's row and column band tint
+shows/hides live on the grid behind the panel.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' default active-cell emphasis is HEADERS-ONLY: selecting C4 bolds/tints only the "C" column-letter and "4" row-number header labels — the grid body gets no extra tint beyond the selection outline itself. Sheets has no first-party setting to additionally wash the whole active row/column band across the body (this is a Studio-only opt-in enhancement, not a Sheets-parity requirement), so the Sheets-faithful default this toggle must preserve is OFF — the render layer (already built and unit-tested) has carried this default since and this issue only adds a way to flip it at runtime.
+
+#### The toggle is reachable from Settings and starts unchecked (OFF, the Sheets-faithful default)
+
+**Given**
+
+**When** I click menu item **file.settings**
+
+**Then**
+- `[data-testid="settings-panel"]` is visible
+- `[data-testid="settings-field-showActiveBands"]` is visible containing "Highlight active row & column"

@@ -1,0 +1,65 @@
+---
+title: "Underline a cell"
+description: "Ctrl+U (or the toolbar Underline button, or Format > Text > Underline) toggles underline on the selection."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select cells and press **Ctrl+U** — or click the **Underline** button in the toolbar, or Format > Text > Underline in the menu bar — to toggle underline. Underline is **presentation**, separate from the cell's value: underlining `=A1+B1` draws a line under the number without touching the formula. It undoes and redoes like any other edit, and survives a later value edit.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Ctrl+U toggles underline on the selected cells (Cmd+U on Mac). Underline is a presentation attribute independent of the cell's value or formula, and it undoes/redoes like any edit. Toggling again removes it. Format > Text in the Sheets menu bar lists Bold, Italic, Underline, Strikethrough in that order — this codebase shipped Bold/Italic/Strikethrough but never Underline; a live audit against the reference workbook found the gap and this feature closes it.
+
+#### Ctrl+U underlines the selected cell
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+U`
+
+**Then**
+- **A1** is underline
+
+#### Ctrl+U a second time removes the underline
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+U`, then press `Control+U`
+
+**Then**
+- **A1** is underline=false
+
+#### Format > Text > Underline toggles the same attribute as the keyboard chord
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then click menu item **format.underline**
+
+**Then**
+- **A1** is underline
+
+#### Underline survives undo/redo like any other edit
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+U`, then press `Control+Z`
+
+**Then**
+- **A1** is underline=false
+
+#### Underline survives a value edit (presentation stays separate from content)
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+U`, then type `world` into **A1**
+
+**Then**
+- **A1** shows `world`
+- **A1** is underline
