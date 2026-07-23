@@ -5,8 +5,9 @@ description: How spreadsheet functions work — arguments, variadic functions, n
 
 Operators cover arithmetic, but most spreadsheet power lives in
 **functions**: named operations that take arguments in parentheses and
-return a value. TrueCalc implements **484** Google Sheets functions, each
-verified against the conformance fixtures.
+return a value. TrueCalc implements a wide range of Google Sheets
+functions, each verified against the conformance fixtures — see the
+[full function catalogue](/reference/functions) for the current count.
 
 ## Anatomy of a function call
 
@@ -99,7 +100,7 @@ assert.equal(sum.category, 'math');
 assert.equal(sum.syntax, 'SUM(value1, ...)');
 ```
 
-The complete catalogue of all 484 functions is being generated into the
+The complete function catalogue is generated into the
 [Reference tab](/reference/functions) from the engine's registry.
 
 ## What you learned
