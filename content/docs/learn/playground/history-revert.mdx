@@ -9,14 +9,13 @@ description: "Clicking a history entry's Restore button non-destructively restor
 
 The **History** panel is now interactive. Each entry carries an explicit, always-visible **"Restore" button** (Google Sheets Version History's "Restore this version" pattern — discoverable without hovering, keyboard-accessible); pressing it **non-destructively restores the document to that state** — it records a _new_ version at the top of the timeline and keeps every prior version, so nothing is lost (undo the restore to step back out of it). **Hovering** an entry previews it: the cells it touched light up on the grid (a transient amber highlight that clears when you move away), and the entry shows **what changed** — a `before → after` for a single value edit (e.g. `10 → 20`), or a short summary for a formatting change ("fill color") or a multi-cell edit ("3 cells"). Consecutive identical operations on the same cell (the 8× repeated date-format on `C5` seen in dogfooding) **collapse into a single row** with a `×N` badge, so the timeline stays legible. Timestamps are **human-readable** — "just now", "2 min ago", "Today 3:45 PM", "Yesterday", then a date like "Jul 14" for older entries — with the exact absolute time available on hover.
 
-The chrome now also tells you, at a glance, **where the current document and its history actually live**. Today the playground is standalone: the workbook is held **in your browser only** and is lost if you close the tab. A footer strip states this ("Not saved — this workbook lives in your browser and is lost if you close the tab."), the History panel header says "History is kept in this browser only", and closing the tab with unsaved edits **warns you first**.
+The chrome now also tells you, at a glance, **where the current document and its history actually live**. A footer strip states this in plain words; the History panel header carries the matching note; and while the workbook is in the browser-only `local` mode (the default — see [persistent-history](./persistent-history)), the tab-close warning stays off, since the document and its history are already saved.
 
-## Deferred to storage persistence
+## Deferred to
+ (persistent history — autosave + restore across reload, in THIS browser) has shipped; see [persistent-history](./persistent-history). What's still deferred is the account half:
 
-The **persistent** half of this design waits on history persistence and the anonymous→account handoff. The restore semantics here are already the final, non-destructive ones; what's deferred is making the history and its versions _durable_:
-
-- **Persistent, cross-device version history** — the same non-destructive restore, but with versions saved server-side so they survive reload and other devices, rather than living only in this browser session. This PR ships the in-browser non-destructive restore; durability is.
-- **Account-saved history**, the `local` and `account` indicator states going live, and the **"Sign in to save"** upgrade CTA from standalone.
+- **Cross-device version history** — the same non-destructive restore, but with versions saved server-side so they survive not just a reload but a different device too, rather than being scoped to this one browser.
+- **Account-saved history**, the `account` indicator state going live, and the **"Sign in to save"** upgrade CTA from standalone.
 
 ## Verified behavior
 
@@ -32,7 +31,7 @@ _Matches Google Sheets:_ Restoring to a past state matches Google Sheets File �
 **Then**
 - **A1** shows `9`
 
-#### The chrome states the workbook lives in the browser and is lost on close
+#### The chrome states where the workbook currently lives
 
 **Given**
 - **A1** = `1`
@@ -40,4 +39,4 @@ _Matches Google Sheets:_ Restoring to a past state matches Google Sheets File �
 **When** I click **A1**
 
 **Then**
-- `[aria-label="Storage status"]` is visible containing "lives in your browser"
+- `[aria-label="Storage status"]` is visible containing "Saved in this browser"

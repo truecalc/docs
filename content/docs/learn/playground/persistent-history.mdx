@@ -1,0 +1,36 @@
+---
+title: "Persistent history — autosave + restore across reload"
+description: "The document AND its command log (History panel entries, undo/redo) are continuously autosaved to browser storage and silently restored on reopen — no explicit save needed — while importing a foreign document still starts fresh, never inheriting a previous session's log."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Studio now autosaves **continuously** — the document and its full command log (every entry the [History panel](./command-history) shows, plus enough to keep undo/redo working) are written to browser storage as you work, with no explicit "Save" step. Reopen the tab and everything comes back: the grid's cells/formats, the History panel's timeline, and Ctrl+Z/Ctrl+Y both still walk the exact same steps they would have if the tab had never closed. The storage-indicator footer's trailing **ⓘ** button opens a small panel showing what's actually stored (a document? how many history entries?) and a **Clear stored session** action, so nothing about what's saved is hidden.
+
+**Importing a different document still starts fresh.** Loading a _foreign_ file — Import JSON, or the pre-existing Save/Load-to-browser slot from [persist](./persist) — has never been undoable (it drops history so a bad import can't leave partial undo steps); this feature doesn't change that. Only the NEW "restore session" path (silently run on boot) reattaches a log, and only when it's the SAME app's own previously-autosaved session.
+
+## Manifest coverage — and its honest gap
+
+The manifest scenario DSL drives the REAL running app through Playwright, but has **no reload-equivalent verb** — there is no way to script "close and reopen the tab" — and its one `import` verb is [data-import](./data-import), not the full-workbook JSON replace ("Import a document") this feature's fresh-history guarantee is about. Extending the verb vocabulary for a one-off reload action seemed like exactly the kind of large, single-purpose schema addition the methodology asks NOT to force — so those two acceptance criteria are unit/integration-tested instead, at the layer that actually matters (headless, no browser needed):
+
+- **edit → reload → document/History-panel/undo-redo restored**: a dedicated persistence test (`saveSession` from one `Store`, `restoreSession` into a second, independent `Store` standing in for "after a reload" — proving the document, `history`, `canUndo`, and actual `undo`/`redo` all come back correct) plus a command-log test (the `Store.commandLog`/`restoreCommandLog` contract in isolation).
+- **a version-mismatched/corrupt log safely degrades**: a dedicated schema-version test plus a matching case in the persistence test.
+- **importing a foreign document starts fresh**: the persistence test proves a compatible log sitting in storage is NOT reattached when the load goes through the existing `replaceWorkbook` path (Import/Load-from-browser's path) instead of the new `restoreSession` — only the latter ever calls `restoreCommandLog`.
+
+The one thing above the manifest CAN reach the real running app for — the storage-indicator now reading `local` from first paint — is the scenario in this manifest's frontmatter.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets autosaves continuously to Drive and its Version History survives reload/reopen by design — there is no "lost history" mode to replicate. Studio has no server, so the equivalent here is the local, browser-only version of the same guarantee: reopening the tab restores the document, its History panel timeline, and undo/redo exactly as Sheets reopening a Drive file restores its version history. Opening a genuinely DIFFERENT file (Sheets' File → Open, or here, Import) starting a fresh version history rather than continuing the previous file's is also standard behavior both products share.
+
+#### Once the app boots, the storage indicator reads "saved in this browser" — autosave is live from the first paint, not an opt-in step
+
+**Given**
+- **A1** = `1`
+
+**When** I click **A1**
+
+**Then**
+- `[aria-label="Storage status"]` is visible containing "Saved in this browser"

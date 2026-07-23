@@ -1,0 +1,40 @@
+---
+title: "Error cells show a diagnostic tooltip"
+description: "Hovering or selecting a cell that resolves to an error shows a Sheets-style tooltip with a red \"Error\" header and a per-code diagnostic message."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+When a cell resolves to an error — `#REF!`, `#DIV/0!`, `#NAME?`, `#VALUE!`, `#NUM!`, `#N/A` — hovering it or making it the active selection shows a small red-accented tooltip: an **"Error"** header plus a plain-language diagnostic line (e.g. "Division by zero." for `#DIV/0!`). It tracks the cell and disappears when you move the pointer away, select a different cell, start editing, or scroll.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1==1/0" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, a cell that resolves to an error (#REF!, #DIV/0!, #NAME?, #VALUE!, #NUM!, #N/A, …) shows a small red-accented tooltip with an "Error" header and a plain-language diagnostic line — both when you hover the cell and when it's the active selection. The tooltip tracks the cell it's anchored to and disappears when you move the mouse away or scroll; a non-error cell never shows one. TrueCalc's engine (@truecalc/workbook) does not yet emit a rich per-error diagnostic message (core#731, itself blocked upstream on the Google Sheets conformance-fixtures pipeline capturing real error-message strings, which hasn't landed yet) — so this feature ships with a FALLBACK per-code message table (the six codes the engine currently surfaces) rather than the engine's own wording, and is structured to prefer an engine-supplied message the moment one exists (see `domain/error-message.ts`).
+
+#### A
+
+**Given**
+- **A1** = `=1/0`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `#DIV/0!`
+- `[data-slot="error-tooltip"]` is visible containing "Division by zero."
+
+#### A non-error cell shows no tooltip when selected
+
+**Given**
+- **A1** = `42`
+
+**When** I click **A1**
+
+**Then**
+- **A1** shows `42`
+- `[data-slot="error-tooltip"]` is hidden

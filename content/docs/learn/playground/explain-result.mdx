@@ -1,0 +1,136 @@
+---
+title: "Explain a cell's computed result"
+description: "Right-clicking a cell offers \"Explain\", which opens a modal, centered stage playing back an animated node-graph of how the cell's value was computed — leaf inputs at the bottom, operations flowing up, the result at the top, each step lighting its node/edges and narrating what happened."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Right-clicking any grid cell opens a context menu with one item, **Explain**. Choosing it opens a **near-fullscreen modal stage** — "watch how this number was computed" — centered over the grid, which dims and blurs behind it. Dismiss it with Escape, an outside click, or its close button; to explain a different cell, close the dialog first, then right-click that cell.
+
+The stage is an **animated node graph**: the formula's leaf inputs sit on the bottom row, operations flow upward, and the final result sits at the top. **Play** runs the calculation step by step — each step lights its node (the brand-yellow accent) and its incoming edges, narrates what happened in a caption below ("Divide: 0.05 / 12 = 0.0041666…"), and leaves every earlier node fully lit ("seen") while anything not yet reached stays dimmed. **Step** advances one frame at a time; **Reset** returns to the inputs-only frame. A multi-step formula — e.g. `PMT(0.05/12, 30*12, -500000)` — shows each operand's own node (`0.05 / 12`, `30 * 12`, `-500000`) lighting up in turn before the final function-call node combines them.
+
+**The whole tree always fits — no clipping, no scroll — and you can zoom in.** The stage measures itself and scales the graph (never past its natural 1× size for a small formula) so a big, deeply-nested cross-sheet model renders complete on open, padded to the stage, not clipped at the edges. Zoom in/out buttons plus drag-to-pan let you inspect a large model up close; reset snaps back to the fitted view.
+
+**The INPUT frame lists resolved references cleanly.** Rather than one run-on line mixing cell references and bare literals, the INPUT frame shows a short framing line plus a chip per resolved cell/range reference (e.g. `Inputs!B1 = 0.05`, `Inputs!B4:B6 = {100, 200, 300}`) — bare literals are left out of this summary (they're already visible in the formula text and their own leaf node).
+
+**Explain is LIVE — any formula, not just two demos.** Right-clicking ANY formula cell calls the real trace producer (`@truecalc/pro`'s `trace_cell_at`, a client WASM package vendored into this repo — see `packages/core/vendor/truecalc-pro/VENDORED-FROM.md`) against the workbook's CURRENT state, reusing the exact `(timestamp_ms, timezone, rng_seed)` the engine used for its last on-screen recalc (`EngineAdapter.lastRecalcContext`) so a volatile cell explains against what's actually on screen. Three distinct, honest non-graph states replace the old "two demo formulas" placeholder: an empty/non-formula cell shows "nothing to explain" (`explain-no-formula`); a cell caught in a circular reference shows a dedicated circular-reference message (`explain-cycle` — core's own `Workbook::trace_cell` short-circuits a cycle member before ever invoking the trace hook, the same wire signature as "no formula", so Studio disambiguates the two using its OWN knowledge of whether the cell has a stored formula at all); and a genuine trace failure surfaces its raw message (`explain-trace-error`) rather than crashing.
+
+**Formula-token highlighting is wired.** Every `TraceNode` carries a `span` — a byte range into the cell's own formula text, read straight off the real generated trace wire type. As each frame plays, the live node's span slices the formula shown above the stage and highlights that substring (`explain-formula-highlight`), so pressing Play visibly "lights up" the exact token currently being evaluated.
+
+**Respects `prefers-reduced-motion`.** With that OS preference set, the stage skips the animation and opens straight on its end state: every node seen, the result lit. Nothing to wait for, nothing moving unexpectedly.
+
+**Reopening on a different cell always starts fresh.** Explain is modal now, so the flow is close → right-click a different cell → Explain again, not retarget-while-open. Every open always starts that cell's graph from frame 0 (or, under reduced motion, straight to its own end state) — never a stale mid-animation frame left over from a previous cell, and never a crash if the new trace has fewer steps than a previous one was stepped into (the underlying safety mechanism, `openId`-keyed remounting, still exists — see "How it works" — as insurance against any future code path that could otherwise swap cells on a live-mounted instance).
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;B1=20;C1==A1+B1" />
+
+Right-click cell **C1** and choose **Explain**, then press **Play**.
+
+## Verified behavior
+
+_Matches Google Sheets:_ There is no Google Sheets or Excel feature that produces a step-by-step animated computation graph like this one — Sheets has no "Explain" surface, and Excel's closest analogs (Formula Evaluator's single-step-through modal, Trace Precedents' arrows) don't render an ordered, playable node graph. This feature's ground truth is therefore NOT a Google-Sheets/Excel UI oracle (no `study-sheets` brief backs this manifest, per design D5's own scope for TrueCalc-original UX) — it's the real TrueCalc engine's own evaluation, cross-checked via the `truecalc` MCP `evaluate` tool at authoring time: `0.05/12` → `0.004166666666666667`, `30*12` → `360`, `PMT(0.05/12, 30*12, -500000)` → `2684.108115060699`, and `C1*2` with `C1=30` → `60`. ** (Slice C) wired the REAL trace producer** (`@truecalc/pro`'s `trace_cell_at`) — every scenario below now drives a LIVE trace of whatever the clicked cell actually holds, not a lookup against a hand-authored fixture (an earlier slice's canned fixture data still backs Storybook/unit tests, but the live "Explain" path never reads it). Every scenario runs under `prefers-reduced-motion: reduce` (set once for the whole scenario harness), which the graph itself reads to open straight on its deterministic END STATE (every node seen, the result node live) instead of animating — the same accessibility affordance a real user with that OS preference gets, and the harness's only way to assert the graph's outcome without a Play/Step dance.
+
+#### Right-click a formula cell and choose Explain shows the LIVE computed graph, references resolved, result live, formula token highlighted
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+
+**When** I right-click **C1**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- **C1** shows `30`
+- `[data-testid="explain-dialog"]` is visible containing "Explain C1"
+- `[data-node-id="n-0"]` is visible containing "A1"
+- `[data-testid="explain-node"][data-state="live"]` is visible containing "30"
+- `[data-testid="explain-formula"]` is visible containing "A1+B1"
+- `[data-testid="explain-formula"][data-formula-highlight="active"]` is visible
+- `[data-testid="explain-formula-highlight"]` is visible containing "A1+B1"
+
+#### Opening Explain from a LOW row still reaches the result — the stage is centered and viewport-capped, not anchored to the click
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **A23** = `=A1+B1`
+
+**When** I right-click **A23**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- `[data-testid="explain-node"][data-state="live"]` is visible containing "30" near the top of the screen (≤700px)
+
+#### A LIVE, non-demo formula explains for real — resolved references, not a fixture lookup
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+- **D5** = `=C1*2`
+
+**When** I right-click **D5**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- **D5** shows `60`
+- `[data-testid="explain-dialog"]` is visible containing "Explain D5"
+- `[data-node-id="n-0"]` is visible containing "C1"
+- `[data-testid="explain-node"][data-state="live"]` is visible containing "60"
+- `[data-testid="explain-no-formula"]` is hidden
+- `[data-testid="explain-cycle"]` is hidden
+- `[data-testid="explain-trace-error"]` is hidden
+
+#### An empty, non-formula cell shows an honest "nothing to explain" state, never a blank or fabricated graph
+
+**Given**
+
+**When** I right-click **D9**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- `[data-testid="explain-dialog"]` is visible containing "Explain D9"
+- `[data-testid="explain-no-formula"]` is visible containing "nothing to explain"
+- `[data-testid="explain-node"]` is hidden
+
+#### A cell caught in a circular reference explains as a distinct circular-reference state, not a blank/crashed graph
+
+**Given**
+- **A1** = `=B1+1`
+- **B1** = `=A1+1`
+
+**When** I right-click **A1**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- **A1** shows `#REF!`
+- `[data-testid="explain-dialog"]` is visible containing "Explain A1"
+- `[data-testid="explain-cycle"]` is visible containing "circular reference"
+- `[data-testid="explain-node"]` is hidden
+
+#### Retargeting an OPEN Explain dialog to a different cell resets it instead of crashing the app (regression guard)
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **D4** = `=PMT(0.05/12, 30*12, -500000)`
+- **C1** = `=A1+B1`
+
+**When** I right-click **D4**, then click **grid-context-menu-explain** in the context menu, then right-click **C1**, then click **grid-context-menu-explain** in the context menu
+
+**Then**
+- `[data-testid="explain-dialog"]` is visible containing "Explain C1"
+- `[data-testid="explain-node"][data-state="live"]` is visible containing "30"
+- `[data-testid="explain-error-fallback"]` is hidden
+
+#### Zoom-out actually decrements the zoom, including after the toolbar's own pointerdown starts intercepting drag-pan
+
+**Given**
+- **A1** = `10`
+- **B1** = `20`
+- **C1** = `=A1+B1`
+
+**When** I right-click **C1**, then click **grid-context-menu-explain** in the context menu, then click **explain-zoom-in**, then click **explain-zoom-in**, then click **explain-zoom-out**, then click **explain-zoom-out**
+
+**Then**
+- `[data-testid="explain-zoom-out"]:disabled` is visible
+- `[data-testid="explain-zoom-reset"]:disabled` is visible

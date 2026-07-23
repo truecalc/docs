@@ -1,0 +1,123 @@
+---
+title: "Menu bar — File / Edit / View / Insert / Format / Data / Help"
+description: "A Google-Sheets-organized top menu bar sits above the toolbar; active items run real commands, not-yet-built items are visible but disabled with a \"coming soon\" tooltip, and persisted-mode-only items are locked in try mode."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A top menu bar sits above the toolbar, organized exactly like Google Sheets: **File · Edit · View · Insert · Format · Data · Help**. Every item is visible — nothing is hidden — but only items backed by a real, already-shipped command are clickable:
+
+- 🟢 **Active** — wired to the same seam the toolbar/keyboard already use (`run`/`apply`/`applyBorders`) or a thin, purely client-side action (New, Download, Full screen, Show gridlines/formula bar).
+- ◻️ **Disabled ("coming soon")** — the item renders, greyed, with a tooltip explaining it's not built yet. Clicking it does nothing.
+- 🔒 **Locked ("requires a saved account")** — Version history, Share, and Chart are gated on persisted/identified storage, which Studio doesn't have yet; they're disabled the same way, with a different tooltip.
+
+File absorbs the old standalone "Save, load, export" toolbar button and its Import rows — there's exactly one home for those actions now.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;A2==A1+1" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · View · Insert · Format · Data · Tools · Extensions · Help, in that left-to-right order, each opening a dropdown of grouped commands (separators between groups, greyed rows for unavailable commands, a lock/cloud glyph on account-gated rows). Studio's menu bar matches that same relative order and grouping for the SEVEN menus scopes in (Tools and Extensions are out of scope — Studio has no add-ons/macros surface yet). Within each menu, items are grouped exactly as Sheets groups them (e.g. Undo/Redo, then Cut/Copy/Paste, then Delete values/rows/columns, then Clear formatting in Edit), separated by hairlines. A command Sheets shows greyed-out (e.g. "Merge cells" with nothing merge-able selected) still LOOKS like a menu item with a tooltip on hover explaining why it's unavailable — never hidden — which is the same visible-roadmap pattern this feature uses for not-yet-built commands.
+
+#### All 7 menus render in Google-Sheets order and grouping
+
+**Given**
+
+**When** I click **A1**
+
+**Then**
+- `[data-testid="menu-bar"]` is visible containing "FileEditViewInsertFormatDataHelp"
+
+#### Clicking an active item (Edit > Undo) invokes the real existing command
+
+**Given**
+- **A1** = `10`
+
+**When** I type `99` into **A1**, then click menu item **edit.undo**
+
+**Then**
+- **A1** shows `10`
+
+#### Clicking an active item (Insert > Function) starts a real formula edit, and the SAME autocomplete dropdown then opens
+
+**Given**
+
+**When** I click **A1**, then click menu item **insert.function**, then press `s`
+
+**Then**
+- `[data-slot="formula-autocomplete"]` is visible
+
+#### A disabled item (Format > Conditional formatting) is visibly disabled and invokes nothing
+
+**Given**
+- **A1** = `10`
+
+**When** I click menu item **format.conditionalFormatting**
+
+**Then**
+- **A1** shows `10`
+- `[data-menu-item="format.conditionalFormatting"]` is visible
+
+#### Clicking Format > Merge cells merges the selection, through the SAME confirm-gated seam the toolbar's merge control uses
+
+**Given**
+- **A1** = `Anchor`
+
+**When** I click **A1**, then press `Shift+ArrowRight`, then click menu item **format.mergeCells**, then click **B1**
+
+**Then**
+- the active cell is **A1**
+
+#### Clicking Edit > Clear formatting clears formatting without touching the value
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Control+b`, then click menu item **edit.clearFormatting**
+
+**Then**
+- **A1** shows `hello`
+- **A1** is bold=false
+
+#### Clicking Help > Keyboard shortcuts opens the shortcuts panel (a chrome-only action, not a registry command)
+
+**Given**
+
+**When** I click menu item **help.shortcuts**
+
+**Then**
+- `[data-testid="shortcuts-panel"]` is visible
+
+#### A submenu leaf (Format > Text > Underline) is reachable and runs its real command
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then click menu item **format.underline**
+
+**Then**
+- **A1** is underline
+
+#### A submenu leaf (Format > Number > Currency) is reachable and runs its real command
+
+**Given**
+- **A1** = `1234.5`
+
+**When** I click **A1**, then click menu item **format.numberCurrency**
+
+**Then**
+- **A1** shows `1234.5`
+- **A1** is numberFormat=currency
+
+#### A checkbox item nested inside a submenu (View > Show > Show gridlines) is still reachable and clickable
+
+**Given**
+
+**When** I click menu item **view.gridlines**
+
+**Then**
+- `[data-menu-item="view.gridlines"]` is visible

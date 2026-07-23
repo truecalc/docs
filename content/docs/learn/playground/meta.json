@@ -34,6 +34,15 @@
     "reference-translation",
     "shortcuts",
     "spill-rendering",
-    "view-workbook"
+    "view-workbook",
+    "active-row-column-bands",
+    "column-row-resize",
+    "error-tooltip",
+    "explain-result",
+    "format-rotation",
+    "format-underline",
+    "menu-bar",
+    "merge-cells",
+    "persistent-history"
   ]
 }

@@ -1,0 +1,188 @@
+---
+title: "Merge cells"
+description: "A merged range renders, selects, and navigates as one spanning cell; merging clears every cell but the top-left, and undoes/redoes as one command."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and click the toolbar's **Merge cells** split button (`⧉`) to collapse it into one spanning cell — matching Google Sheets' Format ▸ Merge cells. The icon itself merges **all** (one click); its chevron opens a dropdown with **Merge all / Merge vertically / Merge horizontally / Unmerge** — Merge vertically collapses EACH COLUMN of the selection into its own top-to-bottom span (a 3-column selection produces 3 independent merges, not one big rect); Merge horizontally is the row analogue. Unavailable options grey out rather than disappear: Merge vertically for a single-row selection, Merge horizontally for a single-column selection, Unmerge when the active cell isn't part of a merge.
+
+If any cell other than a resulting merge's own top-left carries content, an in-app **"Heads up!"** dialog warns that merging will clear it — _"Merging cells will only preserve the top-left value. Merge anyway?"_ — with a **"Don't show this again for 5 minutes"** checkbox alongside Cancel (aborts) and OK (merges). This is a real, testable DOM element — `[data-testid="merge-confirm-dialog"]` — not a native `window.confirm`; the split-button dropdown, the keyboard/headless command surface, and every merge mode all route through the same dialog. Click **Unmerge** to restore independent cells — the anchor keeps its value, the others stay blank (their prior content was already cleared when the merge was created; unmerge does not resurrect it).
+
+Click **any** cell inside a merged range and the whole merge is selected as one unit — the name box and formula bar read the merge's top-left address and content. Arrow keys move **past** a merge as a unit: arrowing into it from any side selects the whole merge, and arrowing again exits past its far edge rather than stepping cell-by-cell through the interior.
+
+Merging a range that overlaps an existing merge auto-unmerges the conflicting merge first, then merges the new, larger range as one — no error, no refusal.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Anchor;B1=b1;A2=a2;B2=b2" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Format ▸ Merge cells is a split control offering Merge all / Merge vertically (one merge per COLUMN of the selection) / Merge horizontally (one merge per ROW) / Unmerge. If any cell OTHER than a resulting merge's own top-left carries content, Sheets warns — an in-app "Heads up!" dialog reading "Merging cells will only preserve the top-left value. Merge anyway?", with a "Don't show this again for 5 minutes" checkbox alongside Cancel/OK — before clearing them; a range with content only in the surviving anchor cell(s) merges silently. Selecting any cell inside a merge selects the WHOLE merge as one unit (the name box / formula bar show the top-left anchor's address); arrow-key navigation moves PAST a merge as a unit rather than cell-by-cell through its interior. Merging a range that overlaps an existing merge auto-unmerges the conflicting merge(s) first, then merges the new (larger) range as one — no error. Unmerging restores independent cells but does NOT resurrect content cleared at merge time — the anchor keeps its current value, every other cell in the old merge stays blank.
+
+#### Merging a 2x2 range shows content spanning the merged rect
+
+**Given**
+- **A1** = `Anchor`
+- **B1** = `b1`
+- **A2** = `a2`
+- **B2** = `b2`
+
+**When** I merge **A1:B2**
+
+**Then**
+- **A1** shows `Anchor`
+- **B1** shows `null`
+- **A2** shows `null`
+- **B2** shows `null`
+
+#### Clicking any cell inside the merge selects the whole merged range
+
+**Given**
+- **A1** = `Anchor`
+
+**When** I merge **A1:B2**, then click **B2**
+
+**Then**
+- the active cell is **A1**
+
+#### Merging then typing into the merged cell then unmerging restores separate (still-empty) cells
+
+**Given**
+- **A1** = `x`
+- **B1** = `y`
+- **A2** = `z`
+- **B2** = `w`
+
+**When** I merge **A1:B2**, then type `42` into **A1**, then unmerge **A1**
+
+**Then**
+- **A1** shows `42`
+- **B1** shows `null`
+- **A2** shows `null`
+- **B2** shows `null`
+
+#### Merging a single cell is a no-op
+
+**Given**
+- **A1** = `solo`
+
+**When** I merge **A1:A1**
+
+**Then**
+- **A1** shows `solo`
+
+#### Merging then undoing restores the separate cells' content in ONE step
+
+**Given**
+- **A1** = `x`
+- **B1** = `y`
+
+**When** I merge **A1:B1**, then click **A1**, then undo
+
+**Then**
+- **A1** shows `x`
+- **B1** shows `y`
+
+#### Merging vertically produces one merge PER COLUMN, not one big merge
+
+**Given**
+- **A1** = `colA`
+- **B1** = `colB`
+- **A2** = `a2`
+- **B2** = `b2`
+
+**When** I merge **A1:B2** vertically
+
+**Then**
+- **A1** shows `colA`
+- **B1** shows `colB`
+- **A2** shows `null`
+- **B2** shows `null`
+
+#### Merging vertically then undoing restores every column's content in ONE step
+
+**Given**
+- **A1** = `x`
+- **B1** = `y`
+- **A2** = `p`
+- **B2** = `q`
+
+**When** I merge **A1:B2** vertically, then click **A1**, then undo
+
+**Then**
+- **A1** shows `x`
+- **B1** shows `y`
+- **A2** shows `p`
+- **B2** shows `q`
+
+#### Merging horizontally produces one merge PER ROW, not one big merge
+
+**Given**
+- **A1** = `row1`
+- **A2** = `row2`
+- **B1** = `b1`
+- **B2** = `b2`
+
+**When** I merge **A1:B2** horizontally
+
+**Then**
+- **A1** shows `row1`
+- **A2** shows `row2`
+- **B1** shows `null`
+- **B2** shows `null`
+
+#### Merging horizontally then undoing restores every row's content in ONE step
+
+**Given**
+- **A1** = `x`
+- **A2** = `y`
+- **B1** = `p`
+- **B2** = `q`
+
+**When** I merge **A1:B2** horizontally, then click **A1**, then undo
+
+**Then**
+- **A1** shows `x`
+- **A2** shows `y`
+- **B1** shows `p`
+- **B2** shows `q`
+
+#### The merge confirm dialog is a real, testable in-app element — not native browser chrome
+
+**Given**
+- **A1** = `anchor`
+- **B1** = `other`
+
+**When** I select **A1:B1**, then open the merge dropdown, then pick **all** from the merge dropdown
+
+**Then**
+- `[data-testid="merge-confirm-dialog"]` is visible containing "Heads up!"
+
+#### Clicking OK on the merge confirm dialog applies the merge
+
+**Given**
+- **A1** = `anchor`
+- **B1** = `other`
+
+**When** I select **A1:B1**, then open the merge dropdown, then pick **all** from the merge dropdown, then click OK on the merge confirm dialog
+
+**Then**
+- **A1** shows `anchor`
+- **B1** shows `null`
+
+#### Clicking Cancel on the merge confirm dialog aborts the merge — nothing changes
+
+**Given**
+- **A1** = `anchor`
+- **B1** = `other`
+
+**When** I select **A1:B1**, then open the merge dropdown, then pick **all** from the merge dropdown, then click Cancel on the merge confirm dialog
+
+**Then**
+- **A1** shows `anchor`
+- **B1** shows `other`
+- `[data-testid="merge-confirm-dialog"]` is hidden
