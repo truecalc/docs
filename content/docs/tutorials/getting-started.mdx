@@ -1,0 +1,39 @@
+---
+title: Getting started
+description: "Install TrueCalc and run your first formula in under a minute."
+---
+
+TrueCalc is a spreadsheet formula engine with Google Sheets conformance —
+install it, and you can evaluate spreadsheet formulas from JavaScript or
+TypeScript.
+
+## Install
+
+```sh
+npm install @truecalc/core
+```
+
+## Run a formula
+
+```ts test
+import { createEngine } from '@truecalc/core';
+import assert from 'node:assert/strict';
+
+const engine = createEngine('google-sheets');
+
+// SUM behavior — fixture: google_sheets/math.tsv — "sum of individual arguments"
+const result = engine.evaluate('=SUM(A1, B1)', { A1: 100, B1: 200 });
+assert.deepEqual(result, { type: 'number', value: 300 });
+```
+
+`A1` and `B1` are the cell values you're supplying — TrueCalc's evaluator is
+stateless, so you pass in whatever a formula's references need.
+
+## Where next
+
+- **[Tutorials](/tutorials)** — build a real calculation step by step,
+  starting with [your first formula](/tutorials/your-first-formula).
+- **[Learn](/learn)** — a beginner-to-advanced guide to spreadsheet formulas
+  and workbooks with TrueCalc.
+- **[Reference](/reference)** — a page for every function, with a runnable
+  widget.

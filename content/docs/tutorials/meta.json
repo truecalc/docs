@@ -1,5 +1,5 @@
 {
   "root": true,
   "title": "Tutorials",
-  "pages": ["index", "(beginner)", "(advanced)"]
+  "pages": ["index", "getting-started", "(beginner)", "(advanced)"]
 }
