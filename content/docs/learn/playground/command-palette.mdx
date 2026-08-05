@@ -1,0 +1,107 @@
+---
+title: "Command palette — search the menus"
+description: "Alt+/ (Option+/ on Mac) opens a fuzzy-find search box over every active menu command; typing filters live, and picking a result runs it through the exact same seam the menu bar itself uses."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Press **Alt+/** (**Option+/** on Mac) anywhere in the grid to open a search
+box over every active menu command — Google Sheets' own "Search the menus"
+chord. Type to filter live (a plain, case-insensitive substring match on the
+command's label or its menu breadcrumb, e.g. "Format > Text"); the top match
+is pre-highlighted, so **Enter** runs it immediately. Arrow keys move the
+highlight, clicking a row runs that one instead, and **Escape** closes the
+box and returns focus to the grid.
+
+A not-yet-built or account-gated command still appears in results — Studio's
+established visible-roadmap convention, matching how the menu bar itself
+never hides a command, only greys it — but picking one does nothing (same
+`aria-disabled` pattern the menu bar's own rows use).
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;A2==A1+1" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets binds Option+/ (Alt+/) to "Search the menus": an inline box docked at the toolbar's top-left, with live substring filtering (typing "bold" matches "Bold" instantly), a pre-highlighted top result that Enter runs immediately (verified live: running "Bold" through the box flipped the toolbar's own Bold button to active for the selected cell), and Escape to close. Its real match surface is broader than menus alone (it also finds spreadsheet FUNCTION names whose text contains the query, e.g. "insert row" surfaces the GROWTH function) and shows a personalized empty-query suggestion plus a pinned "Find in document" action — see this feature's oracle brief for the full observed behavior and the specific, documented divergences Studio's implementation makes from it (centered overlay instead of an inline toolbar-docked box; menu commands only, not spreadsheet functions; no personalized suggestions or pinned find action, since Studio has neither a usage-history store nor a built find-in-document feature yet).
+
+#### Alt+/ opens the palette, focused and empty
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`
+
+**Then**
+- `[data-testid="command-palette"]` is visible
+
+#### Typing filters live to matching commands, showing their menu breadcrumb
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`, then type `bold`
+
+**Then**
+- `[data-testid="command-palette-item-format.bold"]` is visible containing "Format > Text"
+
+#### Enter on the pre-highlighted top result runs the SAME command the toolbar/menu use, and closes the palette
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Alt+/`, then type `bold`, then press `Enter`
+
+**Then**
+- **A1** is bold
+- `[data-testid="command-palette"]` is hidden
+
+#### Clicking a result runs it too, not just Enter
+
+**Given**
+- **A1** = `hello`
+
+**When** I click **A1**, then press `Alt+/`, then type `italic`, then click **command-palette-item-format.italic**
+
+**Then**
+- **A1** is italic
+- `[data-testid="command-palette"]` is hidden
+
+#### A disabled item (Insert > Chart, locked in try mode) still appears — visible roadmap — but Enter on it does nothing
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`, then type `chart`, then press `Enter`
+
+**Then**
+- `[data-testid="command-palette-item-insert.chart"]` is visible
+- `[data-testid="command-palette"]` is visible
+
+#### No match shows a plain "no results" message, not a broken empty list
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`, then type `zzzxyq123nomatch`
+
+**Then**
+- `[data-testid="command-palette"]` is visible containing "No matching commands"
+
+#### Escape closes the palette and returns focus to the grid
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`, then see `[data-testid="command-palette"]` on screen, then press `Escape`, then press `b`, then press `Enter`
+
+**Then**
+- **A1** shows `b`
+- `[data-testid="command-palette"]` is hidden
+
+#### File's actions are out of scope for this first pass — searching "import" finds nothing
+
+**Given**
+
+**When** I click **A1**, then press `Alt+/`, then type `import`
+
+**Then**
+- `[data-testid="command-palette"]` is visible containing "No matching commands"

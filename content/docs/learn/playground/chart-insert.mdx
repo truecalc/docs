@@ -1,0 +1,451 @@
+---
+title: "Insert a chart from a range"
+description: "Selecting a range and choosing Insert ▸ Chart charts it into a docked chart panel bound to that range — a header row becomes the series names, a blank cell plots as a gap rather than a zero, a cell's number format carries onto the value axis, and the whole insert undoes in one step. The panel shows whichever chart the active sheet holds, however it got there, so a chart stays on screen across a reload and View ▸ Show ▸ Show chart brings back one you closed."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and choose **Insert ▸ Chart**. A chart appears bound to that range, in a
+**docked panel** beside the grid — pick a cell/range, open **Insert**, click **Chart**. There
+is no type-picker dialog first: the chart draws immediately.
+
+The binding is the part that matters. A chart is not a snapshot of some numbers; it holds a
+**reference to a range**, resolved fresh every time the panel redraws — edit a charted cell
+and the chart updates with it.
+
+Two rules the renderer enforces, both visible in the scenarios above:
+
+- **A blank cell is a gap, not a zero.** A bar is skipped, a line breaks. Plotting a missing
+ value at the baseline is a lie about the data, and it is the single most common way charts
+ mislead.
+- **The cell's number format is the axis format.** A currency column charts with a currency
+ axis, because the format belongs to the data, not to the chart.
+
+A single unnamed series renders with **no legend** — matching Google Sheets (oracle behaviour
+7). A header row becomes the series names and brings a legend with it. An empty or single-cell
+selection creates nothing — there is no data to chart.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Quarter;B1=North;C1=East;A2=Q1;B2=10;C2=20;A3=Q2;B3=12;C3=22" />
+
+## When the chart is on screen — the panel binds to the document, not to the click
+
+Studio **docks the chart itself** (see the ADR note above), so this panel is not an editor you
+opt into the way Sheets' "Chart editor" is: it is the chart's only rendering surface. A chart in
+the document that draws nowhere is a chart you have no reason to believe was ever saved. So the
+rule is:
+
+**The active sheet's chart is shown whenever there is one, unless you turned it off and nothing
+has changed since — a choice that now survives a reload.**
+
+Concretely, the app shell subscribes to `Store.chartsOnActive()` and derives the panel's bound chart
+from it. Every route that can produce a chart therefore ends with the chart on screen — the menu,
+the command palette, an agent's `chart:insert`, a reload, a restored document, or redo of an
+undone insert — and every route that can remove one unbinds the panel, including switching to a
+sheet the chart isn't on. Whenever a chart **arrives**, the panel binds to *that* chart, so
+inserting a second one shows the second one rather than snapping back to the sheet's first —
+through the wire API exactly as through the menu.
+
+**Closing it is a real choice, not a one-way door.** The ✕ (or Escape) hides the panel; the chart
+record is untouched. **View ▸ Show ▸ Show chart** brings it back — a checkbox row beside `Show
+gridlines` and `Show formula bar`, because it is the same kind of thing: one chrome surface's
+visibility, not a change to the document. It is disabled ("No chart on this sheet.") when the
+active sheet has none, and — unlike `Insert ▸ Chart` — it is **not** gated on the charts Preview
+flag: that flag stages *creating* a chart, and a chart already in your document is document
+content. `Insert ▸ Chart` is never overloaded into "open the existing one"; it always creates.
+
+**Unchecking it sticks across a reload**. All three `View ▸ Show` rows are stored
+together as local UI preferences (their own versioned storage key — *not* the
+preview-features one, which means "opt-in staging flag"), so the box you unchecked is still
+unchecked when you come back. They used to be session-only, which meant unchecking `Show chart`
+and reloading brought both the chart *and* its tick back; that was consistent with its two
+neighbours, since all three were session-only, so all three were fixed rather than adding a
+third instance of the divergence.
+
+**Two things override a dismissal**, because each is new information that your earlier "not now"
+could not have been about:
+
+- **A chart arrives.** You closed a panel showing some other chart, or none at all; that cannot
+ sensibly suppress a chart which did not exist yet. Without this rule an agent's `chart:insert`
+ reproduced the original defect exactly — a chart in the document, nothing on screen. Note the *first*
+ read after boot is a baseline, not an arrival: a document restoring its own charts is the very
+ set you dismissed, so a reload honours your choice instead of undoing it.
+- **The document is replaced** (File ▸ Load from browser, Import JSON backup, Import data). The
+ new document's charts were never dismissed; the previous document's were.
+
+This is what keeps an agent-created chart visible while the preference persists: the guarantee was never "a
+reload always re-opens the panel", it is "a chart the user has not turned off is on screen, and
+there is always a way back to one they did".
+
+> **Possible divergence — REPORTED, NOT VERIFIED.** Google Sheets is *said* to store `Show
+> gridlines` as a sheet property inside the document (travelling with the file, so everyone
+> opening a shared workbook sees the author's choice) while `Show formula bar` is a per-user app
+> preference. **This repo has not observed either claim** — the oracle brief §7 still lists
+> reload/persistence behaviour as unobserved, and moving an unverified claim into this file would
+> not make it true, it would only move it out of the file that tracks what is unverified. Treat it
+> as a lead for a future oracle pass, not as ground truth, and do not build on it.
+>
+> What IS settled is our own behaviour: **all three toggles are per-browser here.** Whether
+> gridlines should instead live in the document is a schema decision this PR deliberately does not
+> take.
+
+**Closing another docked panel returns the slot to the chart.** History, Settings and Conditional
+formatting borrow the one docked slot, so the chart is that slot's resting state
+whenever there is a chart you haven't closed. Opening History over a chart and closing it again
+leaves the chart showing, rather than silently emptying the slot. This is done at each panel's own
+close, *not* by keying the auto-open effect off `activePanel` — that would re-open the chart the
+instant you opened another panel, fighting you for the slot you just asked for.
+
+> **Open question — needs a live oracle observation.** *Which* chart the panel shows when a sheet
+> holds several is not decided here: it shows the first, and there is no chart picker. The
+> reopen interaction that would inform it — Sheets' own chart ⋮ menu and its "Edit chart" route
+> back into the editor for an *existing* chart — is listed as NOT OBSERVED in
+> the oracle brief (gaps 3 and 4), and nothing here guesses at it. Note that the oracle cannot
+> settle the question this manifest *does* answer: Sheets floats the chart as a grid object and
+> docks only the editor, so it has no surface corresponding to Studio's docked panel. The
+> "a chart in the document is on screen" rule above follows from the docked-placement ADR, and
+> is recorded as a product decision, not as observed Sheets behaviour.
+>
+> One consequence worth naming: the command palette's catalogue is built from the *static* menu
+> model (`PALETTE_ENTRIES`), so both `Chart` and `Show chart` appear
+> there permanently greyed regardless of live state — the same pre-existing staleness
+> `Insert ▸ Chart` already had in the palette, not something new to this row. The menu bar
+> itself is live. `CommandPaletteActions.onToggleChartPanel` is therefore **dead on arrival**:
+> wired so the switch stays a complete mirror of the menu bar's own `runItem`, and so the row works
+> the day the catalogue goes live, but unreachable until then.
+
+> **Known coverage gap.** The scenario harness's `insertChart` verb always drives
+> `CanvasGrid.insertChart()` — the `chart.insert` operation — never App's React `insertChart()`
+> handler, deliberately, because the real `Insert ▸ Chart` menu row is gated on a
+> `localStorage` preview flag the harness reuses one browser page across (see the harness's own
+> reasoning). So **no scenario exercises the React handler**: its notice-on-degenerate-selection,
+> its `setActivePanel('chart')` and its preference write are covered only by the manual
+> browser pass recorded on this feature's issue, not by the suite. Everything the scenarios above assert
+> about a chart appearing is therefore asserted about the *operation* path — which is precisely
+> the path an agent, the wire API and MCP take, so the gap is on the human route, not the
+> machine one.
+
+## Charts and the Preview-features toggle — what "Enable charts" actually gates
+
+**"Enable charts" gates the `Insert ▸ Chart` MENU ITEM only.** It is a *UI preference*, stored
+in this browser's `localStorage` (`truecalc.studio.previewFeatures.v1`), not a property of the
+document.
+
+The consequence, stated plainly because it is otherwise surprising enough to be filed as a
+bug: **with the toggle off, an agent can still create a chart in your document.** The command
+succeeds, the `ChartRecord` lands, and it survives save/load like any other document content.
+That is intended, not a defect.
+
+The reason is that the alternative is worse. Promoting a browser preference into something a
+headless caller could read would make your document's capabilities depend on one browser's
+settings — a workbook would behave differently through the API depending on which machine last
+opened it. So the flag stays what it is: a local staging control for an in-progress menu item.
+
+**An agent-created chart IS visible in the app — with the toggle in either position.** The
+panel's binding is derived from the document, not from the insert event: the app shell
+subscribes to `Store.chartsOnActive()` and shows the active sheet's chart whichever way it
+arrived — the menu, `chart:insert`, a reload, or a restored document — and an arriving chart
+binds the panel to itself and overrides an earlier dismissal, so this holds even in a session
+where the user has closed the panel by hand. The toggle stays a
+staging control for the *menu row*; it has never gated the insert path, and it does not gate
+looking at a chart the document already holds either. Showing document content must not depend
+on a browser-local preference — that combination is exactly what made an agent's chart
+invisible before this feature landed.
+
+## Charts from the API, an agent, or MCP
+
+Charting is reachable from all three of Studio's agent-facing surfaces, not just the menu:
+
+| Surface | Entry point |
+|---|---|
+| Operation registry (keyboard, command palette, headless) | `chart.insert` |
+| Wire commands | `chart:insert`, `chart:update`, `chart:remove` |
+| MCP tools | `studio__chart__insert`, `studio__chart__update`, `studio__chart__remove` |
+
+`chart:insert` takes an **A1 range** (`{ from: "A1", to: "B3" }` — the same way every other
+range-taking command addresses cells, since an API caller has no selection to infer one from),
+an explicit `chartType`, and optional renderer `options`; it returns the new chart's
+**`chartId`**, which `chart:update` and `chart:remove` address the chart by. The whole insert
+is **one undoable step**, exactly like the menu path.
+
+Two things it will refuse, rather than create something that says nothing:
+
+- **A single-cell range.** There is no data to chart — the same v1 rule the menu path applies.
+- **A chart form that cannot draw the selected data.** `chart:insert` runs the *same*
+ applicability rule the panel's type picker does — one shared rule, not a second
+ implementation — and returns the *same sentence* the
+ picker shows on hover — e.g. asking for a scatter over a single numeric column returns
+ "Scatter needs at least two numeric series (an x column and a y column)." The rule and its
+ wording live in one place and are shared by both surfaces, so an agent gets a correctable
+ error where the picker would have shown a tooltip. Note this covers a **form/shape
+ mismatch** only, and four forms are exempt from it entirely — see the next section before
+ relying on it.
+
+`chart:update` applies the same check before switching an existing chart's form, and validates
+against the options being set in that same command — so fixing a Sankey by re-assigning its
+`columnRoles` in one call works, rather than being rejected against the stale ones. Neither
+command can re-point a chart's `range`: a new range means a new chart.
+
+### What the applicability guard does and does not promise
+
+The guard checks **type against shape** — whether *this chart form* can draw *the data
+currently in the range*. It is **not** an emptiness check, and it is not a promise that every
+chart in your document draws something. Three consequences follow; none is a bug, and the third
+is the one most likely to surprise.
+
+**Four forms are never gated at all.** `column`, `bar`, `line` and `area` degrade gracefully to
+any `ChartData`, so there is no shape they can misrepresent and nothing to reject them on.
+Every other form — `pie`, `scatter`, `box-plot`, `slope`, `dumbbell`, `small-multiples`,
+`calendar-heatmap`, `sankey` — has a rule.
+
+**So whether you can chart first and fill the cells afterwards depends on the form.** With the
+four ungated forms it works: `chart:insert` with `chartType: "column"` over an empty range
+succeeds, returns a `chartId`, and the chart fills in as data arrives. With any gated form it
+does not — `chartType: "scatter"` over an empty range is rejected with `chart:insert rejected
+chartType "scatter": Scatter needs at least two numeric series (an x column and a y column).`,
+because at that instant the range genuinely cannot be scattered. For those, write the cells
+first (`edit:setCell`), then insert.
+
+**`column` is the default, and it will happily persist a chart that draws nothing.** That is
+the honest reading of the two points above: `Insert ▸ Chart`, the `chart.insert` operation and
+`chart:insert` with `chartType: "column"` all accept a real-but-empty range and store a chart
+with no data in it. That is the known empty-chart defect (a chart that renders happily and says nothing)
+still reachable at insert time through the ungated forms — the guard narrowed that hole, it did
+not close it. The empty chart at least *appears* now — the panel opens on the
+agent's insert and draws nothing — so the outcome is visible rather than silent. Visible is not
+the same as refused: nothing rejects the insert or warns about it.
+
+**And the check is one-shot, not an invariant.** Nothing re-validates a chart after it exists,
+even for a gated form. Insert a `pie` over `1/2/3`, then clear those cells with `edit:clear`,
+and the chart stays in the document while applicability now reports *"Pie needs one numeric
+series with at least one value."* — persisted, inapplicable, unnoticed.
+
+Whether an empty range should be refused, and whether emptying a charted range should re-check,
+warn, or do nothing, are separate decisions — deliberately not taken here.
+
+### Known gap — a chart's range does not yet re-point through a structural edit
+
+Google Sheets re-points a chart's data range through insert/delete the way a formula reference
+does (oracle behaviour 12) — insert 3 rows above `B6:B8` and Sheets moves the source to
+`B9:B11` with no broken reference. **Studio's `insertRows`/`insertColumns`/`deleteRows`/
+`deleteColumns` do not adjust `model.charts` at all** (`Store.applyStructuralShift` rewrites
+`cells`/`formats`/`colWidths`/`rowHeights`/`merges` for the active sheet but never touches
+`charts`) — a chart's bound range is a static rectangle today. This is a real, confirmed gap
+against Sheets ground truth, not a design choice; wiring the chart range through the same
+`ReferenceAdjuster` formulas already use is future work, tracked against this issue. No
+scenario in this manifest asserts range re-pointing, since the shipped behaviour does not have
+it yet.
+
+### Not built, not claimed
+
+The full chart-type list, the Customize tab, and the chart's own ⋮ menu are marked NOT
+OBSERVED in the oracle brief — nothing here asserts them. Dual-axis and 3D chart types are
+deliberate, permanent divergences from Sheets (the oracle brief's own "Accepted divergences"
+section).
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, Insert ▸ Chart is a plain menu item — no submenu, no keyboard shortcut, and no chart-type picker before insertion — sitting in the insert-object group beside Pivot table, Image and Drawing. Choosing it inserts a chart IMMEDIATELY with a type chosen from the shape of the selected data (a single numeric column, B6:B8 holding 1/2/3, drew a Column chart); a spilled array range charts as an ordinary numeric range, with no special handling. A single unnamed series renders with NO legend — the default column chart drew bars and a value axis with no legend and no visible title. The chart is inserted as a FLOATING object over the grid, CELL-ANCHORED to the selection (inserting a row above the anchor moves the chart down with it; inserting rows below the anchor leaves it in place), while a separate "Chart editor" side panel docks on the right with Setup and Customize tabs. The chart's own data range re-points through a structural edit exactly like a formula reference — inserting 3 rows above B6:B8 moved its source to B9:B11 with no broken reference and no user action. A single ⌘Z undoes the whole insert — chart, anchored position and all — in one step, closing the editor with it. (Live-observed in the reference workbook on 2026-07-27 — see this feature's oracle brief, behaviours 1, 2, 3 as corrected by 11, 7, 8, 9, 11, 12, 13.)
+
+#### Inserting a chart from a single numeric column binds it to that range
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is sourceRange=`"B6:B8"`, type=`"column"`
+
+#### A single unnamed series renders without a legend
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is seriesCount=`1`, hasLegend=`false`
+
+#### A header row becomes the series names, and two series get a legend
+
+**Given**
+- **A1** = `Quarter`
+- **B1** = `North`
+- **C1** = `East`
+- **A2** = `Q1`
+- **B2** = `10`
+- **C2** = `20`
+- **A3** = `Q2`
+- **B3** = `12`
+- **C3** = `22`
+
+**When** I select **A1:C3**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is seriesNames=`["North","East"]`, categories=`["Q1","Q2"]`, hasLegend=`true`
+
+#### A blank cell inside the range is a gap, never plotted as zero
+
+**Given**
+- **A1** = `Q`
+- **B1** = `North`
+- **A2** = `Q1`
+- **B2** = `10`
+- **A3** = `Q2`
+- **A4** = `Q3`
+- **B4** = `30`
+
+**When** I select **A1:B4**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is values=`[10,null,30]`
+
+#### A cell's number format carries onto the value axis
+
+**Given**
+- **A1** = `Q`
+- **B1** = `Revenue`
+- **A2** = `Q1`
+- **B2** = `128400`
+- **A3** = `Q2`
+- **B3** = `141200`
+
+**When** I click **B2**, then press `Control+Shift+4`, then click **B3**, then press `Control+Shift+4`, then select **A1:B3**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is valueAxisFormat=`"currency"`
+
+#### Inserting a chart then undoing removes it in ONE step
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click **B6**, then undo
+
+**Then**
+- no chart exists
+
+#### A chart is still on screen after a save and reload, not just still in the document
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then save, reload the page, and load the workbook back
+
+**Then**
+- `[data-testid="chart-canvas"]` is visible
+- `[data-testid="chart-panel-range"]` is visible containing "B6:B8"
+- the chart is sourceRange=`"B6:B8"`, type=`"column"`
+
+#### An insert through the chart.insert operation puts the chart on screen, not just in the document
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart
+
+**Then**
+- `[data-testid="chart-canvas"]` is visible
+
+#### A chart arriving after the panel was closed re-opens it — a dismissal cannot suppress a chart that did not exist yet
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+- **D2** = `5`
+- **D3** = `9`
+- **D4** = `4`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click **chart-panel-close**, then select **D2:D4**, then choose Insert ▸ Chart
+
+**Then**
+- `[data-testid="chart-canvas"]` is visible
+- `[data-testid="chart-panel-range"]` is visible containing "D2:D4"
+
+#### Closing another docked panel returns the slot to the chart, not to nothing
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click **toolbar-history**, then click **history-panel-close**
+
+**Then**
+- `[data-testid="chart-canvas"]` is visible
+
+#### Closing the chart panel hides the chart without removing it from the document
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click **chart-panel-close**
+
+**Then**
+- `[data-testid="chart-canvas"]` is hidden
+- the chart is sourceRange=`"B6:B8"`
+
+#### Unchecking Show chart survives a reload — the chart stays hidden, it does not silently come back
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click menu item **view.chart**, then wait 1200ms, then reload the page
+
+**Then**
+- `[data-testid="chart-canvas"]` is hidden
+- the chart is sourceRange=`"B6:B8"`
+
+#### Escape that cancels a cell edit leaves the chart panel open — one Escape belongs to one handler
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then double-click **E10**, then press `h`, then press `Escape`, then wait 600ms
+
+**Then**
+- **E10** shows `null`
+- `[data-testid="chart-canvas"]` is visible
+
+#### View ▸ Show ▸ Show chart brings a closed chart back
+
+**Given**
+- **B6** = `1`
+- **B7** = `2`
+- **B8** = `3`
+
+**When** I select **B6:B8**, then choose Insert ▸ Chart, then click **chart-panel-close**, then click menu item **view.chart**
+
+**Then**
+- `[data-testid="chart-canvas"]` is visible
+
+#### Insert with an empty (single-cell) selection does not create a chart
+
+**Given**
+- **B6** = `1`
+
+**When** I select **E20:E20**, then choose Insert ▸ Chart
+
+**Then**
+- no chart exists

@@ -1,0 +1,291 @@
+---
+title: "Sort a range (daily-driver slice)"
+description: "Data ▸ Sort range ▸ \"Sort range A → Z\" / \"Z → A\" reorders the rows of the CURRENT SELECTION by its first column, carrying every selected column of a row along with it and nothing else — a one-column selection reorders that column alone, exactly as Google Sheets does. Formulas move with their cells, their relative references translating to the new row while `$`-anchored ones stay pinned. Numbers (dates among them) order before text, text before booleans, booleans before errors, and blanks stay last in BOTH directions. The whole permutation is ONE undoable command, so a single Ctrl+Z restores the exact prior order."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Data ▸ Sort range ▸ Sort range A → Z** (and **Z → A**) reorders the rows of the current selection by the values in its **first column**, matching Google Sheets' own two quick menu rows.
+
+Two things about it are easy to get wrong, and both are taken directly from the live oracle rather than from intuition:
+
+1. **It sorts the SELECTION, not the row.** Only cells inside the selected rectangle move. If you select one column of a table and sort it, that column is reordered and every other column stays exactly where it is — so each row's values no longer belong together. Google Sheets does precisely this, with no warning and no "do you want to expand the selection?" prompt, and Studio replicates it faithfully. Select the whole table when you mean to sort the whole table.
+2. **Undo is one step.** The entire permutation is a single command, so one <kbd>Ctrl</kbd>+<kbd>Z</kbd> puts every cell — values _and_ formula text — back exactly where it was.
+
+Formulas travel with their cell. A **relative** reference translates by the number of rows the formula moved, so `=A2*2` sitting in row 2 reads `=A1*2` after landing in row 1 and keeps pointing at its own row; a **`$`-anchored** reference is left verbatim, so `=$Z$2` stays `=$Z$2` wherever it lands. That is the fill/copy translate, not the `$`-blind rewrite an insert/delete performs — a sort moves the _formula_, never the cell it refers to.
+
+Formatting travels with the row too — a bold cell is still bold where it lands, and a date-formatted cell is still a date. That is not just cosmetic parity: Studio stores a date as a serial with a `date` number format and derives the cell's date _typing_ from it, so leaving the format behind would turn the plain number that lands on that row into a 1900 date.
+
+Mixed types order the way Sheets orders them: **numbers first** (a date sorts among them, by its serial), then **text** (compared case-insensitively, so `apple` comes before `Banana`), then **booleans**, then **errors** — and **blanks stay at the bottom in both directions**, never flipping to the top when you sort descending.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=delta;B1=3;A2=alpha;B2=1;A3=charlie;B3=2" />
+
+## What this slice deliberately does not do
+
+Sorting is destructive, so anything the live oracle session did not actually demonstrate is left out rather than approximated:
+
+- **No "Data has header row" option.** The checkbox was seen, and ticking it was seen to relabel the Sort-by dropdown with the header text — but what it does to the sorted _output_ was never confirmed. Studio's sort always permutes the whole selection, exactly like the quick menu row that _was_ observed end to end (which sorted a header row into the data). To keep a header out of a sort, leave it out of the selection.
+- **No multi-column sort**, no `Data ▸ Sort sheet`, and no advanced-sort dialog.
+- **No ordering is claimed within the boolean group or within the error group**, and no tie-break between two equal keys: the sort is _stable_, so equal keys keep their original relative order.
+- **A range overlapping a merged cell, or a spilled dynamic array, is refused** rather than sorted. Neither was ever put inside a sorted range in the oracle session, and both have a concrete way to lose data if guessed at: permuting content under a merge hides it (the merge stays put, so whatever lands in a covered cell vanishes from the grid while still sitting in the model), and moving a spill anchor re-spills from a new origin, hard-materialises the echoes it left behind, and cannot be undone in one step. The menu row is a no-op on such a selection; the API command throws with the reason.
+- **A relative reference with nowhere to go becomes `#REF!`.** `=A1` moving up out of row 1 has no cell to point at. Sort hands the text to the same `adjustFormula` translate that fill and copy/paste already use, so it behaves identically to them — but Sheets was never asked what _it_ does, so this is recorded as unobserved rather than claimed as parity.
+- **No filter.** `Data ▸ Create a filter` stays "coming soon". The oracle captured a filter's creation chrome (green column headers, per-header dropdown buttons, a bold header row) but none of the behaviour that matters — what the dropdown contains, how hidden rows renumber, whether it survives reload, whether undo removes it in one step — and Studio has no row-hiding mechanism at all today. It is filed separately; the wider parity scope stays open.
+
+Every one of these is recorded, with the reason, in the oracle brief's **"NOT OBSERVED — do not guess these"** section.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Data ▸ Sort range is a submenu offering "Sort range by column X (A to Z)" — where X is the selection's FIRST column — the same "(Z to A)", and an "Advanced range sorting options" dialog (a "Data has header row" checkbox, a Sort-by column dropdown, an A-to-Z/Z-to-A radio pair, "Add another sort column", Cancel/Sort). The two quick rows sort the ENTIRE selection with no header inference — live-verified: sorting A1:C5 of a table whose row 1 held "Name/Score/Note" put "Name" last, among the data. Sorting reorders ONLY the selected rectangle: selecting one column of a three-column table and sorting it moved that column alone and left every other column of each row exactly where it was, with no warning and no "expand the selection?" prompt — the classic data-corrupting difference between "sort range" and a whole-row sort, and behaviour Studio replicates faithfully rather than second-guessing. Within the selection a row travels as a unit. Formulas move with their cell and their RELATIVE references translate by the row delta (a formula reading "=G2*2" in row 2 read "=G1*2" after moving to row 1) while `$`-anchored ones are left verbatim ("=$A$2" stayed "=$A$2") — the fill/copy translate, not the $-blind structural-edit rewrite. Ascending, a column holding 2, 10, a date, "apple", "Banana", TRUE, =1/0 and one empty cell ordered as: 2 · 10 · the date (by its serial, among the numbers) · apple · Banana (text compared case-INSENSITIVELY) · TRUE · #DIV/0! · blank. Descending gave the exact reverse of that non-blank run with the blank STILL last. A cell's FORMATTING travels with its row — live-verified: a bold cell moving from row 1 to row 3 was still bold there, and a date-formatted cell still rendered as a date in its new row. One Ctrl+Z restored the exact pre-sort order in a single step. This daily-driver slice ships exactly the two quick menu rows: no "Data has header row" option and no multi-column sort (the dialog's only two unique capabilities — and what the header checkbox does to the sorted OUTPUT was never observed, so it is not guessed at here), no Data ▸ Sort sheet, and no filter. Full parity is tracked separately; every unobserved edge is listed in the oracle brief's "NOT OBSERVED — do not guess these" section.
+
+#### Data ▸ Sort range ▸ A → Z reorders the selection and carries every selected column with each row
+
+**Given**
+- **A1** = `delta`
+- **B1** = `3`
+- **A2** = `alpha`
+- **B2** = `1`
+- **A3** = `charlie`
+- **B3** = `2`
+
+**When** I select **A1:B3**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `alpha`
+- **B1** shows `1`
+- **A2** shows `charlie`
+- **B2** shows `2`
+- **A3** shows `delta`
+- **B3** shows `3`
+
+#### Z → A sorts the same selection in the opposite order
+
+**Given**
+- **A1** = `delta`
+- **B1** = `3`
+- **A2** = `alpha`
+- **B2** = `1`
+- **A3** = `charlie`
+- **B3** = `2`
+
+**When** I select **A1:B3**, then click menu item **data.sortRangeDesc**
+
+**Then**
+- **A1** shows `delta`
+- **B1** shows `3`
+- **A2** shows `charlie`
+- **B2** shows `2`
+- **A3** shows `alpha`
+- **B3** shows `1`
+
+#### Sorting a ONE-COLUMN selection reorders that column alone and leaves the rest of each row behind
+
+**Given**
+- **A1** = `delta`
+- **B1** = `keep-1`
+- **A2** = `alpha`
+- **B2** = `keep-2`
+- **A3** = `charlie`
+- **B3** = `keep-3`
+
+**When** I select **A1:A3**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `alpha`
+- **A2** shows `charlie`
+- **A3** shows `delta`
+- **B1** shows `keep-1`
+- **B2** shows `keep-2`
+- **B3** shows `keep-3`
+
+#### A formula moves with its row and its RELATIVE reference translates to the new row
+
+**Given**
+- **A1** = `30`
+- **B1** = `=A1*2`
+- **A2** = `10`
+- **B2** = `=A2*2`
+- **A3** = `20`
+- **B3** = `=A3*2`
+
+**When** I select **A1:B3**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `10`
+- **A2** shows `20`
+- **A3** shows `30`
+- **B1** has formula `=A1*2`
+- **B2** has formula `=A2*2`
+- **B3** has formula `=A3*2`
+
+#### A $-anchored reference is NOT adjusted — it travels with its cell verbatim
+
+**Given**
+- **A1** = `30`
+- **C1** = `=$Z$1`
+- **A2** = `10`
+- **C2** = `=$Z$2`
+- **A3** = `20`
+- **C3** = `=$Z$3`
+
+**When** I select **A1:C3**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `10`
+- **A2** shows `20`
+- **A3** shows `30`
+- **C1** has formula `=$Z$2`
+- **C2** has formula `=$Z$3`
+- **C3** has formula `=$Z$1`
+
+#### Ascending puts numbers before text, text before booleans, booleans before errors, blanks last
+
+**Given**
+- **A1** = `10`
+- **A2** = `apple`
+- **A4** = `TRUE`
+- **A5** = `=1/0`
+- **A6** = `2`
+- **A7** = `Banana`
+
+**When** I select **A1:A7**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `2`
+- **A2** shows `10`
+- **A3** shows `apple`
+- **A4** shows `Banana`
+- **A5** shows `true`
+- **A6** shows `#DIV/0!`
+- **A7** shows `null`
+
+#### Descending reverses that order but leaves blanks LAST, not first
+
+**Given**
+- **A1** = `10`
+- **A2** = `apple`
+- **A4** = `TRUE`
+- **A5** = `=1/0`
+- **A6** = `2`
+- **A7** = `Banana`
+
+**When** I select **A1:A7**, then click menu item **data.sortRangeDesc**
+
+**Then**
+- **A1** shows `#DIV/0!`
+- **A2** shows `true`
+- **A3** shows `Banana`
+- **A4** shows `apple`
+- **A5** shows `10`
+- **A6** shows `2`
+- **A7** shows `null`
+
+#### ONE undo restores the exact pre-sort order, every column included
+
+**Given**
+- **A1** = `delta`
+- **B1** = `3`
+- **C1** = `n-delta`
+- **A2** = `alpha`
+- **B2** = `1`
+- **C2** = `n-alpha`
+- **A3** = `charlie`
+- **B3** = `2`
+- **C3** = `n-charlie`
+
+**When** I select **A1:C3**, then click menu item **data.sortRangeAsc**, then click **A1**, then undo
+
+**Then**
+- **A1** shows `delta`
+- **B1** shows `3`
+- **C1** shows `n-delta`
+- **A2** shows `alpha`
+- **B2** shows `1`
+- **C2** shows `n-alpha`
+- **A3** shows `charlie`
+- **B3** shows `2`
+- **C3** shows `n-charlie`
+
+#### Undo after a sort that moved formulas restores their original text too
+
+**Given**
+- **A1** = `30`
+- **B1** = `=A1*2`
+- **A2** = `10`
+- **B2** = `=A2*2`
+
+**When** I select **A1:B2**, then click menu item **data.sortRangeAsc**, then click **A1**, then undo
+
+**Then**
+- **A1** shows `30`
+- **A2** shows `10`
+- **B1** shows `60`
+- **B2** shows `20`
+- **B1** has formula `=A1*2`
+- **B2** has formula `=A2*2`
+
+#### Sorting a single-row selection changes nothing
+
+**Given**
+- **A1** = `delta`
+- **B1** = `alpha`
+
+**When** I select **A1:B1**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `delta`
+- **B1** shows `alpha`
+
+#### A cell's formatting travels with its row
+
+**Given**
+- **A1** = `delta`
+- **A2** = `alpha`
+
+**When** I click **A1**, then press `Control+b`, then select **A1:A2**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `alpha`
+- **A2** shows `delta`
+- **A1** is bold=false
+- **A2** is bold
+
+#### A date sorts by its serial among the numbers, and stays a date in its new row
+
+**Given**
+- **A1** = `8/5/2026`
+- **A2** = `10`
+
+**When** I select **A1:A2**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `10`
+- **A1** is numberFormat=false
+- **A2** is numberFormat=date
+
+#### Sorting a range that overlaps a merge is refused, leaving the data untouched
+
+**Given**
+- **A1** = `delta`
+- **B1** = `anchor`
+- **A2** = `alpha`
+- **B2** = `keep-me`
+
+**When** I merge **B1:C1**, then select **A1:C2**, then click menu item **data.sortRangeAsc**
+
+**Then**
+- **A1** shows `delta`
+- **A2** shows `alpha`
+- **B2** shows `keep-me`
+
+#### Data ▸ Create a filter is still disabled — this slice ships sort only
+
+**Given**
+
+**When** I click menu item **data.createFilter**
+
+**Then**
+- `[data-menu-item="data.createFilter"]` is visible
