@@ -1,0 +1,175 @@
+---
+title: "Insert & delete rows/columns"
+description: "Insert.rows/Insert.columns/Edit ▸ Delete rows/Edit ▸ Delete columns shift cell content across the whole sheet and re-adjust every formula's own references, matching Google Sheets — the foundation primitive"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Insert ▸ Rows** / **Insert ▸ Columns** and **Edit ▸ Delete ▸ Rows** / **Edit ▸ Delete ▸ Columns** insert or remove whole rows/columns relative to the current selection — matching Google Sheets: inserting puts as many blank rows/columns as are selected immediately before the selection's first row/column; deleting removes exactly the selected rows/columns. Every cell at/after the affected boundary shifts to its new address, and every formula's own references re-adjust to keep pointing at the same logical cells — including `$`-anchored ones, which shift here even though a copy/paste translate keeps them pinned (this isn't a copy; the referenced cell itself moved). A reference into a deleted row/column becomes `#REF!`; see the oracle brief for the exact (and non-obvious) rule for when a RANGE reference shrinks vs. collapses entirely.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=1;A2=2;A3=3;B1=Total;B2==SUM(A1:A3)" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, inserting N rows/columns shifts every cell at/after the insertion point down/right by N, and re-adjusts EVERY formula reference (anywhere in the workbook) that points at/after the boundary — including $-anchored references, which shift here even though a copy/paste translate would keep them pinned (a structural edit moves the referenced cell itself, it isn't a copy). A range reference straddling the boundary extends to include the inserted rows/columns. Deleting N rows/columns shifts everything after the deleted band back by N and drops content inside it; a single-cell reference into the deleted band becomes #REF!, and a range reference collapses to the literal whole-formula #REF! (not a shrink to the surviving corner, and not a nested #REF! inside the original function call) whenever EITHER of its two corners falls inside the deleted band — it shrinks normally only when the deleted band passes strictly through its interior, touching neither corner (live-verified; see this feature's oracle brief). RESOLVED GAP (was truecalc/core#716, fixed by core#754, shipped in @truecalc/workbook 6.0.0): the engine's formula parser previously rejected the `#REF!` error literal, so a formula whose TEXT collapsed to `=#REF!` (or contained it, e.g. `=#REF!+B1`) resolved to `null` — the cell painted BLANK, not the red `#REF!` Google Sheets shows. The parser now accepts the error-literal family as a value (the engine adapter's regression tests cover both the bare and compound cases), so this cell now renders the visible red `#REF!` text like every other error, matching Sheets.
+
+#### insertRows shifts content at/after the boundary down, leaves earlier rows untouched
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I insert 1 row(s) before row 2
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `null`
+- **A3** shows `2`
+- **A4** shows `3`
+
+#### insertRows re-adjusts a relocated formula's own out-of-band references
+
+**Given**
+- **A1** = `10`
+- **A5** = `50`
+- **B3** = `=A1+A5`
+
+**When** I insert 1 row(s) before row 3
+
+**Then**
+- **B4** shows `60`
+- **B4** has formula `=A1+A6`
+
+#### insertRows extends a range reference that straddles the boundary
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+- **B1** = `=SUM(A1:A4)`
+
+**When** I insert 1 row(s) before row 3
+
+**Then**
+- **B1** has formula `=SUM(A1:A5)`
+
+#### insertColumns mirrors insertRows on the column axis
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+
+**When** I insert 1 column(s) before column index 0
+
+**Then**
+- **A1** shows `null`
+- **B1** shows `1`
+- **C1** shows `2`
+
+#### deleteRows removes the band and shifts later content up
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I delete 1 row(s) starting at row 2
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `3`
+- **A3** shows `null`
+
+#### deleteRows turns a single-cell reference into the deleted band into
+
+**Given**
+- **A2** = `5`
+- **B1** = `=A2`
+
+**When** I delete 1 row(s) starting at row 2
+
+**Then**
+- **B1** shows `#REF!`
+- **B1** has formula `=#REF!`
+
+#### deleteRows shrinks a range reference when the deleted band is strictly interior
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+- **A5** = `5`
+- **B1** = `=SUM(A1:A5)`
+
+**When** I delete 1 row(s) starting at row 3
+
+**Then**
+- **B1** has formula `=SUM(A1:A4)`
+
+#### deleteRows collapses a range reference to
+
+**Given**
+- **A2** = `2`
+- **A3** = `3`
+- **B1** = `=SUM(A2:A3)`
+
+**When** I delete 1 row(s) starting at row 2
+
+**Then**
+- **B1** has formula `=#REF!`
+
+#### deleteColumns mirrors deleteRows on the column axis
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+
+**When** I delete 1 column(s) starting at column index 1
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `3`
+- **C1** shows `null`
+
+#### insertRows/deleteRows are undoable in one step
+
+**Given**
+- **A1** = `1`
+
+**When** I insert 1 row(s) before row 1, then click **A1**, then undo
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `null`
+
+#### the Insert menu's Rows item is active and inserts before the selection
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+
+**When** I click **A1**, then click menu item **insert.rows**
+
+**Then**
+- **A1** shows `null`
+- **A2** shows `1`
+
+#### the Edit ▸ Delete ▸ Rows menu item is active and deletes the selected row
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+
+**When** I click **A1**, then click menu item **edit.deleteRows**
+
+**Then**
+- **A1** shows `2`
+- **A2** shows `null`

@@ -1,0 +1,48 @@
+---
+title: "Make a copy — local multi-document storage"
+description: "File > Make a copy shows a naming dialog prefilled \"Copy of <current name>\", then duplicates the current document's content under the confirmed name into a brand-new, independent local document that opens in its own tab, leaving the source untouched — enabled by a document-keyed registry (every document has its own name, defaulting \"Untitled workbook\") that replaced try mode's single fixed local-storage slot and migrates the existing saved workbook with zero data loss."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**File > Make a copy** opens a naming dialog — a required **Name** field prefilled `Copy of <current document's name>`, its text pre-selected so typing immediately replaces it (matching the oracle's #2 finding) — before duplicating anything. Confirming duplicates the current document's content — every cell, formula, format, and sheet — under the confirmed name into a brand-new, independent local document, and opens it in a new browser tab (focused, matching Google Sheets' own new-tab behavior). The tab you clicked from is left exactly as it was; the two documents are independent from that moment on, each with its own local storage, its own autosave, and its own name.
+
+This was previously impossible: try mode persisted exactly **one** workbook to a single fixed local-storage slot, so there was nowhere a second document could live, and no document had a name at all. That's what this feature actually adds — a small, real local-storage schema change (a document-keyed **registry**, every entry now carrying a `name` — defaulting `"Untitled workbook"` for the migrated pre-existing document — not a rewrite of how any one document is saved) — with the naming dialog and **File > Open** (see [file-open](./file-open)) as its first two consumers.
+
+**Local multi-document storage.** Every document is identified by a short local id, a **name**, and a pair of storage keys (its snapshot in `localStorage`, its command log in `IndexedDB` — the exact same two-part shape [persistent-history](./persistent-history) already saves through). A small **registry** (one `localStorage` entry: a list of `{ id, name, keys, createdAt, updatedAt }`) is the list of documents that exist in this browser, plus an **active-document pointer** recording which one a plain reload should return to. Opening `?doc=<id>` (what the new tab's URL carries) opens THAT document; a plain visit with no `?doc=` reopens whichever document was last active — byte-identical to the pre-this-feature single-document behavior when only one document has ever existed.
+
+**Migration preserves the existing workbook — zero data moved.** The very first time this ships to a browser that already had a saved workbook (the old single fixed slot), the registry is seeded with exactly one entry whose storage keys are the OLD fixed keys, unchanged, and whose **name defaults to "Untitled workbook"**. Nothing is copied or rewritten; the existing document is simply now ALSO listed in the registry, still readable from the exact same place it always was. This bootstrap is idempotent (a no-op on every later boot) and runs automatically, with no migration step to run by hand. A registry a browser already wrote BEFORE `name` existed (the one release where the registry shipped without it) is handled the same defaulting way on read, rather than losing that entry.
+
+**The copy carries content, not history — matching the oracle.** Per the observed Sheets behavior (a copy is a new Drive file with its own fresh version history, never the source's — see the oracle brief), Make a copy writes the CURRENT live document's cells/formats/sheets into the new document's slot, but never touches its command-log slot — so opening the copy starts with empty History-panel/undo-redo, the same as any other freshly-created document. This is a snapshot at the moment of copying, not a live link: editing the source (or the copy) afterward never affects the other.
+
+**No account or server involved.** Every piece of this — the registry, the active-document pointer, each document's snapshot and log — lives in this browser's `localStorage`/`IndexedDB` only, entirely separate from persisted mode (account save, `.tc` cloud sync), which is tracked elsewhere. Multi-document storage in the browser is still try mode.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' File > Make a copy opens a "Copy document" dialog — a required Name field prefilled `Copy of <title>` (its text pre-selected for immediate rename), a Folder picker, and Share/comments checkboxes — and confirming it opens the duplicate in a brand-new, focused browser tab: a genuinely new Drive file (its own file id), carrying over the source's full content (every cell, formula, format, and sheet) as of that moment, but starting with its OWN fresh version history, never the source's. The source's own tab is left open and completely unchanged. Studio has no server, sharing, or folders yet, so the Folder picker and Share/comments checkboxes have no Studio analog — but the Name field DOES: Studio's own naming dialog matches it directly (required, prefilled `Copy of <current name>`, pre-selected, editable before confirming). See this feature's oracle brief for the full replication brief (dialog contents, new-tab-and-focus behavior, and the fresh-history finding this feature's "no log copied" design follows).
+
+#### Make a copy is available (no longer disabled) and opens the naming dialog, prefilled with "Copy of" the current document's name, WITHOUT touching the current document
+
+**Given**
+- **A1** = `42`
+
+**When** I click menu item **file.makeCopy**
+
+**Then**
+- **A1** shows `42`
+- `[data-menu-item="file.makeCopy"]` is visible
+- `[data-testid="copy-document-dialog"]` is visible containing "Copy document"
+- `[data-testid="copy-document-name-input"]` is visible with value "Copy of Untitled workbook"
+
+#### Cancelling the naming dialog aborts — no dialog left open, current document still untouched
+
+**Given**
+- **A1** = `42`
+
+**When** I click menu item **file.makeCopy**, then click **copy-document-cancel**
+
+**Then**
+- **A1** shows `42`
+- `[data-testid="copy-document-dialog"]` is hidden

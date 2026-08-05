@@ -1,0 +1,401 @@
+---
+title: "Right-click grid context menu"
+description: "Right-clicking a cell (or the current selection) in the grid prevents the browser's native context menu and opens a custom one instead — Cut, Copy, Paste, Insert row above/below, Insert column left/right, Delete row, Delete column, and Explain — every row routed through the SAME commands the top Edit/Insert menu already uses, so it's undo/redo compatible by construction. The insert labels show the REAL row/column count for a multi-row/column selection (e.g. \"Insert 3 rows above\"), matching Sheets' own grammar. Right-clicking a row-number/column-letter HEADER directly — or a cell that's part of a header-originated whole-row/whole-column selection — opens a second, richer, axis-only menu instead — only that axis's Insert above/below (or left/right), plus a real-range **Delete rows/columns X-Y** and a new **Clear rows/columns X-Y** (empties content without deleting the rows/columns), reusing the exact same commands (and, for Clear, the exact same `clear.selection` command `Delete`/`Backspace` already run) — no new capability needed."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Right-clicking a cell (or the current selection) anywhere in the grid prevents the browser's native context menu — no more "Save Image As…"/"Inspect" over what looks like a plain `<canvas>` — and opens a custom, Sheets-shaped menu instead: **Cut**, **Copy**, **Paste**, a separator, **Insert row above**, **Insert row below**, **Insert column left**, **Insert column right**, a separator, **Delete row**, **Delete column**, a separator, and **Explain**. Every row above Explain runs through the exact same command the top **Edit**/**Insert** menu already calls for the identical action — `clipboard.cut`/`clipboard.copy`/`clipboard.paste` and `structure.insertRows`/`insertRowsBelow`/`insertColumns`/`insertColumnsRight`/`deleteRows`/`deleteColumns` — so undo/redo, the command-history panel, and analytics all work identically whether the action came from the top menu or the right-click menu, by construction (one command path, not two).
+
+The insert labels show the **real row/column count** for the current selection, matching Sheets' own grammar exactly: a single row/column keeps the singular, un-numbered "Insert row above"/"Insert column left" (Sheets never spells out "1"), while a 3-row selection shows "Insert 3 rows above"/"Insert 3 rows below" and a 2-column selection shows "Insert 2 columns left"/"Insert 2 columns right".
+
+**Right-clicking a row-number/column-letter header directly — or a cell inside a header-originated whole-row/whole-column selection — opens a second, richer menu instead **, matching Sheets: only that ONE axis's items, not both. A row-header menu shows **Insert row above**, **Insert row below**, a separator, **Delete row(s) N** (or **N-M** for a multi-row selection, the real range), and **Clear row(s) N** — no column items at all; a column-header menu mirrors it with column items only. **Clear** is new here — it empties the selected row/column band's content (every cell in it) without deleting the rows/columns themselves or shifting anything, unlike Delete.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=1;A2=2;A3=3;B1=Total;B2==SUM(A1:A3)" />
+
+Right-click any cell to see the plain menu. Try **Cut**/**Copy** on one cell, then right-click another and **Paste**; try **Insert row above/below** or **Delete row** on a row inside the sample data; select a multi-row/column range first to see the label switch to the real count in both directions. Right-click a row NUMBER or column LETTER in the header strip to see the richer axis-only menu, including the new **Clear** item.
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, right-clicking a single cell opens a menu whose first group is Cut/Copy/Paste/Paste special, followed by Insert (1 row above / 1 column left / cells…), then Delete (row / column / cells…) — live-verified; see this feature's oracle brief. For a MULTI-row/column selection, Sheets' own plain-cell menu spells out the real count and BOTH insert directions — "Insert 3 rows above" / "Insert 3 rows below", "Insert 2 columns left" / "Insert 2 columns right" — and a single row/column keeps the singular, un-numbered "Insert row above"/"Insert column left" (Sheets never spells out "1"). Studio's `structure.insertRows`/`insertColumns` commands already insert `count` rows/columns matching the selection's span for the "above"/"left" direction; `structure. insertRowsBelow`/`insertColumnsRight` add the missing "insert after the selection" pair, reusing the exact same `Store.insertRows`/`insertColumns` primitive with `at` one past the selection's last row/column instead of before its first. Sheets also right-click-selects the target the same way a left-click does — inside the current selection, the selection is left alone; outside it, the selection collapses to the clicked cell — which Studio's `CanvasGrid.onContextMenu` replicates.
+
+The header-triggered menu (live-verified 2026-07-22; see this feature's oracle brief): right-clicking a row-number or column-letter HEADER in Sheets opens a DIFFERENT, richer menu than the plain-cell one — still Cut/Copy/Paste/Paste special first, but the Insert group offers BOTH directions ("Insert 1 row above" AND "Insert 1 row below" together for a header-selected row, live-confirmed), plus Clear row/Hide row/Resize row/Create a filter/Conditional formatting/Data validation/"View more row actions" (only Clear is in scope here — the rest have no backing Studio capability yet, per the issue's own non-goals list). For a MULTI-row/column header selection, this session's live drive of the exact real-range Delete/Clear label wording hit a shared-browser tooling collision (see the oracle's addendum) — Studio's own chosen wording, `Delete rows {r0}-{r1}`/`Clear rows {r0}-{r1}` (no spaces around the hyphen), is a disclosed divergence from any unverified exact Sheets spacing, not a byte-for-byte replication attempt. Studio's `clear.selection` command needed no new capability: a header-originated whole-row/ whole-column selection is structurally just a `SelRange`, identical in shape to any other selection `clearEdits` already handles.
+
+#### Right-clicking a cell opens the menu with every row present, without invoking anything
+
+**Given**
+- **A1** = `5`
+
+**When** I right-click **A1**
+
+**Then**
+- **A1** shows `5`
+- `[data-testid="grid-context-menu-cut"]` is visible containing "Cut"
+- `[data-testid="grid-context-menu-copy"]` is visible containing "Copy"
+- `[data-testid="grid-context-menu-paste"]` is visible containing "Paste"
+- `[data-testid="grid-context-menu-insert-rows"]` is visible containing "Insert row above"
+- `[data-testid="grid-context-menu-insert-rows-below"]` is visible containing "Insert row below"
+- `[data-testid="grid-context-menu-insert-columns"]` is visible containing "Insert column left"
+- `[data-testid="grid-context-menu-insert-columns-right"]` is visible containing "Insert column right"
+- `[data-testid="grid-context-menu-delete-rows"]` is visible containing "Delete row"
+- `[data-testid="grid-context-menu-delete-columns"]` is visible containing "Delete column"
+- `[data-testid="grid-context-menu-explain"]` is visible containing "Explain"
+
+#### Cut then Paste via the context menu moves the cell, same as Edit ▸ Cut/Paste
+
+**Given**
+- **A1** = `42`
+
+**When** I right-click **A1**, then click **grid-context-menu-cut** in the context menu, then select **B1**, then right-click **B1**, then click **grid-context-menu-paste** in the context menu
+
+**Then**
+- **A1** shows `null`
+- **B1** shows `42`
+
+#### Copy then Paste via the context menu duplicates the cell and keeps the source, same as Edit ▸ Copy/Paste
+
+**Given**
+- **A1** = `7`
+
+**When** I right-click **A1**, then click **grid-context-menu-copy** in the context menu, then select **B1**, then right-click **B1**, then click **grid-context-menu-paste** in the context menu
+
+**Then**
+- **A1** shows `7`
+- **B1** shows `7`
+
+#### Insert row above via the context menu shifts content down, same as Insert ▸ Rows
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I right-click **A2**, then click **grid-context-menu-insert-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `null`
+- **A3** shows `2`
+- **A4** shows `3`
+
+#### Insert row above/below on a multi-row selection shows the REAL row count in both labels, not a hardcoded singular
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+
+**When** I select **A1:A3**, then right-click **A2**
+
+**Then**
+- `[data-testid="grid-context-menu-insert-rows"]` is visible containing "Insert 3 rows above"
+- `[data-testid="grid-context-menu-insert-rows-below"]` is visible containing "Insert 3 rows below"
+
+#### Insert row below via the context menu inserts the selection's row count below it
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+
+**When** I select **A1:A3**, then right-click **A2**, then click **grid-context-menu-insert-rows-below** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `2`
+- **A3** shows `3`
+- **A4** shows `null`
+- **A5** shows `null`
+- **A6** shows `null`
+- **A7** shows `4`
+
+#### Delete row via the context menu shifts content up, same as Edit ▸ Delete rows
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I right-click **A2**, then click **grid-context-menu-delete-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `3`
+- **A3** shows `null`
+
+#### Insert column left via the context menu shifts content right, same as Insert ▸ Columns
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+
+**When** I right-click **B1**, then click **grid-context-menu-insert-columns** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `null`
+- **C1** shows `2`
+- **D1** shows `3`
+
+#### Insert column left/right on a multi-column selection shows the REAL column count in both labels, not a hardcoded singular
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+- **D1** = `4`
+
+**When** I select **A1:C1**, then right-click **B1**
+
+**Then**
+- `[data-testid="grid-context-menu-insert-columns"]` is visible containing "Insert 3 columns left"
+- `[data-testid="grid-context-menu-insert-columns-right"]` is visible containing "Insert 3 columns right"
+
+#### Insert column right via the context menu inserts the selection's column count to its right
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+- **D1** = `4`
+
+**When** I select **A1:C1**, then right-click **B1**, then click **grid-context-menu-insert-columns-right** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `2`
+- **C1** shows `3`
+- **D1** shows `null`
+- **E1** shows `null`
+- **F1** shows `null`
+- **G1** shows `4`
+
+#### Delete column via the context menu shifts content left, same as Edit ▸ Delete columns
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+
+**When** I right-click **B1**, then click **grid-context-menu-delete-columns** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `3`
+- **C1** shows `null`
+
+#### A right-click INSIDE the current multi-row selection preserves it, acting on the whole range (Sheets convention)
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+
+**When** I select **A1:A3**, then right-click **A2**, then click **grid-context-menu-delete-rows** in the context menu
+
+**Then**
+- **A1** shows `4`
+- **A2** shows `null`
+- **A3** shows `null`
+- **A4** shows `null`
+
+#### A right-click OUTSIDE the current multi-row selection collapses it to the clicked cell before acting (Sheets convention)
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+
+**When** I select **A1:A3**, then right-click **A4**, then click **grid-context-menu-delete-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `2`
+- **A3** shows `3`
+- **A4** shows `null`
+
+#### Right-clicking a row-number header directly opens the richer header menu — row-only actions, no column items
+
+**Given**
+- **A2** = `2`
+
+**When** I right-click the row **2** header
+
+**Then**
+- `[data-testid="grid-context-menu-cut"]` is visible containing "Cut"
+- `[data-testid="grid-context-menu-copy"]` is visible containing "Copy"
+- `[data-testid="grid-context-menu-paste"]` is visible containing "Paste"
+- `[data-testid="grid-context-menu-insert-rows"]` is visible containing "Insert row above"
+- `[data-testid="grid-context-menu-insert-rows-below"]` is visible containing "Insert row below"
+- `[data-testid="grid-context-menu-delete-rows"]` is visible containing "Delete row 2"
+- `[data-testid="grid-context-menu-clear-rows"]` is visible containing "Clear row 2"
+- `[data-testid="grid-context-menu-insert-columns"]` is hidden
+- `[data-testid="grid-context-menu-insert-columns-right"]` is hidden
+- `[data-testid="grid-context-menu-delete-columns"]` is hidden
+- `[data-testid="grid-context-menu-clear-columns"]` is hidden
+
+#### Right-clicking a column-letter header directly opens the richer header menu — column-only actions, no row items
+
+**Given**
+- **B1** = `2`
+
+**When** I right-click the **B** column header
+
+**Then**
+- `[data-testid="grid-context-menu-insert-columns"]` is visible containing "Insert column left"
+- `[data-testid="grid-context-menu-insert-columns-right"]` is visible containing "Insert column right"
+- `[data-testid="grid-context-menu-delete-columns"]` is visible containing "Delete column B"
+- `[data-testid="grid-context-menu-clear-columns"]` is visible containing "Clear column B"
+- `[data-testid="grid-context-menu-insert-rows"]` is hidden
+- `[data-testid="grid-context-menu-insert-rows-below"]` is hidden
+- `[data-testid="grid-context-menu-delete-rows"]` is hidden
+- `[data-testid="grid-context-menu-clear-rows"]` is hidden
+
+#### A multi-row header selection's header menu shows the REAL range in every label
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **A4** = `4`
+- **A5** = `5`
+
+**When** I select row headers **2:4**, then right-click the row **3** header
+
+**Then**
+- `[data-testid="grid-context-menu-insert-rows"]` is visible containing "Insert 3 rows above"
+- `[data-testid="grid-context-menu-insert-rows-below"]` is visible containing "Insert 3 rows below"
+- `[data-testid="grid-context-menu-delete-rows"]` is visible containing "Delete rows 2-4"
+- `[data-testid="grid-context-menu-clear-rows"]` is visible containing "Clear rows 2-4"
+
+#### A multi-column header selection's header menu shows the REAL range in every label
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+- **D1** = `4`
+- **E1** = `5`
+
+**When** I select column headers **B:D**, then right-click the **C** column header
+
+**Then**
+- `[data-testid="grid-context-menu-insert-columns"]` is visible containing "Insert 3 columns left"
+- `[data-testid="grid-context-menu-insert-columns-right"]` is visible containing "Insert 3 columns right"
+- `[data-testid="grid-context-menu-delete-columns"]` is visible containing "Delete columns B-D"
+- `[data-testid="grid-context-menu-clear-columns"]` is visible containing "Clear columns B-D"
+
+#### Insert row above via the row-header menu shifts content down — same command the plain cell menu already uses
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I right-click the row **2** header, then click **grid-context-menu-insert-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `null`
+- **A3** shows `2`
+- **A4** shows `3`
+
+#### Delete rows via the row-header menu removes the selected band — same command the plain cell menu already uses
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+
+**When** I right-click the row **2** header, then click **grid-context-menu-delete-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `3`
+- **A3** shows `null`
+
+#### Clear rows via the row-header menu empties the row's content WITHOUT deleting or shifting rows
+
+**Given**
+- **A1** = `1`
+- **A2** = `2`
+- **A3** = `3`
+- **B2** = `20`
+
+**When** I right-click the row **2** header, then click **grid-context-menu-clear-rows** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **A2** shows `null`
+- **A3** shows `3`
+- **B2** shows `null`
+
+#### Clear columns via the column-header menu empties the column's content WITHOUT deleting or shifting columns
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **C1** = `3`
+- **B2** = `20`
+
+**When** I right-click the **B** column header, then click **grid-context-menu-clear-columns** in the context menu
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `null`
+- **C1** shows `3`
+- **B2** shows `null`
+
+#### A right-click on a plain cell with NO header-based selection still opens the ORIGINAL plain cell menu, unchanged
+
+**Given**
+- **A1** = `1`
+
+**When** I right-click **A1**
+
+**Then**
+- `[data-testid="grid-context-menu-insert-rows"]` is visible containing "Insert row above"
+- `[data-testid="grid-context-menu-insert-columns"]` is visible containing "Insert column left"
+- `[data-testid="grid-context-menu-delete-rows"]` is visible containing "Delete row"
+- `[data-testid="grid-context-menu-delete-columns"]` is visible containing "Delete column"
+- `[data-testid="grid-context-menu-clear-rows"]` is hidden
+- `[data-testid="grid-context-menu-clear-columns"]` is hidden
+
+#### A right-click on a cell inside a header-originated whole-row selection opens the richer ROW header menu, not the plain cell menu
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **A2** = `3`
+- **B2** = `4`
+
+**When** I select row headers **1:2**, then right-click **B1**
+
+**Then**
+- `[data-testid="grid-context-menu-delete-rows"]` is visible containing "Delete rows 1-2"
+- `[data-testid="grid-context-menu-clear-rows"]` is visible
+- `[data-testid="grid-context-menu-insert-columns"]` is hidden
+
+#### A right-click on a cell inside a header-originated whole-column selection opens the richer COLUMN header menu, not the plain cell menu
+
+**Given**
+- **A1** = `1`
+- **B1** = `2`
+- **A2** = `3`
+- **B2** = `4`
+
+**When** I select column headers **A:B**, then right-click **A2**
+
+**Then**
+- `[data-testid="grid-context-menu-delete-columns"]` is visible containing "Delete columns A-B"
+- `[data-testid="grid-context-menu-clear-columns"]` is visible
+- `[data-testid="grid-context-menu-insert-rows"]` is hidden
