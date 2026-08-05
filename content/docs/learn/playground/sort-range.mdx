@@ -33,7 +33,7 @@ Sorting is destructive, so anything the live oracle session did not actually dem
 - **No ordering is claimed within the boolean group or within the error group**, and no tie-break between two equal keys: the sort is _stable_, so equal keys keep their original relative order.
 - **A range overlapping a merged cell, or a spilled dynamic array, is refused** rather than sorted. Neither was ever put inside a sorted range in the oracle session, and both have a concrete way to lose data if guessed at: permuting content under a merge hides it (the merge stays put, so whatever lands in a covered cell vanishes from the grid while still sitting in the model), and moving a spill anchor re-spills from a new origin, hard-materialises the echoes it left behind, and cannot be undone in one step. The menu row is a no-op on such a selection; the API command throws with the reason.
 - **A relative reference with nowhere to go becomes `#REF!`.** `=A1` moving up out of row 1 has no cell to point at. Sort hands the text to the same `adjustFormula` translate that fill and copy/paste already use, so it behaves identically to them — but Sheets was never asked what _it_ does, so this is recorded as unobserved rather than claimed as parity.
-- **No filter.** `Data ▸ Create a filter` stays "coming soon". The oracle captured a filter's creation chrome (green column headers, per-header dropdown buttons, a bold header row) but none of the behaviour that matters — what the dropdown contains, how hidden rows renumber, whether it survives reload, whether undo removes it in one step — and Studio has no row-hiding mechanism at all today. It is filed separately; the wider parity scope stays open.
+- **Filter by value is a separate manifest.** `Data ▸ Create a filter` now ships alongside sort in this same daily-driver slice — see the `filter-by-value` manifest for its own scope and ground truth.
 
 Every one of these is recorded, with the reason, in the oracle brief's **"NOT OBSERVED — do not guess these"** section.
 
@@ -280,12 +280,3 @@ _Matches Google Sheets:_ Google Sheets' Data ▸ Sort range is a submenu offerin
 - **A1** shows `delta`
 - **A2** shows `alpha`
 - **B2** shows `keep-me`
-
-#### Data ▸ Create a filter is still disabled — this slice ships sort only
-
-**Given**
-
-**When** I click menu item **data.createFilter**
-
-**Then**
-- `[data-menu-item="data.createFilter"]` is visible
