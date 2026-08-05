@@ -1,76 +1,61 @@
 ---
 title: Test Strategy
-description: How truecalc verifies formula correctness against real Google Sheets output, and how to interpret the conformance results.
+description: How truecalc verifies formula correctness against Google Sheets, and how to read the conformance results.
 ---
 
 import { ConformanceTable } from '@/components/conformance-table';
 
 ## Overview
 
-truecalc tests formula correctness against ~10,500 formulas captured from real Google Sheets runs.
-The fixture TSV files are immutable ground truth — they were produced by running formulas inside
-Google Sheets and recording the exact output.
-CI evaluates every fixture on every PR and blocks merges on any mismatch.
+truecalc is measured against a large corpus of expected values taken from Google Sheets itself —
+not from a specification, and not from truecalc's own output. Each expression is evaluated in
+Google Sheets, the result is recorded, and that recorded answer becomes the reference.
 
-## The fixture pipeline
+Those reference values are fixed. Every change to the engine is checked against all of them, and a
+change that breaks one cannot ship.
 
-```mermaid
-flowchart LR
-    A["GAS script\n(Google Sheets)"] -->|"formula + expected output"| B["TSV files\ncommitted to truecalc/core"]
-    B --> C["conformance_tsv_test!\nin CI"]
-    C -->|"mismatch → fails"| D["merge blocked"]
-    C -->|"all pass"| E["merge allowed"]
-```
+## Why the source of the reference matters
 
-A Google Apps Script runs formulas inside a real Google Sheets workbook and exports each formula
-alongside the value Google Sheets computed for it. Those pairs are committed as TSV rows under
-`crates/core/tests/fixtures/google_sheets/`. The `conformance_tsv_test!` macro in the test suite
-feeds every row through the truecalc evaluator and asserts the output matches.
+An engine checked against its own output can only ever agree with itself. A test suite written by
+reading documentation inherits whatever its author assumed the documentation meant — and the places
+spreadsheet engines actually diverge are rarely the places documentation describes.
 
-## Two-tier test model
+Rounding at the half, text-to-number coercion, date edge cases, error propagation: these are
+settled by behaviour, not by prose. Capturing that behaviour directly is the only way to test
+against it, and it is most of the work.
 
-Fixtures are divided into two tiers:
+## How to read the results
 
-| Tier | Behavior | When used |
-|---|---|---|
-| **Blocking** | CI fails if any row regresses | All current production categories |
-| **Report-only** | Failures are logged but do not block merge | WIP categories actively being fixed |
+Results are grouped by function category. A category is either **enforced** — a regression blocks
+the change — or **tracked**, meaning differences are recorded and reported while the work is still
+in progress. A category becomes enforced once it is passing and stays that way.
 
-```mermaid
-flowchart LR
-    F["Fixture row"] --> G{{"blocking?"}}
-    G -->|"yes"| H["CI fails on mismatch\nmerge blocked"]
-    G -->|"no"| I["mismatch logged\nmerge allowed"]
-```
+Cases that do not yet match are counted and published rather than removed. A conformance number
+that excludes its own failures is not evidence of anything, so known differences stay in the total
+and are tracked as bugs.
 
-A category moves from report-only to blocking once its pass rate reaches 100% and that state is
-stable across several PRs. No category can regress from blocking to report-only without an
-explicit, reviewed decision.
-
-## Known deviations (`bugs.tsv`)
-
-Some formulas cannot pass in the current harness — not because the evaluator is wrong, but because
-the test environment cannot replicate the full context Google Sheets used. For example, `=SHEETS()`
-returns the number of sheets in the workbook, which depends on how many sheets the GAS script
-created at capture time. Rows like this, along with formulas affected by known architecture
-constraints, are recorded in `bugs.tsv`.
+A small number of expressions depend on the surrounding workbook rather than on the formula alone —
+`=SHEETS()`, for instance, returns a value that depends on how many sheets exist. Cases like these
+are recorded as known differences with the reason attached, rather than quietly excluded.
 
 <Callout type="info">
-  Entries in `bugs.tsv` are documented failures, not hidden ones. Each row explains why it cannot
-  currently pass. When the underlying limitation is resolved, the row moves to the appropriate
-  category TSV.
+  If you find a formula where truecalc disagrees with Google Sheets, please
+  [open an issue](https://github.com/truecalc/core/issues). It becomes part of the reference corpus,
+  permanently, for everyone.
 </Callout>
+
+## Reference integrity
+
+Two rules protect the corpus from the failure mode that would make all of this meaningless:
+
+- **Reference values are never edited by hand.** They are what Google Sheets returned.
+- **Reference data and engine changes travel separately**, and CI enforces it. If both could change
+  in one step, a regression could be made to "pass" by rewriting the expected value to match the
+  wrong answer. Keeping them apart means the reference is something the engine must satisfy, not
+  something it can adjust to suit itself.
 
 ## Live conformance status
 
 <ConformanceTable />
 
-For a full drill-down by fixture ID, see the [conformance report](https://truecalc.github.io/core/#conformance).
-
-## Fixture / code separation
-
-TSV changes and code changes must travel in separate PRs — CI enforces this. The rule exists to
-prevent a subtle failure mode: if fixture values could be silently updated in the same PR that
-changes the evaluator, a regression could be made to "pass" simply by updating the expected value
-to match the wrong output. Keeping them separate means the fixture files remain an independent
-source of truth that the code must satisfy, not a file the code can rewrite to suit itself.
+For a drill-down by category, see the [conformance report](https://truecalc.github.io/core/#conformance).
