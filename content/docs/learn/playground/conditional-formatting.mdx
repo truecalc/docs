@@ -1,0 +1,148 @@
+---
+title: "Conditional formatting (daily-driver slice)"
+description: "A single-condition value-comparison rule or a 2-stop color scale, applied over a range from the Format ▸ Conditional formatting dialog, colors matching cells live (tracking edits) without touching their value/formula; a rule undoes/redoes like any edit. The dialog ITSELF previews every field edit on the grid immediately, before Done — Done only finalizes it as one undoable command, and Cancel discards the live preview entirely with no trace."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and open **Format ▸ Conditional formatting** to color-code cells by their own value, the way Google Sheets does — this daily-driver slice covers the two most common shapes: a **single-condition rule** ("format cells if greater than / less than / equal to / between a value, in a chosen fill color") and a **color scale** (a 2-stop gradient from a min color to a max color across the range's own numbers). Pick a condition and a value (and a second value for "Is between"/"Is not between"), or switch to the Color scale tab — **every change colors the range on the sheet immediately**, exactly like real Google Sheets. **Done** doesn't "apply" anything; it just closes the panel, keeping whatever you last saw on the grid. **Cancel** (or Escape, an outside click, or the panel's own close button) discards the live preview entirely — the grid returns to its exact pre-panel state, with no rule left behind.
+
+A rule is **live**: it re-evaluates every time the sheet recalculates, so a cell that crosses the threshold as a dependent formula changes recolors automatically — nothing is baked in at the moment you click Done. It's **presentation only**: coloring `=A1+B1` tints the cell without touching the formula or its computed value. However many fields you tune before clicking Done, the rule still **undoes/redoes as ONE edit** — Ctrl+Z after Done always fully removes it in a single step, never leaving you partway through your own tuning session.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Format ▸ Conditional formatting opens a "Conditional format rules" panel with two tabs. The "Single color" tab offers a "Format cells if…" condition dropdown (Is empty/not empty, five text conditions, three date conditions, six numeric-comparison operators — Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to, plus Is between/Is not between, and "Custom formula is") and a formatting-style picker (bold/italic/underline/strikethrough/text color/ fill color; default a light green ~#b7e1cd). The "Color scale" tab offers a min/mid/maxpoint picker (default a 2-stop White→Green preset, midpoint "None") with a live gradient preview. Multiple rules can stack over the same or overlapping ranges via "+Add another rule". A rule is grid-owned presentation, re-evaluated against each cell's live value on every recalc (never baked into a static per-cell format), and undoes/redoes like any other edit. This daily-driver slice ships all eight numeric operators (Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to/Is between/Is not between), restricts their values to numbers (no text/date/formula conditions), narrows the color scale to 2-stop (matching Sheets' own default, no midpoint), and presents it in a right-docked, non-modal panel matching Sheets' own docked side panel (a fixed, non-resizable width is the one residual chrome gap) — see the oracle's "Accepted divergences" for the full list. Full parity (text/date conditions, custom formula, 3-stop scale, alternating colors, themes) is tracked separately. The panel's OWN fields preview live on the grid before Done — real Google Sheets applies conditional- format highlighting live as the panel's own condition/style/color-scale fields are adjusted; Done just closes the panel, it is not an apply gate, and Cancel discards whatever was previewed with no trace left behind.
+
+#### Opening Format > Conditional formatting shows the Single color tab by default
+
+**Given**
+
+**When** I click menu item **format.conditionalFormatting**
+
+**Then**
+- `[data-testid="conditional-format-dialog"]` is visible
+- `[data-testid="conditional-format-operator"]` is visible
+
+#### A single-condition rule (value > 10) colors a matching cell's fill, leaving its value untouched
+
+**Given**
+- **A1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`, then click **conditional-format-done**
+
+**Then**
+- **A1** shows `15`
+- **A1** renders as fill=#b7e1cd
+
+#### A single-condition rule does NOT color a cell whose value fails the condition
+
+**Given**
+- **A1** = `5`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=false
+
+#### Conditional formatting is presentation only — a formula's value/formula are untouched
+
+**Given**
+- **A1** = `=5+10`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`, then click **conditional-format-done**
+
+**Then**
+- **A1** shows `15`
+- **A1** has formula `=5+10`
+- **A1** renders as fill=#b7e1cd
+
+#### Undo removes the rule's effect; redo reapplies it
+
+**Given**
+- **A1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`, then click **conditional-format-done**, then click **A1**, then undo
+
+**Then**
+- **A1** renders as fill=false
+
+#### Adjusting the value previews the fill LIVE on the grid, BEFORE Done is clicked
+
+**Given**
+- **A1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`
+
+**Then**
+- **A1** renders as fill=#b7e1cd
+
+#### Switching to the Color scale tab previews IT live too, before Done
+
+**Given**
+- **A1** = `0`
+- **A2** = `10`
+
+**When** I select **A1:A2**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-color-scale**
+
+**Then**
+- **A1** renders as fill=#ffffff
+- **A2** renders as fill=#57bb8a
+
+#### Cancel discards the live-previewed rule entirely — the grid returns to its pre-panel state
+
+**Given**
+- **A1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `10`, then click **conditional-format-cancel**
+
+**Then**
+- **A1** renders as fill=false
+
+#### Done after several live-adjusted values still commits cleanly — undo fully reverts in ONE step, not partway
+
+**Given**
+- **A1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then fill **conditional-format-value** with `5`, then fill **conditional-format-value** with `20`, then fill **conditional-format-value** with `10`, then click **conditional-format-done**, then click **A1**, then undo
+
+**Then**
+- **A1** renders as fill=false
+
+#### A color-scale rule paints the range's own min/max values at its two endpoint colors
+
+**Given**
+- **A1** = `0`
+- **A2** = `5`
+- **A3** = `10`
+
+**When** I select **A1:A3**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-color-scale**, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=#ffffff
+- **A3** renders as fill=#57bb8a
+
+#### A color-scale rule never affects a cell OUTSIDE its range
+
+**Given**
+- **A1** = `0`
+- **A2** = `10`
+- **B1** = `999`
+
+**When** I select **A1:A2**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-color-scale**, then click **conditional-format-done**
+
+**Then**
+- **B1** renders as fill=false
+
+#### Is between evaluates inclusive, order-independent bounds via the operator dropdown
+
+**Given**
+- **A1** = `5`
+- **A2** = `15`
+
+**When** I select **A1:A2**, then click menu item **format.conditionalFormatting**, then choose `between` in **conditional-format-operator**, then fill **conditional-format-value** with `10`, then fill **conditional-format-value2** with `1`, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=#b7e1cd
+- **A2** renders as fill=false

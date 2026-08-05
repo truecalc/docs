@@ -18,7 +18,7 @@ Applying **replaces** the target's format wholesale, the same way Sheets does: i
 
 ## Verification
 
-The scenario runner can drive Ctrl+\\ end-to-end (a real keyboard chord), so clear-formatting's scenarios above are fully automated. Paint format's arm/apply gesture is a toolbar click followed by a click on a DIFFERENT target cell — the runner has no verb for driving a toolbar action button yet (the same gap `format-fill-color.mdx` documents for its color swatch), so it's browser-verified instead: arming via a single click on the roller shows the pressed toolbar state and the source range gets a dashed "copying" outline; clicking a target cell applies the source's format, replaces the target's own prior formatting, and the roller un-presses itself (one-shot); double-clicking the roller instead keeps it pressed across repeated target clicks until Escape.
+The scenario runner can drive Ctrl+\\ end-to-end (a real keyboard chord), so clear-formatting's scenarios above are fully automated. Paint format's arm/apply gesture is a toolbar click followed by a click on a DIFFERENT target cell — the runner has no verb for driving a toolbar action button yet (the same gap the fill-color feature documents for its color swatch), so it's browser-verified instead: arming via a single click on the roller shows the pressed toolbar state and the source range gets a dashed "copying" outline; clicking a target cell applies the source's format, replaces the target's own prior formatting, and the roller un-presses itself (one-shot); double-clicking the roller instead keeps it pressed across repeated target clicks until Escape.
 
 ## Verified behavior
 

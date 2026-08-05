@@ -1,0 +1,41 @@
+---
+title: "File > Open — local document switcher"
+description: "File > Open lists every document in this browser's local registry by name, most-recently-updated first, and lets you switch to a different one — reusing the exact `?doc=<id>` new-tab mechanism File > Make a copy already opens its copies with."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**File > Open** lists every document stored in this browser's local registry — by name, most-recently-updated first — so a document that only ever existed as a one-time "Make a copy" new-tab link can be found and switched to again. The document you're currently on is shown too, marked **Current** instead of an Open button — opening the tab you're already in onto itself would have no useful effect.
+
+Picking a different document's **Open** button switches to it in a new, focused browser tab — reusing the exact same `?doc=<id>` `window.open` mechanism File > Make a copy already opens its copies with (see [make-a-copy](./make-a-copy)), not a second "switch document" mechanism. The tab you clicked from is left open and unchanged, same as Make a copy's own new-tab behavior.
+
+This is local (try-mode) storage only — no account, server, or Drive-equivalent is involved. There is no Sheets-style Recent/Shared/Starred picker chrome to browse, because none of what it browses (a Drive account's files) has a Studio equivalent yet; this is a flat list of what's actually in this ONE browser.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' closest analog is File > Open, which opens a Drive file picker (Recent/Shared with me/Starred, search, thumbnails) scoped to the signed-in account's Drive. Studio has no account, Drive, or sharing concept in try mode at all — the same scope boundary the Make a copy oracle brief's own "Accepted divergences" already established for Make a copy — so there is no Drive picker chrome to replicate; this feature's own oracle brief documents that a live re-verification of Sheets' picker itself was attempted this session and could not be completed (no authenticated Google session was reachable), and flags a follow-up re-check rather than asserting an unverified finding. What IS carried over, and WAS already live-verified (the Make a copy oracle brief, point 3, the same reference workbook): confirming a document-opening action in Sheets opens it in a new, focused browser tab, leaving the tab you acted from unchanged in the background — the exact interaction shape this feature's `window.open` `?doc=<id>` mechanism reuses (the same one File > Make a copy already uses), rather than a same-tab redirect that could silently discard whatever the user was doing.
+
+#### File > Open is available and lists the current document by name
+
+**Given**
+- **A1** = `1`
+
+**When** I click menu item **file.open**
+
+**Then**
+- **A1** shows `1`
+- `[data-menu-item="file.open"]` is visible
+- `[data-testid="open-document-dialog"]` is visible containing "Untitled workbook"
+
+#### Closing the Open dialog leaves the current document untouched
+
+**Given**
+- **A1** = `1`
+
+**When** I click menu item **file.open**, then click **open-document-cancel**
+
+**Then**
+- **A1** shows `1`
+- `[data-testid="open-document-dialog"]` is hidden

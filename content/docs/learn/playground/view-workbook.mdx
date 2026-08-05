@@ -17,7 +17,7 @@ Every cell with content shows its computed value on the canvas grid, laid out th
 
 _Matches Google Sheets:_ In Google Sheets, a cell's displayed value is type-driven by default: numbers and dates align to the right of the cell, text (and blank/unrecognized content) aligns to the left — matching the same automatic rule Sheets uses before any explicit alignment override is applied. A formula that errors (e.g. "=1/0") shows its error code ("#DIV/0!") in place of a value, rendered in a visually distinct (red) color so it reads as an error at a glance rather than as ordinary text. Sheets only ever draws/lays out the rows and columns in or near the viewport — scrolling a sheet with thousands of rows stays smooth because off-screen cells are never rendered.
 
-#### A literal number renders with no explicit alignment override (right-aligned by the type-based default — see How it works)
+#### A literal number renders with no explicit alignment override (right-aligned by the type-based default)
 
 **Given**
 - **A1** = `42`
@@ -27,7 +27,7 @@ _Matches Google Sheets:_ In Google Sheets, a cell's displayed value is type-driv
 **Then**
 - **A1** shows `42`
 
-#### A literal text value renders with no explicit alignment override (left-aligned by the type-based default — see How it works)
+#### A literal text value renders with no explicit alignment override (left-aligned by the type-based default)
 
 **Given**
 - **A1** = `hello`

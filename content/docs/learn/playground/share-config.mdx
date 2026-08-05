@@ -1,0 +1,69 @@
+---
+title: "Embed/share presentation config (ShareConfig)"
+description: "A `ShareConfig` controls how a grid is embedded/shared — which range/sheet is visible (an explicit A1 range, or auto-detected used content, capped by maxRows/maxCols), independently-combinable chrome-visibility toggles (menu bar/toolbar/formula bar/sheet tabs), and a whole-embed read-only flag — delivered as URL query params on the existing `?seed=` mechanism; every existing embed with no ShareConfig params keeps working exactly as before."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A `ShareConfig` controls how a grid is presented when embedded or shared —
+separate from a user's own working-view preferences (the existing grid
+Settings), the same way Google Sheets' "Publish to web" is its own dialog,
+not a view setting.
+
+- **`sheetId`** (optional): unset shows the whole workbook (the viewer can
+ switch sheets via the tab bar, subject to `chrome.sheetTabs`); set scopes
+ the embed to that one sheet and the tab bar is **always** hidden — there's
+ nothing to switch to.
+- **`range`** (optional, A1-style, e.g. `A1:D10`): the base visible shape.
+ Unset auto-detects the sheet's own used-content extent instead — no more
+ "one filled cell renders as a huge, mostly-blank grid."
+- **`maxRows`/`maxCols`** (optional): cap whichever of the above is larger.
+ Never grow past a smaller shape.
+- **`chrome`** (`menuBar`/`toolbar`/`formulaBar`/`sheetTabs`): independent,
+ combinable visibility toggles — not a fixed preset. All default visible.
+- **`readOnly`**: makes the whole embed read-only — no cell edits, no
+ format/merge/sheet-structure changes, no undo/redo. Signaled visually: a "View only" badge in the
+ TopBar chrome, and a `not-allowed` cursor over the grid — a small, GLOBAL
+ indicator, not per-cell styling.
+- **`hideBranding`**: reserved in the type, inert in v1 — see "Non-goals" below.
+
+**Delivery**: `ShareConfig` fields ride the existing `?seed=` URL mechanism
+as query params, read once at load — e.g.
+`?seed=A1=Hello&range=A1:D10&hideChrome=menuBar,toolbar&readOnly=1`. Chrome
+uses **hide-list** semantics (`hideChrome=menuBar,toolbar`), not a show-list —
+every element defaults to visible, matching today's behavior with **no
+ShareConfig params set at all** (a bare `?seed=` link keeps working exactly
+as before — no crop, full chrome, editable). Wanting ONLY the auto-detect
+crop with every other field at its default (the design doc's own headline
+motivating case — "a sheet with one filled cell shouldn't embed as a huge
+blank grid") needs one explicit activation signal since there's otherwise no
+param to distinguish that request from "no ShareConfig at all": `?seed=...&crop=1`
+(`crop` is a URL-delivery-only flag, not a `ShareConfig` field itself — it is
+the signal that says "apply the default crop", which is not the same request as
+"no ShareConfig at all").
+
+**Non-goals** (explicitly out of scope, tracked separately or not at all):
+per-range protected editing, the "Made with TrueCalc" branding
+badge and any paid-tier gating for it, internal scroll for content beyond the
+cropped shape, and named ranges (`range` is a plain A1 string only).
+
+## Verified behavior
+
+_Matches Google Sheets:_ This is an embed/iframe-delivery concept — "crop a shared grid to a range, cap it, toggle chrome, make it read-only via URL params" — with no direct Google Sheets analogue to study live (Sheets' closest relative, "Publish to web," is a server-rendered snapshot with a completely different mechanism, no client-side crop/chrome/read-only composition to observe). Per this repo's own methodology, that absence is documented explicitly rather than fabricated — see this feature's oracle brief for the full reasoning. Ground truth for this feature is the originating issue's own acceptance criteria (reproduced verbatim in the oracle brief), the same "no oracle, use the issue itself" precedent the persistent-history and command-history features establish for TrueCalc-specific (non-spreadsheet-UI) features.
+
+#### with no ShareConfig params, every chrome element still renders and editing still works — the backward-compatibility acceptance criterion
+
+**Given**
+- **A1** = `1`
+
+**When** I click **A1**, then type `2` into **B1**
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `2`
+- `[data-testid="menu-bar"]` is visible
+- `[data-testid="toolbar"]` is visible
+- `[data-testid="formula-input"]` is visible
+- `[aria-label="Sheet tabs"]` is visible

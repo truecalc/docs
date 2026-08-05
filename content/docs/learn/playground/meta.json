@@ -43,6 +43,18 @@
     "format-underline",
     "menu-bar",
     "merge-cells",
-    "persistent-history"
+    "persistent-history",
+    "chart-axis-labels",
+    "chart-insert",
+    "command-palette",
+    "conditional-formatting",
+    "file-open",
+    "formula-range-preview",
+    "grid-context-menu",
+    "make-a-copy",
+    "share-config",
+    "sort-range",
+    "structure-insert-delete",
+    "views"
   ]
 }

@@ -1,0 +1,135 @@
+---
+title: "A dense category axis stays readable"
+description: "A chart whose categories are packed tighter than their labels are wide does not draw them on top of each other. The category axis climbs a ladder measured against the room it actually has — slant the labels to 45°, then stand them up at 90°, then drop to every Nth label — and cuts a label with an ellipsis rather than let the label band eat the plot. A band axis on the vertical side thins the same way but is never rotated; its gutter grows instead.\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+A column, line, area, combo or box-plot chart puts its **categories** on the horizontal axis.
+When there are more categories than the plot is wide enough to label, the axis does not draw
+every label anyway — it climbs a ladder, in this order, and stops at the first rung that fits:
+
+1. **Horizontal**, one label per category — whenever each label is narrower than the slice of
+ axis its category owns.
+2. **Slanted 45°**, still one label per category.
+3. **Vertical 90°**, still one label per category.
+4. **Vertical 90° plus thinning** — every *N*th label, where *N* is the smallest stride that
+ keeps neighbouring labels apart.
+
+The rung is chosen from **measured text**, never from a category count: the labels are measured
+against the plot width the chart actually got, so the same chart narrows through the rungs as
+its panel narrows, and widens back out again.
+
+Two details are worth stating because they surprise people, and both come straight from Google
+Sheets:
+
+- **Thinning counts from the FIRST category and does not keep the last.** Over 30 categories at
+ stride 2 you get Cat 1, 3, 5 … 29 — Cat 30 is dropped. That is what Sheets does, and
+ "helpfully" pinning the last category would put two labels a half-stride apart.
+- **A long label is cut with an ellipsis, not shrunk.** Google Sheets cuts the text
+ (`Long category na…`) once the tick-label band would grow past a limit, so the labels never
+ eat the plot. Only one measurement of that limit exists, and it cannot say whether the limit
+ scales with the chart — so the specific number here is a **choice**, not observed behaviour:
+ the band may grow to about 22.8% of the chart's height, which is the one measured band read
+ as a proportion.
+
+A **band axis on the vertical side** — a horizontal bar chart's categories — thins with the
+identical stride but is **never rotated and never truncated**. It has room to do that because
+its gutter is already sized to the longest category name in the range, whether or not that
+particular label survives the thinning.
+
+A **numeric axis is deliberately untouched.** Its tick count is already chosen by the value
+scale, which picks round numbers and so never packs them tighter than they fit. A dense numeric
+axis was never observed in Google Sheets either, so there is no ground truth to replicate and
+none is invented.
+
+## Try it
+
+<TrueCalc
+ mode="standalone"
+ seed="A1=Cat 1;B1=17;A2=Cat 2;B2=24;A3=Cat 3;B3=31;A4=Cat 4;B4=38;A5=Cat 5;B5=45;A6=Cat 6;B6=52;A7=Cat 7;B7=59;A8=Cat 8;B8=16;A9=Cat 9;B9=23;A10=Cat 10;B10=30;A11=Cat 11;B11=37;A12=Cat 12;B12=44;A13=Cat 13;B13=51;A14=Cat 14;B14=58;A15=Cat 15;B15=15;A16=Cat 16;B16=22;A17=Cat 17;B17=29;A18=Cat 18;B18=36;A19=Cat 19;B19=43;A20=Cat 20;B20=50"
+/>
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, a category axis NEVER draws overlapping tick labels. At every chart width driven — 1201, 600, 541, 481, 421, 361, 301 and 181 CSS px, all over the same 30 categories — the labels stayed individually readable. The response to density is an escalating ladder: horizontal, then horizontal wrapped onto two lines, then slanted about 45°, then vertical at 90°, then vertical PLUS thinning. Every rung change is reproduced by one number — a minimum separation between adjacent labels of about 12.5 CSS px — measured against the room each category actually gets (plot width divided by the category count): 18.3px per category drew 45°, 16.3px drew 90°, 14.3px still drew every label, and 12.3px thinned to stride 2. The stride is PURELY MODULAR FROM THE FIRST category and does NOT force-keep the last one: over 30 categories, stride 2 drew Cat 1, 3, 5 … 29 and dropped Cat 30, and stride 3 drew Cat 1, 4, 7 … 28 and dropped both Cat 29 and Cat 30. A long label is cut with a single ellipsis character rather than thinned or shrunk, and the cut is driven by how tall the tick-label BAND is allowed to grow rather than by the axis width — the chart was wide enough to show every label in full and it still cut them. Only ONE measurement of that limit was taken (84.5px of band on a 371px-tall chart), so the rule behind it is not established: a fraction of the chart's height, a fixed maximum, and a fraction of the plot area all fit that single number equally well. A BAND Y-AXIS thins with the identical modular stride but is neither rotated nor truncated — Sheets widened the y-axis gutter to about 125px and drew each surviving label horizontally and in full. A LINEAR/NUMERIC axis was never driven into a dense state at all: the value axes seen carried 2–5 nice-number ticks chosen by the scale, so this ground truth says nothing about them and Studio deliberately leaves them alone. (Live-observed in the reference Google Sheets workbook on 2026-08-05, across eight chart widths over the same 30 categories, with every number above measured off the rendered pixels.)
+
+#### A dense category axis stands its labels up and thins them instead of colliding
+
+**Given**
+- **A1** = `Cat 1`
+- **B1** = `17`
+- **A2** = `Cat 2`
+- **B2** = `24`
+- **A3** = `Cat 3`
+- **B3** = `31`
+- **A4** = `Cat 4`
+- **B4** = `38`
+- **A5** = `Cat 5`
+- **B5** = `45`
+- **A6** = `Cat 6`
+- **B6** = `52`
+- **A7** = `Cat 7`
+- **B7** = `59`
+- **A8** = `Cat 8`
+- **B8** = `16`
+- **A9** = `Cat 9`
+- **B9** = `23`
+- **A10** = `Cat 10`
+- **B10** = `30`
+- **A11** = `Cat 11`
+- **B11** = `37`
+- **A12** = `Cat 12`
+- **B12** = `44`
+- **A13** = `Cat 13`
+- **B13** = `51`
+- **A14** = `Cat 14`
+- **B14** = `58`
+- **A15** = `Cat 15`
+- **B15** = `15`
+- **A16** = `Cat 16`
+- **B16** = `22`
+- **A17** = `Cat 17`
+- **B17** = `29`
+- **A18** = `Cat 18`
+- **B18** = `36`
+- **A19** = `Cat 19`
+- **B19** = `43`
+- **A20** = `Cat 20`
+- **B20** = `50`
+- **A21** = `Cat 21`
+- **B21** = `57`
+- **A22** = `Cat 22`
+- **B22** = `14`
+- **A23** = `Cat 23`
+- **B23** = `21`
+- **A24** = `Cat 24`
+- **B24** = `28`
+- **A25** = `Cat 25`
+- **B25** = `35`
+- **A26** = `Cat 26`
+- **B26** = `42`
+
+**When** I select **A1:B26**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is seriesCount=`1`, axisLabels=`{"painted":true,"axes":[{"x":{"rotationDeg":90,"stride":2,"drawn":["Cat 1","Cat 3","Cat 5","Cat 7","Cat 9","Cat 11","Cat 13","Cat 15","Cat 17","Cat 19","Cat 21","Cat 23","Cat 25"]},"y":null}]}`
+
+#### A sparse category axis is left alone — no rotation, no thinning
+
+**Given**
+- **A1** = `Q1`
+- **B1** = `10`
+- **A2** = `Q2`
+- **B2** = `20`
+- **A3** = `Q3`
+- **B3** = `30`
+- **A4** = `Q4`
+- **B4** = `40`
+
+**When** I select **A1:B4**, then choose Insert ▸ Chart
+
+**Then**
+- the chart is axisLabels=`{"painted":true,"axes":[{"x":{"rotationDeg":0,"stride":1,"drawn":["Q1","Q2","Q3","Q4"]},"y":null}]}`

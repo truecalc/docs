@@ -1,0 +1,147 @@
+---
+title: "Freeze rows & columns · Zoom"
+description: "View ▸ Freeze pins the first N rows and/or columns so they stay under the headers while the rest of the grid scrolls, with a divider marking the split; View ▸ Zoom scales the whole grid surface — cell pitch, cell text, the header strips and any user-resized row/column — to one of seven presets.\n"
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**View ▸ Freeze** pins the top rows and/or the leftmost columns of the sheet so
+they stay put while the rest scrolls — the way you keep a header row visible
+over a long table. The submenu offers the same eight choices Sheets does:
+
+- **No rows** · **1 row** · **2 rows** · **Up to row N**
+- **No columns** · **1 column** · **2 columns** · **Up to column X**
+
+`N` and `X` follow the active cell, so "Up to row 5" is how you freeze more
+than two. Frozen rows and frozen columns are independent; apply both and the
+top-left block stays fixed on both axes. A grey divider marks each split, drawn
+across the header strip as well as the cells. A freeze is part of the
+document — it is saved with the workbook and comes back on reload.
+
+**View ▸ Zoom** scales the grid to **50%**, **75%**, **90%**, **100%**,
+**125%**, **150%** or **200%**. It scales the grid surface only — cell sizes,
+cell text, the row-number gutter, the column-header strip, and any row or
+column you resized yourself, all by the same factor. The menu bar, toolbar and
+formula bar are untouched: this is not a browser zoom, and it changes nothing
+about the document. The current level carries a check in the menu. Unlike a
+freeze, zoom is **per session**: reload and you are back at 100%, matching the
+reference behavior recorded in the oracle brief.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Region;B1=Q1;A2=North;B2=10;A3=South;B3=20" />
+
+Open **View ▸ Freeze ▸ 1 row** and scroll — row 1 stays put. Then try
+**View ▸ Zoom ▸ 150%** and watch the headers scale with the cells.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Observed live in the reference workbook (this feature's oracle brief, studied 2026-08-05). View ▸ Freeze is a one-level submenu of exactly eight rows in two separator-divided groups — "No rows / 1 row / 2 rows / Up to row N" and "No columns / 1 column / 2 columns / Up to column X" — where N and X track the ACTIVE CELL and update live as the selection moves. The submenu shows no current-state marker at all: with two rows and two columns already frozen, none of the eight rows carries a check, a radio dot or aria-checked. Frozen rows do not scroll: with 2 rows frozen and the body paged down to row 70, rows 1 and 2 stayed pinned directly under the column headers, keeping their real row-header numbers; frozen columns behave identically on the other axis, and with both applied the top-left block stays fixed under scrolling on both axes. The split is drawn as a solid #C7C7C7 band 4 CSS px thick that crosses the header strips as well as the cell area — the horizontal one spans the full grid width including the row-number gutter, the vertical one the full height including the column-header strip — with the sheet's ordinary 1px #E1E1E1 gridline still rendered immediately before it. A freeze SURVIVES a page reload: it is document state. View ▸ Zoom is a second one-level submenu of exactly seven fixed presets — 50%, 75%, 90%, 100%, 125%, 150%, 200%, with no "Custom…" row anywhere (the toolbar's own zoom dropdown lists the identical seven) — and unlike Freeze it DOES mark the current level with a ✓. Zoom scales the grid surface and only the grid surface, proportionally: measured at 75% against 100%, the row-number gutter went 45.5 → 34 CSS px, a user-resized column 26 → 19.5, the row pitch ≈21 → ≈16, and the header glyphs shrank with them, while the menu bar, toolbar, formula-bar row and sheet-tab strip were pixel-identical. Zoom applies to the frozen panes too, and the freeze divider's thickness scales with it (4 → 3 CSS px at 75%) though its colour does not. Zoom does NOT survive a page reload — a workbook left at 75% came back at 100% in the very same reload that restored the freeze intact. It changes no cell value, formula or format. A second pass measured three more things the first one had left unobserved: "Up to row N" freezes INCLUSIVELY (active cell on row 3, "Up to row 3" clicked, divider landed below row 3 with row 4 the first scrolling row); freeze is PER SHEET (Sheet1 frozen 3 deep, Sheet2 showed no divider at all); and zoom above 100% scales by exactly the same single factor as below it (at 150%: gutter 90 → 135 device px, row pitch 42 → 63, a resized column 54 → 81, divider 8 → 12 — ×1.5 in every case).
+
+#### A frozen row stays under the column headers while the body scrolls away from it
+
+**Given**
+- **A1** = `header`
+
+**When** I click menu item **view.freeze.rows1**, then select **A60**, then type `still A1` into **A1**
+
+**Then**
+- **A1** shows `still A1`
+
+#### Control: with no freeze, that same screen position is NOT A1 once the body has scrolled
+
+**Given**
+- **A1** = `header`
+
+**When** I select **A60**, then type `not A1` into **A1**
+
+**Then**
+- **A1** shows `header`
+
+#### Frozen columns pin the left edge while the body scrolls right
+
+**Given**
+- **A1** = `left edge`
+
+**When** I click menu item **view.freeze.columns2**, then select **Z1**, then type `still A1` into **A1**
+
+**Then**
+- **A1** shows `still A1`
+
+#### "No rows" releases the freeze again
+
+**Given**
+- **A1** = `header`
+
+**When** I click menu item **view.freeze.rows1**, then click menu item **view.freeze.noRows**, then select **A60**, then type `not A1` into **A1**
+
+**Then**
+- **A1** shows `header`
+
+#### "Up to row N" freezes INCLUSIVELY, through the active cell's own row
+
+**Given**
+- **A1** = `header`
+- **A2** = `subhead`
+
+**When** I select **A2**, then click menu item **view.freeze.upToRow**, then select **A60**, then type `still A2` into **A2**
+
+**Then**
+- **A2** shows `still A2`
+
+#### A freeze survives a reload — it is document state, not session state
+
+**Given**
+- **A1** = `header`
+
+**When** I click menu item **view.freeze.rows1**, then wait 1200ms, then reload the page, then select **A60**, then type `still A1` into **A1**
+
+**Then**
+- **A1** shows `still A1`
+
+#### Zoom below 100% shrinks the grid's cell pitch proportionally
+
+**Given**
+
+**When** I click menu item **view.zoom.75**
+
+**Then**
+- column **A** is exactly 75px wide
+- row **1** is exactly 16px tall
+
+#### Zoom above 100% grows it by the same single factor
+
+**Given**
+
+**When** I click menu item **view.zoom.150**
+
+**Then**
+- column **A** is exactly 150px wide
+- row **1** is exactly 32px tall
+
+#### Zoom changes no value, formula or result
+
+**Given**
+- **A1** = `2`
+- **B1** = `=A1*3`
+
+**When** I click menu item **view.zoom.75**
+
+**Then**
+- **A1** shows `2`
+- **B1** shows `6`
+- **B1** has formula `=A1*3`
+- column **A** is exactly 75px wide
+
+#### Zoom resets to 100% on reload — it is session state, not document state
+
+**Given**
+- **A1** = `kept`
+
+**When** I click menu item **view.zoom.75**, then wait 1200ms, then reload the page
+
+**Then**
+- **A1** shows `kept`
+- column **A** is exactly 100px wide

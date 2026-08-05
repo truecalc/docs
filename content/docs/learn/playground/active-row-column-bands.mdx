@@ -26,7 +26,7 @@ shows/hides live on the grid behind the panel.
 
 ## Verified behavior
 
-_Matches Google Sheets:_ Google Sheets' default active-cell emphasis is HEADERS-ONLY: selecting C4 bolds/tints only the "C" column-letter and "4" row-number header labels — the grid body gets no extra tint beyond the selection outline itself. Sheets has no first-party setting to additionally wash the whole active row/column band across the body (this is a Studio-only opt-in enhancement, not a Sheets-parity requirement), so the Sheets-faithful default this toggle must preserve is OFF — the render layer (already built and unit-tested) has carried this default since and this issue only adds a way to flip it at runtime.
+_Matches Google Sheets:_ Google Sheets' default active-cell emphasis is HEADERS-ONLY: selecting C4 bolds/tints only the "C" column-letter and "4" row-number header labels — the grid body gets no extra tint beyond the selection outline itself. Sheets has no first-party setting to additionally wash the whole active row/column band across the body (this is a Studio-only opt-in enhancement, not a Sheets-parity requirement), so the Sheets-faithful default this toggle must preserve is OFF — the render layer (already built and unit-tested) has carried this default from the start, and this issue only adds a way to flip it at runtime.
 
 #### The toggle is reachable from Settings and starts unchecked (OFF, the Sheets-faithful default)
 

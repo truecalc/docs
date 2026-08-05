@@ -9,7 +9,7 @@ description: "A Google-Sheets-organized top menu bar sits above the toolbar; act
 
 A top menu bar sits above the toolbar, organized exactly like Google Sheets: **File · Edit · View · Insert · Format · Data · Help**. Every item is visible — nothing is hidden — but only items backed by a real, already-shipped command are clickable:
 
-- 🟢 **Active** — wired to the same seam the toolbar/keyboard already use (`run`/`apply`/`applyBorders`) or a thin, purely client-side action (New, Download, Full screen, Show gridlines/formula bar).
+- 🟢 **Active** — wired to the same seam the toolbar/keyboard already use (`run`/`apply`/`applyBorders`) or a thin, purely client-side action (New, Download, Full screen, Show gridlines/formula bar, and — once the active sheet has one — Show chart). The three **View > Show** toggles persist per browser: unchecking one and reloading leaves it unchecked, and a first-time visitor with nothing stored gets gridlines and the formula bar ON. Sheets is *reported* to store its own `Show gridlines` in the document rather than per user — unverified by this repo; the chart-insert feature's own note on browser-local preferences versus document state covers the same distinction.
 - ◻️ **Disabled ("coming soon")** — the item renders, greyed, with a tooltip explaining it's not built yet. Clicking it does nothing.
 - 🔒 **Locked ("requires a saved account")** — Version history, Share, and Chart are gated on persisted/identified storage, which Studio doesn't have yet; they're disabled the same way, with a different tooltip.
 
@@ -21,7 +21,7 @@ File absorbs the old standalone "Save, load, export" toolbar button and its Impo
 
 ## Verified behavior
 
-_Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · View · Insert · Format · Data · Tools · Extensions · Help, in that left-to-right order, each opening a dropdown of grouped commands (separators between groups, greyed rows for unavailable commands, a lock/cloud glyph on account-gated rows). Studio's menu bar matches that same relative order and grouping for the SEVEN menus scopes in (Tools and Extensions are out of scope — Studio has no add-ons/macros surface yet). Within each menu, items are grouped exactly as Sheets groups them (e.g. Undo/Redo, then Cut/Copy/Paste, then Delete values/rows/columns, then Clear formatting in Edit), separated by hairlines. A command Sheets shows greyed-out (e.g. "Merge cells" with nothing merge-able selected) still LOOKS like a menu item with a tooltip on hover explaining why it's unavailable — never hidden — which is the same visible-roadmap pattern this feature uses for not-yet-built commands.
+_Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · View · Insert · Format · Data · Tools · Extensions · Help, in that left-to-right order, each opening a dropdown of grouped commands (separators between groups, greyed rows for unavailable commands, a lock/cloud glyph on account-gated rows). Studio's menu bar matches that same relative order and grouping for the SEVEN menus this feature scopes in (Tools and Extensions are out of scope — Studio has no add-ons/macros surface yet). Within each menu, items are grouped exactly as Sheets groups them (e.g. Undo/Redo, then Cut/Copy/Paste, then Delete values/rows/columns, then Clear formatting in Edit), separated by hairlines. A command Sheets shows greyed-out (e.g. "Merge cells" with nothing merge-able selected) still LOOKS like a menu item with a tooltip on hover explaining why it's unavailable — never hidden — which is the same visible-roadmap pattern this feature uses for not-yet-built commands. View ▸ Full screen hides Sheets' own title/menu row, toolbar, and sheet tabs in place — but NOT its name-box/formula-bar row, which stays visible — leaving the grid plus that one row; it is NOT the browser's native fullscreen API. A single Escape restores everything at once.
 
 #### All 7 menus render in Google-Sheets order and grouping
 
@@ -51,16 +51,25 @@ _Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · Vie
 **Then**
 - `[data-slot="formula-autocomplete"]` is visible
 
-#### A disabled item (Format > Conditional formatting) is visibly disabled and invokes nothing
+#### A disabled item (Data > Data validation) is visibly disabled and invokes nothing
 
 **Given**
 - **A1** = `10`
 
-**When** I click menu item **format.conditionalFormatting**
+**When** I click menu item **data.dataValidation**
 
 **Then**
 - **A1** shows `10`
-- `[data-menu-item="format.conditionalFormatting"]` is visible
+- `[data-menu-item="data.dataValidation"]` is visible
+
+#### Clicking Format > Conditional formatting opens the rules dialog
+
+**Given**
+
+**When** I click menu item **format.conditionalFormatting**
+
+**Then**
+- `[data-testid="conditional-format-dialog"]` is visible
 
 #### Clicking Format > Merge cells merges the selection, through the SAME confirm-gated seam the toolbar's merge control uses
 
@@ -121,3 +130,42 @@ _Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · Vie
 
 **Then**
 - `[data-menu-item="view.gridlines"]` is visible
+
+#### Hiding the formula bar survives a reload — a View > Show choice is a stored preference, not session state
+
+**Given**
+
+**When** I click menu item **view.formulaBar**, then save, reload the page, and load the workbook back
+
+**Then**
+- `[data-testid="menu-bar"]` is visible
+- `[data-testid="formula-input"]` is hidden
+
+#### A first load with nothing stored shows the formula bar — a missing preference never reads as hidden
+
+**Given**
+
+**When** I save, reload the page, and load the workbook back
+
+**Then**
+- `[data-testid="formula-input"]` is visible
+
+#### View > Full screen hides the menu bar itself
+
+**Given**
+
+**When** I click menu item **view.fullScreen**
+
+**Then**
+- `[data-testid="menu-bar"]` is hidden
+- `[data-testid="full-screen-banner"]` is visible
+
+#### Escape exits full screen and restores the menu bar
+
+**Given**
+
+**When** I click menu item **view.fullScreen**, then press `Escape`
+
+**Then**
+- `[data-testid="menu-bar"]` is visible
+- `[data-testid="full-screen-banner"]` is hidden
