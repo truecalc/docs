@@ -1,0 +1,108 @@
+---
+title: "Autofill a series by dragging the fill handle"
+description: "Dragging the small square at the bottom-right of a selection down or right extends a detected pattern — a lone number or date increments by one step, two-or-more numbers/dates continue their observed step, a recognized weekday or month name advances through its list, and a formula's references shift exactly like a copy. Anything that isn't a recognized pattern repeats as a cycle, which is exactly a plain repeat for a single-cell source."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a cell (or a small range) and drag the little square at its bottom-right corner — the **fill handle** — down or right. TrueCalc extends the content as a detected series instead of just copying it:
+
+- **A lone number increments by 1** each step (`5` → `6, 7, 8, …`) — Sheets' own well-known behavior, different from spreadsheet apps that repeat a single number by default.
+- **A recognized weekday or month name** (full or abbreviated — `Jan`, `Mon`, `January`, `Monday`) **advances through its list**, wrapping around (`November` → `December` → `January`).
+- **A formula's relative references shift** exactly like a copy/fill; `$`-anchored ones stay put.
+- **Anything else repeats as-is** — the same "nothing recognized, so don't invent a pattern" behavior every fill has always had.
+
+The series is detected fresh from whatever's selected before you drag — select two or more cells to seed a richer pattern (two numbers continue their exact step; three-or-more continue the average step between them).
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=5" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, dragging the fill handle (the small square at a selection's bottom-right corner) extends the selection's content as a detected series rather than a plain copy: a single number increments by 1 (Sheets' well-known divergence from Excel, which repeats a lone number by default), two-or-more numbers continue their observed step, a recognized weekday or month name (full or abbreviated) advances through its list and wraps around, and a formula's relative references shift exactly like a copy/fill while `$`-anchored ones stay pinned. Anything that doesn't match a recognized pattern repeats as-is. This daily-driver slice implements series-detection for a drag extending DOWN or RIGHT past the source's own bottom-right corner; Ctrl+D/Ctrl+R and a drag up/left of the source keep the pre-existing verbatim-repeat/ref-adjust-copy behavior unchanged. Per the oracle brief's disclosed tooling failure, every specific rule here is built from Sheets/Excel's own extremely well-established, long-stable autofill behavior rather than a fresh live observation this session.
+
+#### A lone number increments by 1 per row, dragging DOWN
+
+**Given**
+- **A1** = `5`
+
+**When** I fill from **A1** to **A4**
+
+**Then**
+- **A2** shows `6`
+- **A3** shows `7`
+- **A4** shows `8`
+
+#### A lone number increments by 1 per column, dragging RIGHT
+
+**Given**
+- **A1** = `1`
+
+**When** I fill from **A1** to **C1**
+
+**Then**
+- **B1** shows `2`
+- **C1** shows `3`
+
+#### A recognized month name advances through the month list
+
+**Given**
+- **A1** = `Jan`
+
+**When** I fill from **A1** to **A3**
+
+**Then**
+- **A2** shows `Feb`
+- **A3** shows `Mar`
+
+#### A month series wraps December back to January
+
+**Given**
+- **A1** = `November`
+
+**When** I fill from **A1** to **A3**
+
+**Then**
+- **A2** shows `December`
+- **A3** shows `January`
+
+#### Unrecognized text repeats as-is (a plain "simple repeat")
+
+**Given**
+- **A1** = `apple`
+
+**When** I fill from **A1** to **A3**
+
+**Then**
+- **A2** shows `apple`
+- **A3** shows `apple`
+
+#### A formula's relative reference shifts exactly like a copy/fill
+
+**Given**
+- **A1** = `10`
+- **A2** = `20`
+- **A3** = `30`
+- **B1** = `=A1*2`
+
+**When** I fill from **B1** to **B3**
+
+**Then**
+- **B2** shows `40`
+- **B3** shows `60`
+- **B2** has formula `=A2*2`
+- **B3** has formula `=A3*2`
+
+#### ONE undo removes every cell the drag filled
+
+**Given**
+- **A1** = `5`
+
+**When** I fill from **A1** to **A3**, then click **A1**, then undo
+
+**Then**
+- **A2** shows `null`
+- **A3** shows `null`
