@@ -11,9 +11,9 @@ Type a dynamic-array formula — `=SEQUENCE(3)`, `=SEQUENCE(2,3)`, `=A1:A3*2` �
 
 ## Verified behavior
 
-_Matches Google Sheets:_ In Google Sheets a dynamic-array formula computes at its ANCHOR cell and "spills" the result across neighbouring cells. The anchor holds the formula and displays the array's top-left value; the other cells are read-only echoes of the result and carry no formula of their own. Orientation follows the array's shape — =SEQUENCE(3) spills DOWN a 3x1 column (A1:A3 = 1,2,3), =SEQUENCE(1,3) spills ACROSS a 1x3 row (A1:C1 = 1,2,3), and =SEQUENCE(2,3) fills a 2x3 block. When a cell within a spill cell is selected, Sheets outlines the whole spilled range with a thin blue "spill boundary". If any target cell is occupied the array cannot spill: the anchor shows #SPILL!, no values spill, and the blocking value is preserved. (As of @truecalc/workbook 3.2.0 the engine spills N x 1 arrays VERTICALLY, matching Sheets — the orientation parity gap tracked in truecalc/core#707 is resolved. The blocked-spill error is still #SPILL! in Sheets vs a generic error in the current engine. See the oracle brief.)
+_Matches Google Sheets:_ In Google Sheets a dynamic-array formula computes at its ANCHOR cell and "spills" the result across neighbouring cells. The anchor holds the formula and displays the array's top-left value; the other cells are read-only echoes of the result and carry no formula of their own. Orientation follows the array's shape — =SEQUENCE(3) spills DOWN a 3x1 column (A1:A3 = 1,2,3), =SEQUENCE(1,3) spills ACROSS a 1x3 row (A1:C1 = 1,2,3), and =SEQUENCE(2,3) fills a 2x3 block. An operation over a source RANGE derives its orientation from that range (observed live in Sheets 2026-08-05, oracle obs. 6-9): =SORT(A1:A3), =UNIQUE(A1:A3) and =FILTER(A1:A3,...) over a vertical A1:A3 are all N x 1 and spill DOWN, while =TRANSPOSE(A1:A3) is the one that flips — a single-column source becomes a 1 x N ROW that spills ACROSS. Elementwise range arithmetic needs the explicit wrapper in Sheets: a bare =A1:A3*2 returns a SINGLE row-aligned value there, and =ARRAYFORMULA(A1:A3*2) is what yields the 3 x 1 column. TrueCalc's engine spills the bare form too — a deliberate engine divergence recorded in the oracle brief — and when it does, it uses the same vertical orientation Sheets gives the ARRAYFORMULA form. When a cell within a spill cell is selected, Sheets outlines the whole spilled range with a thin blue "spill boundary". If any target cell is occupied the array cannot spill: the anchor shows #SPILL!, no values spill, and the blocking value is preserved. (The orientation parity gap tracked in truecalc/core#707 is resolved as of @truecalc/workbook 7.x — every family above now matches Sheets' orientation; earlier engines emitted 1 x N rows for the derived single-column results and a column for TRANSPOSE, i.e. exactly backwards. The blocked-spill error is still #SPILL! in Sheets vs a generic error in the current engine. See the oracle brief.)
 
-#### A single-column dynamic array spills DOWN a column (vertical, 3.2.0)
+#### A single-column dynamic array spills DOWN a column
 
 **Given**
 
@@ -64,3 +64,76 @@ _Matches Google Sheets:_ In Google Sheets a dynamic-array formula computes at it
 - **G6** shows `x`
 - **F5** shows `null`
 - **E6** shows `null`
+
+#### An elementwise op over a vertical range spills DOWN the column
+
+**Given**
+- **E1** = `1`
+- **E2** = `2`
+- **E3** = `3`
+
+**When** I type `=E1:E3*2` into **G1**
+
+**Then**
+- **G2** shows `4`
+- **G3** shows `6`
+- **H1** shows `null`
+- **I1** shows `null`
+- **G1** has formula `=E1:E3*2`
+
+#### SORT, UNIQUE and FILTER over a vertical range keep the column orientation
+
+**Given**
+- **E1** = `3`
+- **E2** = `1`
+- **E3** = `3`
+
+**When** I type `=SORT(E1:E3)` into **G1**, then type `=UNIQUE(E1:E3)` into **G5**, then type `=FILTER(E1:E3,E1:E3>1)` into **G9**
+
+**Then**
+- **G2** shows `3`
+- **G3** shows `3`
+- **G4** shows `null`
+- **H1** shows `null`
+- **I1** shows `null`
+- **G6** shows `1`
+- **G7** shows `null`
+- **H5** shows `null`
+- **G10** shows `3`
+- **G11** shows `null`
+- **H9** shows `null`
+- **G1** has formula `=SORT(E1:E3)`
+- **G5** has formula `=UNIQUE(E1:E3)`
+- **G9** has formula `=FILTER(E1:E3,E1:E3>1)`
+
+#### TRANSPOSE flips the other way — a column source spills ACROSS a row
+
+**Given**
+- **E1** = `1`
+- **E2** = `2`
+- **E3** = `3`
+
+**When** I type `=TRANSPOSE(E1:E3)` into **G1**
+
+**Then**
+- **H1** shows `2`
+- **I1** shows `3`
+- **G2** shows `null`
+- **G3** shows `null`
+- **G1** has formula `=TRANSPOSE(E1:E3)`
+
+#### A value directly BELOW the anchor now blocks an elementwise spill
+
+**Given**
+- **E1** = `1`
+- **E2** = `2`
+- **E3** = `3`
+- **G2** = `note`
+
+**When** I type `=E1:E3*2` into **G1**
+
+**Then**
+- **G2** shows `note`
+- **G3** shows `null`
+- **H1** shows `null`
+- **G1** has formula `=E1:E3*2`

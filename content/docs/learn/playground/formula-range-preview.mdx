@@ -1,0 +1,194 @@
+---
+title: "Formula range-select live-preview bubble"
+description: "While a formula is open and a multi-cell range is selected as its argument — drag-selected with the mouse, OR shift-clicked/shift-arrowed with the keyboard (e.g. mid-typing `=SUM(` and pressing Shift+Down repeatedly to grow D3..D6) — a small floating, read-only chip near the selection shows the live-computed aggregate MATCHING THE ENCLOSING FUNCTION (SUM/PRODUCT/AVERAGE/COUNT/COUNTA/MIN/MAX) of the numeric cells being selected, labeled with which operation it is; no chip for a function outside that list. Never affects the formula text itself, and clears itself on commit or cancel."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Start a formula — type `=` and a function name, e.g. `=SUM(` or `=PRODUCT(`
+— and instead of referencing one cell, select a **range** to supply it as
+the argument, either by **dragging** across it with the mouse or by
+**pressing Shift+Arrow** repeatedly with the keyboard (e.g. Shift+Down to
+grow the reference one row at a time). A small floating chip appears near
+the selection showing the **live-computed aggregate MATCHING THE ENCLOSING
+FUNCTION** of the numeric cells being selected — `Sum 100` inside `=SUM(`,
+`Product 600` inside `=PRODUCT(` for the same range, and likewise `Average`/
+`Count`/`Min`/`Max` inside `=AVERAGE(`/`=COUNT(` or `=COUNTA(`/`=MIN(`/
+`=MAX(` — updating live as the range grows or shrinks, and labeled with
+which operation it is so a `600` (Product) is never mistaken for a `50`
+(Sum) of the same cells. A function outside that supported list (e.g.
+`=VLOOKUP(`, `=IF(`, `=CONCATENATE(`) shows **no chip at all** — there is no
+single obviously-correct live aggregate for those, and guessing one (always
+falling back to a SUM, as this feature originally — and incorrectly — did)
+would just be a differently-shaped version of showing a misleading number.
+Release the mouse (or stop pressing Shift+Arrow) and the chip stays up so
+you can actually read it — it's purely read-only, with no dismiss control of
+its own. A plain
+**single-cell click**, or a plain (non-shifted) **arrow key**, while typing
+a formula still just inserts/steers that one cell's reference, exactly as
+before — nothing to aggregate over one cell, so no chip appears. Releasing
+Shift and pressing a plain arrow while a keyboard range is growing collapses
+it back to a single cell, one step further from the range's last edge — the
+same shift-then-plain-arrow convention the grid's own (non-formula) range
+selection already uses.
+
+The chip is **presentation only**: whether it's showing or what it says
+never changes the reference actually written into the formula — that's
+still the plain `D3:D6` token the drag inserts. Committing the formula (or
+cancelling it) clears the chip along with the rest of the editing state —
+so does the range collapsing back to a single cell.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="D3=10;D4=20;D5=30;D6=40" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ In Google Sheets, while a formula is being typed and the caret is at a reference-valid position, selecting a multi-cell range as the argument — by dragging with the mouse, OR by shift-clicking/shift-arrowing with the keyboard — shows a small floating chip near the selection with a live-computed aggregate of the numeric cells being selected MATCHING WHICHEVER FUNCTION THE RANGE IS AN ARGUMENT TO (e.g. "100" inside `=SUM(`, "600" inside `=PRODUCT(` for the same two cells that would sum to 50), dismissible. A plain single-cell click (or a plain, non-shifted arrow key) while typing a formula inserts a reference the same way it always has and shows no chip — there's nothing to aggregate over one cell. The chip is presentation only: it never changes what reference gets inserted into the formula (still the plain `D3:D6` token) and disappears once the formula commits or is cancelled. NOTE (see this feature's oracle brief): this manifest's ground truth is UNVERIFIED against the live Sheets oracle this slice — the oracle study connected to a live Chrome/CDP session but could not reliably drive keyboard-driven cell data entry in that environment (see the oracle brief for the full connection-status writeup); the claims above reflect well-established, uncontroversial prior knowledge of this Sheets behavior, not a pixel-for-pixel re-verification. The owner must confirm against the live oracle before treating this as parity-complete. The keyboard (shift-arrow) half specifically was NEVER live-verified even in this weaker "well-established prior knowledge" sense during the original slice — it was silently unimplemented rather than deliberately deferred (see the oracle's "Accepted divergences" section) — so its exact cell-by-cell growth semantics (which cell the range starts from on the first Shift+Arrow, what a plain arrow does after Shift is released) are this codebase's own reasoned design, mirroring the grid's existing non-formula Shift+Arrow convention (`operations/select`), not a re-derived Sheets pixel-check. The FUNCTION-AWARE aggregate is also this codebase's own reasoned design, not a re-derived Sheets pixel-check: the owner reported the chip always showing a SUM even inside `=PRODUCT(` as a bug against this manifest's OWN stated ground truth ("live-computed aggregate" — never scoped to "always SUM" in the first place), not a new behavior request. MANUAL DISMISS is a deliberate, accepted divergence: Sheets' chip is dismissible via its own close affordance, but this codebase's first implementation of that affordance (an in-pill "×") turned out to be practically unreachable during an active mouse drag — the only path to it crossed grid cells while the mouse button was still held down, which just kept extending the range instead of ever landing a click on the button. The owner's call was to remove the control rather than chase a fix; the chip now relies solely on its non-dismiss lifecycle (commit, cancel, or the range collapsing to a single cell) to disappear.
+
+#### Dragging a numeric range as a formula argument shows the live-preview chip with the SUM, labeled "Sum"
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **F1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then drag from **D3** to **D6**
+
+**Then**
+- `[data-slot="range-preview-chip"]` is visible containing "Sum 100"
+
+#### Committing the formula inserts the plain range reference and the chip disappears
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **F1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then drag from **D3** to **D6**, then press `)`, then press `Enter`
+
+**Then**
+- **F1** shows `100`
+- **F1** has formula `=SUM(D3:D6)`
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### A plain single-cell click while typing a formula shows no chip (unchanged point-mode/click-insert behavior)
+
+**Given**
+- **D3** = `10`
+
+**When** I click **F1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then click **D3**
+
+**Then**
+- `[data-testid="formula-input"]` is visible with value "=SUM(D3"
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### Dragging UP/LEFT from the anchor cell tracks the chip to the pointer, not a fixed range corner
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **F1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then drag from **D6** to **D3**
+
+**Then**
+- `[data-slot="range-preview-chip"]` is visible containing "100" near the top of the screen (≤260px)
+
+#### An all-text multi-cell range shows no chip — nothing numeric to aggregate
+
+**Given**
+- **B3** = `a`
+- **B4** = `b`
+
+**When** I click **F1**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then drag from **B3** to **B4**
+
+**Then**
+- `[data-testid="formula-input"]` is visible with value "=SUM(B3:B4"
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### Dragging a range inside =PRODUCT( shows the PRODUCT labeled "Product", not the SUM
+
+**Given**
+- **B1** = `20`
+- **C1** = `30`
+
+**When** I click **F1**, then press `=`, then press `P`, then press `R`, then press `O`, then press `D`, then press `U`, then press `C`, then press `T`, then press `(`, then drag from **B1** to **C1**
+
+**Then**
+- `[data-slot="range-preview-chip"]` is visible containing "Product 600"
+
+#### Committing a =PRODUCT( formula from the drag inserts the plain range and computes the real PRODUCT (not the chip's-former hardcoded SUM)
+
+**Given**
+- **B1** = `20`
+- **C1** = `30`
+
+**When** I click **F1**, then press `=`, then press `P`, then press `R`, then press `O`, then press `D`, then press `U`, then press `C`, then press `T`, then press `(`, then drag from **B1** to **C1**, then press `)`, then press `Enter`
+
+**Then**
+- **F1** shows `600`
+- **F1** has formula `=PRODUCT(B1:C1)`
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### Dragging a range inside a function outside the live-preview's supported list (e.g. =CONCATENATE()) shows no chip rather than a guessed aggregate
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **F1**, then press `=`, then press `C`, then press `O`, then press `N`, then press `C`, then press `A`, then press `T`, then press `E`, then press `N`, then press `A`, then press `T`, then press `E`, then press `(`, then drag from **D3** to **D6**
+
+**Then**
+- `[data-testid="formula-input"]` is visible with value "=CONCATENATE(D3:D6"
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### Shift+Arrow (keyboard) also grows a range reference and shows the live-preview chip
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **D2**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then press `ArrowDown`, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`
+
+**Then**
+- `[data-slot="range-preview-chip"]` is visible containing "100"
+
+#### Committing a Shift+Arrow-built range reference inserts the plain range and the chip disappears
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **D2**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then press `ArrowDown`, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`, then press `)`, then press `Enter`
+
+**Then**
+- **D2** shows `100`
+- **D2** has formula `=SUM(D3:D6)`
+- `[data-slot="range-preview-chip"]` is hidden
+
+#### Releasing Shift and pressing a plain arrow collapses the keyboard range to a single cell
+
+**Given**
+- **D3** = `10`
+- **D4** = `20`
+- **D5** = `30`
+- **D6** = `40`
+
+**When** I click **D2**, then press `=`, then press `S`, then press `U`, then press `M`, then press `(`, then press `ArrowDown`, then press `Shift+ArrowDown`, then press `Shift+ArrowDown`, then press `ArrowDown`, then press `)`, then press `Enter`
+
+**Then**
+- **D2** shows `40`
+- **D2** has formula `=SUM(D6)`
+- `[data-slot="range-preview-chip"]` is hidden
