@@ -54,6 +54,7 @@
     "share-config",
     "sort-range",
     "structure-insert-delete",
-    "views"
+    "views",
+    "chart-axis-labels"
   ]
 }
