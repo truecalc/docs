@@ -1,19 +1,21 @@
 ---
 title: "Conditional formatting (daily-driver slice)"
-description: "A single-condition value-comparison rule or a 2-stop color scale, applied over a range from the Format ▸ Conditional formatting dialog, colors matching cells live (tracking edits) without touching their value/formula; a rule undoes/redoes like any edit. The dialog ITSELF previews every field edit on the grid immediately, before Done — Done only finalizes it as one undoable command, and Cancel discards the live preview entirely with no trace."
+description: "A single-condition value-comparison rule, a 2-stop color scale, or a custom-formula rule (an arbitrary boolean formula, checked per cell), applied over a range from the Format ▸ Conditional formatting dialog, colors matching cells live (tracking edits) without touching their value/formula; a rule undoes/redoes like any edit. The dialog ITSELF previews every field edit on the grid immediately, before Done — Done only finalizes it as one undoable command, and Cancel discards the live preview entirely with no trace."
 ---
 
 {/* GENERATED — do not edit by hand */}
 
 ## What it does
 
-Select a range and open **Format ▸ Conditional formatting** to color-code cells by their own value, the way Google Sheets does — this daily-driver slice covers the two most common shapes: a **single-condition rule** ("format cells if greater than / less than / equal to / between a value, in a chosen fill color") and a **color scale** (a 2-stop gradient from a min color to a max color across the range's own numbers). Pick a condition and a value (and a second value for "Is between"/"Is not between"), or switch to the Color scale tab — **every change colors the range on the sheet immediately**, exactly like real Google Sheets. **Done** doesn't "apply" anything; it just closes the panel, keeping whatever you last saw on the grid. **Cancel** (or Escape, an outside click, or the panel's own close button) discards the live preview entirely — the grid returns to its exact pre-panel state, with no rule left behind.
+Select a range and open **Format ▸ Conditional formatting** to color-code cells by their own value, the way Google Sheets does. Three shapes: a **single-condition rule** ("format cells if greater than / less than / equal to / between a value, in a chosen fill color"), a **color scale** (a 2-stop gradient from a min color to a max color across the range's own numbers), and a **custom formula** ("format cells if this formula is TRUE" — any formula you'd type into a cell, checked against each cell in the range). Pick a condition and a value (and a second value for "Is between"/"Is not between"), switch to the Color scale tab, or switch to the Custom formula tab and type a formula — **every change colors the range on the sheet immediately**, exactly like real Google Sheets. **Done** doesn't "apply" anything; it just closes the panel, keeping whatever you last saw on the grid. **Cancel** (or Escape, an outside click, or the panel's own close button) discards the live preview entirely — the grid returns to its exact pre-panel state, with no rule left behind.
 
 A rule is **live**: it re-evaluates every time the sheet recalculates, so a cell that crosses the threshold as a dependent formula changes recolors automatically — nothing is baked in at the moment you click Done. It's **presentation only**: coloring `=A1+B1` tints the cell without touching the formula or its computed value. However many fields you tune before clicking Done, the rule still **undoes/redoes as ONE edit** — Ctrl+Z after Done always fully removes it in a single step, never leaving you partway through your own tuning session.
 
+A custom-formula rule is typed once, anchored to the range's own top-left cell, and each cell in the range checks its own version of it shifted the same way a fill handle would shift a formula — a rule over `A1:A10` reading `=B1>10` checks `=B2>10` at `A2`, `=B3>10` at `A3`, and so on. The formula can read any cell — even a cell outside the range, or a cell other than the one it's coloring — so you can highlight column A based on column B, or color a whole row when one of its cells crosses a threshold.
+
 ## Verified behavior
 
-_Matches Google Sheets:_ Google Sheets' Format ▸ Conditional formatting opens a "Conditional format rules" panel with two tabs. The "Single color" tab offers a "Format cells if…" condition dropdown (Is empty/not empty, five text conditions, three date conditions, six numeric-comparison operators — Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to, plus Is between/Is not between, and "Custom formula is") and a formatting-style picker (bold/italic/underline/strikethrough/text color/ fill color; default a light green ~#b7e1cd). The "Color scale" tab offers a min/mid/maxpoint picker (default a 2-stop White→Green preset, midpoint "None") with a live gradient preview. Multiple rules can stack over the same or overlapping ranges via "+Add another rule". A rule is grid-owned presentation, re-evaluated against each cell's live value on every recalc (never baked into a static per-cell format), and undoes/redoes like any other edit. This daily-driver slice ships all eight numeric operators (Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to/Is between/Is not between), restricts their values to numbers (no text/date/formula conditions), narrows the color scale to 2-stop (matching Sheets' own default, no midpoint), and presents it in a right-docked, non-modal panel matching Sheets' own docked side panel (a fixed, non-resizable width is the one residual chrome gap) — see the oracle's "Accepted divergences" for the full list. Full parity (text/date conditions, custom formula, 3-stop scale, alternating colors, themes) is tracked separately. The panel's OWN fields preview live on the grid before Done — real Google Sheets applies conditional- format highlighting live as the panel's own condition/style/color-scale fields are adjusted; Done just closes the panel, it is not an apply gate, and Cancel discards whatever was previewed with no trace left behind.
+_Matches Google Sheets:_ Google Sheets' Format ▸ Conditional formatting opens a "Conditional format rules" panel with two tabs. The "Single color" tab offers a "Format cells if…" condition dropdown (Is empty/not empty, five text conditions, three date conditions, six numeric-comparison operators — Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to, plus Is between/Is not between, and "Custom formula is") and a formatting-style picker (bold/italic/underline/strikethrough/text color/ fill color; default a light green ~#b7e1cd). The "Color scale" tab offers a min/mid/maxpoint picker (default a 2-stop White→Green preset, midpoint "None") with a live gradient preview. Multiple rules can stack over the same or overlapping ranges via "+Add another rule". A rule is grid-owned presentation, re-evaluated against each cell's live value on every recalc (never baked into a static per-cell format), and undoes/redoes like any other edit. This daily-driver slice ships all eight numeric operators (Greater than/Greater than or equal to/Less than/Less than or equal to/Is equal to/Is not equal to/Is between/Is not between), restricts their values to numbers (no text/date/formula conditions), narrows the color scale to 2-stop (matching Sheets' own default, no midpoint), and presents it in a right-docked, non-modal panel matching Sheets' own docked side panel (a fixed, non-resizable width is the one residual chrome gap) — see the oracle's "Accepted divergences" for the full list. A later slice adds the "Custom formula is" tab: one arbitrary boolean formula, anchored to the range's own top-left cell exactly like a fill (each covered cell evaluates its own relative-shifted copy), matching a fill color when the formula's live result is TRUE. Remaining full parity (text/date conditions, 3-stop scale) is tracked separately (alternating colors and themes are their own, distinct Format-menu features, not conditional-format rule kinds). The panel's OWN fields preview live on the grid before Done — real Google Sheets applies conditional-format highlighting live as the panel's own condition/style/color-scale/formula fields are adjusted; Done just closes the panel, it is not an apply gate, and Cancel discards whatever was previewed with no trace left behind.
 
 #### Opening Format > Conditional formatting shows the Single color tab by default
 
@@ -146,3 +148,36 @@ _Matches Google Sheets:_ Google Sheets' Format ▸ Conditional formatting opens 
 **Then**
 - **A1** renders as fill=#b7e1cd
 - **A2** renders as fill=false
+
+#### A custom-formula rule colors a cell whose formula resolves to TRUE
+
+**Given**
+- **A1** = `15`
+- **B1** = `10`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-custom-formula**, then fill **conditional-format-formula** with `=A1>B1`, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=#b7e1cd
+
+#### A custom-formula rule leaves a cell uncolored when its formula resolves to FALSE
+
+**Given**
+- **A1** = `5`
+- **B1** = `10`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-custom-formula**, then fill **conditional-format-formula** with `=A1>B1`, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=false
+
+#### A custom-formula rule can color a TEXT cell based on a formula that never reads its own value
+
+**Given**
+- **A1** = `hello`
+- **B1** = `15`
+
+**When** I click **A1**, then click menu item **format.conditionalFormatting**, then click **conditional-format-tab-custom-formula**, then fill **conditional-format-formula** with `=B1>10`, then click **conditional-format-done**
+
+**Then**
+- **A1** renders as fill=#b7e1cd
