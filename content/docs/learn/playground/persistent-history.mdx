@@ -19,6 +19,8 @@ The manifest scenario DSL drives the REAL running app through Playwright, but ha
 - **a version-mismatched/corrupt log safely degrades**: a dedicated schema-version test plus a matching case in the persistence test.
 - **importing a foreign document starts fresh**: the persistence test proves a compatible log sitting in storage is NOT reattached when the load goes through the existing `replaceWorkbook` path (Import/Load-from-browser's path) instead of the new `restoreSession` — only the latter ever calls `restoreCommandLog`.
 
+That paragraph predates a plain `reload: true` verb that other manifests (e.g. [views](./views), [chart-insert](./chart-insert)) now drive against the real app — a genuine `page.reload()`, a real browser navigation that fires a real `beforeunload`, not calling the debounced-save flush directly. The scenario above (issue's own fix) uses exactly that: `type` (commit) immediately followed by `reload`, with no `settle` between them, is the one place this feature's acceptance criteria — "committing an edit and immediately reloading never loses it" — needed a REAL unload event rather than another direct unit call to the synchronous flush, because the regression this closed was never reachable from a unit test that invokes it directly: the bug was in the WIRING (a listener with no gate and no unsubscribe, corrupting state across reloads), not in the flush's own logic, which every existing direct-call test case already covered. The broader "close and reopen the tab" gap above — full foreign-document-import semantics — is unrelated to this race and remains headless-tested as described.
+
 The one thing above the manifest CAN reach the real running app for — the storage-indicator now reading `local` from first paint — is the scenario in this manifest's frontmatter.
 
 ## Verified behavior
@@ -34,3 +36,13 @@ _Matches Google Sheets:_ Google Sheets autosaves continuously to Drive and its V
 
 **Then**
 - `[aria-label="Storage status"]` is visible containing "Saved in this browser"
+
+#### A cell committed immediately before a reload still survives — the debounced autosave doesn't get to lose it
+
+**Given**
+- **A1** = `1`
+
+**When** I type `FASTCOMMIT` into **B3**, then reload the page
+
+**Then**
+- **B3** shows `FASTCOMMIT`

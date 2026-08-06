@@ -42,25 +42,34 @@ _Matches Google Sheets:_ Google Sheets' real top menu bar is File · Edit · Vie
 **Then**
 - **A1** shows `10`
 
-#### Clicking an active item (Insert > Function) starts a real formula edit, and the SAME autocomplete dropdown then opens
+#### Clicking Insert > Function starts a real formula edit AND immediately opens the function picker — no typing required first
 
 **Given**
 
-**When** I click **A1**, then click menu item **insert.function**, then press `s`
+**When** I click **A1**, then click menu item **insert.function**
 
 **Then**
 - `[data-slot="formula-autocomplete"]` is visible
 
-#### A disabled item (Data > Data validation) is visibly disabled and invokes nothing
+#### Insert > Function's picker still hands off to the SAME prefix-filtered autocomplete once the user starts typing — no regression to manual "=" entry
+
+**Given**
+
+**When** I click **A1**, then click menu item **insert.function**, then press `s`, then press `u`
+
+**Then**
+- `[data-slot="formula-autocomplete"]` is visible containing "SUM"
+
+#### A disabled item (Data > Split text to columns) is visibly disabled and invokes nothing
 
 **Given**
 - **A1** = `10`
 
-**When** I click menu item **data.dataValidation**
+**When** I click menu item **data.splitToColumns**
 
 **Then**
 - **A1** shows `10`
-- `[data-menu-item="data.dataValidation"]` is visible
+- `[data-menu-item="data.splitToColumns"]` is visible
 
 #### Clicking Format > Conditional formatting opens the rules dialog
 

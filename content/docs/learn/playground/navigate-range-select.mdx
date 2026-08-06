@@ -41,7 +41,7 @@ compare with holding the plain right arrow, which walks one cell at a time.
 
 ## Verified behavior
 
-_Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shift-clicking or shift-arrowing another cell extends the selection into a rectangular range (anchored at the first click, with the moving corner following the pointer/ arrow), rendered as a translucent blue fill with a solid outline. Arrow keys, Tab, and Enter move the active cell one cell at a time (Tab right, Enter down after a commit). Ctrl+Arrow ("jump to data edge") is the fast-navigation chord: from the active cell, in the arrow's direction, it (a) jumps to the LAST cell of the contiguous non-empty run when BOTH the active cell and the adjacent cell have content, (b) jumps to the FIRST non-empty cell ahead when the adjacent cell is empty (regardless of whether the active cell itself has content), (c) lands on the immediately-adjacent cell when the active cell is empty but the adjacent cell has content — the classic "double Ctrl+Down" from a blank cell above a data column: one press reaches the TOP of the data, a second (now from a non-empty active cell) reaches the bottom — or (d) jumps to the edge of the sheet when there is no more data in that direction. At the sheet's edge already, Ctrl+Arrow is a no-op. Ctrl+Shift+ Arrow applies the same jump to the moving corner of the selection, extending the range instead of relocating the lone active cell. Tab is a COMMIT-AND-MOVE, not merely a move: pressed with the cell editor open it commits the edit and steps one column right, and Shift+Tab commits and steps one column LEFT — Shift reverses Tab's direction rather than extending the selection the way it does for Shift+Arrow. Sheets ALSO remembers the column a Tab run began in and returns there, one row down, on the Enter that ends the run (typing through H22 →Tab→ I22 →Tab→ J22 then pressing Enter lands on H23, not J23), and cycles the active cell WITHIN a selected range rather than leaving it — both observed, both NOT yet implemented in Studio, tracked separately. All of this is observed, not recalled — see this feature's oracle brief, observations 1–5.
+_Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shift-clicking or shift-arrowing another cell extends the selection into a rectangular range (anchored at the first click, with the moving corner following the pointer/ arrow), rendered as a translucent blue fill with a solid outline. Arrow keys, Tab, and Enter move the active cell one cell at a time (Tab right, Enter down after a commit). Ctrl+Arrow ("jump to data edge") is the fast-navigation chord: from the active cell, in the arrow's direction, it (a) jumps to the LAST cell of the contiguous non-empty run when BOTH the active cell and the adjacent cell have content, (b) jumps to the FIRST non-empty cell ahead when the adjacent cell is empty (regardless of whether the active cell itself has content), (c) lands on the immediately-adjacent cell when the active cell is empty but the adjacent cell has content — the classic "double Ctrl+Down" from a blank cell above a data column: one press reaches the TOP of the data, a second (now from a non-empty active cell) reaches the bottom — or (d) jumps to the edge of the sheet when there is no more data in that direction. At the sheet's edge already, Ctrl+Arrow is a no-op. Ctrl+Shift+ Arrow applies the same jump to the moving corner of the selection, extending the range instead of relocating the lone active cell. Tab is a COMMIT-AND-MOVE, not merely a move: pressed with the cell editor open it commits the edit and steps one column right, and Shift+Tab commits and steps one column LEFT — Shift reverses Tab's direction rather than extending the selection the way it does for Shift+Arrow. Sheets ALSO remembers the column a Tab run began in and returns there, one row down, on the Enter that ends the run (typing through H22 →Tab→ I22 →Tab→ J22 then pressing Enter lands on H23, not J23), and cycles the active cell WITHIN a selected range rather than leaving it — both observed. The Tab-run-anchor behavior is implemented; range-cycling is not yet, tracked separately. All of this is observed, not recalled — see this feature's oracle brief, observations 1–5.
 
 #### Clicking a cell makes it the sole active selection
 
@@ -52,7 +52,7 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - the active cell is **B2**
 
-#### Tab moves the active cell one column right
+#### Tab moves the active cell one column right without extending the selection
 
 **Given**
 
@@ -60,8 +60,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 
 **Then**
 - the active cell is **B1**
+- the selection is just **B1** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Shift+Tab moves the active cell one column left
+#### Shift+Tab moves the active cell one column left without extending the selection
 
 **Given**
 
@@ -69,8 +71,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 
 **Then**
 - the active cell is **B1**
+- the selection is just **B1** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Tab from an open editor commits the edit and moves one column right
+#### Tab from an open editor commits the edit, moves one column right, and keeps focus on the grid
 
 **Given**
 
@@ -79,8 +83,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - **B2** shows `9`
 - the active cell is **C2**
+- the selection is just **C2** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Shift+Tab from an open editor commits the edit and moves one column left
+#### Shift+Tab from an open editor commits the edit, moves one column left, and keeps focus on the grid
 
 **Given**
 
@@ -89,6 +95,8 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - **C2** shows `9`
 - the active cell is **B2**
+- the selection is just **B2** — it did not extend
+- keyboard focus is on the **grid**
 
 #### Committing an edit with Enter moves the active cell down
 
@@ -100,6 +108,40 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - **A1** shows `9`
 - the active cell is **A2**
+
+#### Enter after a Tab-entry run returns to the run's starting column, one row down
+
+**Given**
+
+**When** I click **A1**, then press `1`, then press `Tab`, then press `2`, then press `Tab`, then press `3`, then press `Enter`
+
+**Then**
+- **A1** shows `1`
+- **B1** shows `2`
+- **C1** shows `3`
+- the active cell is **A2**
+
+#### Escape mid-Tab-run ends the run — a later commit's Enter stays in the current column, not the run's start column
+
+**Given**
+
+**When** I click **A1**, then press `Tab`, then press `F2`, then press `Escape`, then press `9`, then press `Enter`
+
+**Then**
+- **B1** shows `9`
+- the active cell is **B2**
+
+#### Navigating away and back to a Tab run's exact old cell does not resurrect the abandoned run
+
+**Given**
+
+**When** I click **H1**, then press `1`, then press `Tab`, then press `2`, then press `Tab`, then press `3`, then click **A5**, then click **J1**, then press `9`, then press `Enter`
+
+**Then**
+- **H1** shows `1`
+- **I1** shows `2`
+- **J1** shows `9`
+- the active cell is **J2**
 
 #### Shift+Arrow extends the active cell without losing track of the anchor cell
 

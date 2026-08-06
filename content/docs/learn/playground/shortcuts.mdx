@@ -8,9 +8,30 @@ description: "Every keyboard shortcut is declared once, by its own operation; th
 ## What it does
 
 Press **?** (Shift+/) anywhere in the grid to open a categorized list of every
-keyboard shortcut — grouped as **Edit**, **Formatting**, and **Help** — each
-row showing its action and its chord (e.g. "Bold — Ctrl+B"). Press **Escape**
-or click outside to close it.
+keyboard shortcut — grouped as **Navigation**, **Edit**, **Formatting**, and
+**Help** — each row showing its action and its chord (e.g. "Bold — Ctrl+B").
+Press **Escape** or click outside to close it.
+
+The **Navigation** group documents the grid's own keys, which belong to no
+single operation: arrow keys move one cell, **Tab** / **Shift+Tab** move to the
+next and previous cell, **Ctrl+Arrow** jumps to the edge of the data, and
+**Escape** / **Shift+Escape** leave the grid.
+
+Those last two are the keyboard way OUT. Because Tab moves between cells rather
+than between controls (as it does in a spreadsheet), the grid would otherwise
+have no exit: **Escape** hands focus to the controls after the grid — the sheet
+tabs and everything below them — and **Shift+Escape** hands it to the controls
+before the grid — the formula bar, the toolbar and the menu bar. Shift reverses
+the exit exactly as it reverses Tab, and a single direction is not enough: the
+natural way back from a forward exit is Shift+Tab, which walks straight into the
+grid again.
+
+Both are announced by assistive technology from the grid itself (the grid
+publishes them as its keyboard shortcuts), so they are discoverable without
+opening this panel first. Leaving does not change the selection — the active
+cell is still there when you come back. You land on a small labelled control
+that says which way to keep going, and pressing **Enter** on it returns you to
+the grid.
 
 ## Verified behavior
 
@@ -24,6 +45,46 @@ _Matches Google Sheets:_ Individually, Studio's bindings already match Google Sh
 
 **Then**
 - `[data-testid="shortcuts-panel"]` is visible containing "Bold"
+
+#### The panel documents the grid's own navigation keys, including the way out
+
+**Given**
+
+**When** I click **A1**, then press `Shift+?`
+
+**Then**
+- `[data-testid="shortcuts-panel"]` is visible containing "Leave the grid"
+
+#### Escape hands keyboard focus out of the grid, to the controls after it
+
+**Given**
+
+**When** I click **A1**, then press `Escape`
+
+**Then**
+- keyboard focus is **outside the grid**
+- keyboard focus is inside `[data-testid="grid-exit-sentinel"]`
+
+#### Shift+Escape hands focus out backwards, to the controls before the grid
+
+**Given**
+
+**When** I click **A1**, then press `Shift+Escape`
+
+**Then**
+- keyboard focus is **outside the grid**
+- keyboard focus is inside `[data-testid="grid-exit-sentinel-before"]`
+
+#### Leaving the grid keeps the selection, so coming back resumes on the same cell
+
+**Given**
+
+**When** I click **B2**, then press `Escape`
+
+**Then**
+- the active cell is **B2**
+- the selection is just **B2** — it did not extend
+- keyboard focus is **outside the grid**
 
 #### Escape closes the panel
 

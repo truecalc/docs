@@ -1,0 +1,142 @@
+---
+title: "Filter a range by value (daily-driver slice)"
+description: "Data ▸ Create a filter (or a header's funnel button) opens a panel listing the selected range's columns; unchecking a value for a column hides every row whose raw value in that column is unchecked, and re-checking it (or removing the filter) restores those rows. The header row is never hidden. Two columns' criteria on the SAME filter combine as AND. Creating a filter, changing its criteria, and removing it are each one undoable command."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Data ▸ Create a filter** opens a panel over the currently-selected range: one tab per column, and — for whichever column is selected — a checkbox list of every distinct value in it. Unchecking a value hides every row whose value in that column matches; checking it back (or clicking **Remove filter**) restores those rows. The range's own first row is the filter's header and is never hidden.
+
+Two things worth knowing:
+
+1. **A filtered-out row takes up no space at all** — it isn't dimmed or struck through, it collapses to zero height, exactly like the rows above and below it closed the gap. Row numbers keep their ORIGINAL value (so hiding row 3 shows `1, 2, 4, 5`, not a renumbered `1, 2, 3, 4`) — the header is a reference/formula anchor, and renumbering would misrepresent which sheet row it addresses.
+2. **Two columns on the same filter combine as AND.** Narrowing column A and column B both apply — a row has to pass both to stay visible.
+
+Creating a filter, narrowing a column's criteria, and removing the filter are each **one undoable command**, so a single <kbd>Ctrl</kbd>+<kbd>Z</kbd> reverses whichever of those you just did.
+
+A cell counted as **blank** (nothing typed into it) is its own distinct entry in the checklist, labeled `(Blanks)`, separate from any typed value.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Name;A2=delta;A3=alpha;A4=bravo" />
+
+## What this slice deliberately does not do
+
+The live oracle session that would have verified this feature's actual hide/show mechanics against Google Sheets failed on browser tooling before it could drive anything past the filter's creation chrome (see the oracle brief's "Session method (transparency)" section for the full account) — so everything below the creation chrome is a **Studio decision**, built to be the least-invented reading of a checkbox-value filter, not a claim of Sheets parity:
+
+- **The panel's exact contents and layout were never seen.** Sheets' own dropdown, its "Select all"/search box, and its exact hide-affordance were never driven live. Studio's docked, tabbed panel is its own design, not a reproduction.
+- **No click-to-unhide affordance on the row-header gutter.** Sheets is believed to show a small expand control between two header numbers that straddle a hidden run; this was never observed, so it isn't built. Re-opening the panel and re-checking a value is the only way to unhide here.
+- **No filter-by-condition, no filter views, no slicers.** Full parity stays out of scope; this slice is value-only, one filter per sheet.
+- **Multi-column AND-stacking is inferred, not observed.** Oracle observation 13 shows one filter puts a dropdown in every covered column's header (one filter, several columns) — that several-column shape is real; that unrelated columns' criteria combine as AND is the standard reading of that shape, not something the live session actually exercised.
+
+Every one of these is called out, with the reasoning, in the oracle brief's "Studio decisions (not Sheets-observed)" section — a future session with working browser tooling should revisit each.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Data ▸ Create a filter is a single menu item (no submenu) that, over a selected range, changes the sheet's chrome without touching any data: a funnel-glyph dropdown button appears in each cell of the range's first row, that row renders bold, the column headers it covers are tinted green, a green outline is drawn around the range, and the toolbar's filter icon becomes active — live-verified, with nothing hidden yet (all rows stay visible). That is the full extent of what this session could verify live: a fresh attempt to drive the filter's actual value-hiding behaviour (what the dropdown lists, what unchecking a value does, how hidden rows affect row-header numbering, whether it survives reload, whether undo is one step, whether two columns' criteria stack) failed on browser tooling six separate times over roughly 45 minutes, not on Sheets itself — see the oracle brief's "Session method (transparency)" section for the full account. Everything this slice ships beyond the verified creation chrome is therefore a documented STUDIO DECISION (the oracle's "Studio decisions (not Sheets-observed)" section), not a fresh Sheets citation: the mechanically obvious, lowest-invention reading of a checkbox-list value filter (hide a row iff its checked-value set excludes that row's value in the column), built to be corrected by a future session with working tooling rather than left unshipped a second time.
+
+#### Data ▸ Create a filter opens the panel with nothing hidden yet
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A3** = `alpha`
+- **A4** = `delta`
+
+**When** I select **A1:A4**, then click menu item **data.createFilter**
+
+**Then**
+- `[data-testid="filter-panel"]` is visible
+
+#### Unchecking a value hides every row holding it; the header row never hides
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A3** = `alpha`
+- **A4** = `delta`
+
+**When** I select **A1:A4**, then click menu item **data.createFilter**, then click **filter-panel-value-delta**, then click **filter-panel-done**
+
+**Then**
+- row **2** is exactly 0px tall
+- row **4** is exactly 0px tall
+
+#### Re-checking a value before Done leaves it visible
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A3** = `alpha`
+
+**When** I select **A1:A3**, then click menu item **data.createFilter**, then click **filter-panel-value-delta**, then click **filter-panel-value-delta**, then click **filter-panel-done**
+
+**Then**
+
+#### A blank cell can be filtered out via the (Blanks) entry
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A4** = `alpha`
+
+**When** I select **A1:A4**, then click menu item **data.createFilter**, then click **filter-panel-value-blank**, then click **filter-panel-done**
+
+**Then**
+- row **3** is exactly 0px tall
+
+#### Two columns' criteria on the same filter stack as AND
+
+**Given**
+- **A1** = `Name`
+- **B1** = `Dept`
+- **A2** = `delta`
+- **B2** = `eng`
+- **A3** = `alpha`
+- **B3** = `sales`
+- **A4** = `delta`
+- **B4** = `sales`
+
+**When** I select **A1:B4**, then click menu item **data.createFilter**, then click **filter-panel-column-1**, then click **filter-panel-value-sales**, then click **filter-panel-done**
+
+**Then**
+- row **3** is exactly 0px tall
+- row **4** is exactly 0px tall
+
+#### The panel's own Remove filter button removes it and restores every row
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A3** = `alpha`
+
+**When** I select **A1:A3**, then click menu item **data.createFilter**, then click **filter-panel-remove**
+
+**Then**
+- `[data-testid="filter-panel"]` is hidden
+
+#### ONE undo after narrowing a filter restores every row
+
+**Given**
+- **A1** = `Name`
+- **A2** = `delta`
+- **A3** = `alpha`
+
+**When** I select **A1:A3**, then click menu item **data.createFilter**, then click **filter-panel-value-delta**, then click **filter-panel-done**, then click **A1**, then undo
+
+**Then**
+
+#### Creating a filter refuses a single-row selection — nothing to filter
+
+**Given**
+- **A1** = `Name`
+- **B1** = `Dept`
+
+**When** I select **A1:B1**, then click menu item **data.createFilter**
+
+**Then**
+- **A1** shows `Name`
+- **B1** shows `Dept`
+- `[data-testid="filter-panel"]` is hidden
