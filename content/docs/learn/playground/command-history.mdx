@@ -9,6 +9,8 @@ description: "A togglable side panel lists every committed operation with a huma
 
 A togglable **History** panel (the clock-arrow icon at the right of the toolbar) lists every committed operation — typed edits, fills, pastes, clears, and every formatting toggle — as a labeled row: a human-readable story ("Bold on B2", "Filled A2:A5"), the affected cell(s) in monospace, and a timestamp. Clicking a row **reverts the document to that state** and highlights what changed. The log isn't persisted across reloads yet.
 
+The panel is fully keyboard-operable: opening it moves keyboard focus into the panel, so **Tab** walks straight to **Close** and then to each row's **Restore** button, and closing it hands focus back to the toolbar button that opened it. It is still not modal — the grid stays live and interactive beside it, and Tab keeps walking out of the panel into the rest of the page.
+
 ## Verified behavior
 
 _Matches Google Sheets:_ Google Sheets has a Version History feature (File > Version history), but it operates on named SNAPSHOTS of the whole spreadsheet at a point in time — it does not list individual operations (each keystroke, each formatting toggle) as discrete, clickable, labeled entries the way this panel does. There is no Sheets equivalent to reproduce: this is a TrueCalc-original feature, built from the Store's own command log rather than replicated oracle behavior.
@@ -33,3 +35,23 @@ _Matches Google Sheets:_ Google Sheets has a Version History feature (File > Ver
 
 **Then**
 - **A2** shows `null`
+
+#### Opening the panel moves keyboard focus into it, so Close and Restore are reachable
+
+**Given**
+- **A1** = `10`
+
+**When** I click **toolbar-history**
+
+**Then**
+- keyboard focus is inside `[data-testid="history-panel"]`
+
+#### Closing the panel hands keyboard focus back to the button that opened it
+
+**Given**
+- **A1** = `10`
+
+**When** I click **toolbar-history**, then click **history-panel-close**
+
+**Then**
+- keyboard focus is inside `[data-testid="toolbar-history"]`
