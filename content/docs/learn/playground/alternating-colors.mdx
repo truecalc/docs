@@ -1,0 +1,85 @@
+---
+title: "Alternating (banded) colors"
+description: "A repeating header/odd/even/footer fill pattern, applied over a range from the Format ▸ Alternating colors panel, colors the range immediately and keeps coloring it correctly as rows are inserted or deleted inside it. The panel previews every field edit on the grid immediately, before Done — Done only finalizes it as one undoable command, and Cancel discards the live preview entirely with no trace."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and open **Format ▸ Alternating colors** to give it a repeating fill pattern, the way Google Sheets does — a distinct **header** color on the range's own first row (on by default), two colors that **alternate** down every row after it, and an optional distinct **footer** color on the range's own last row. Turn Header or Footer off to fold that row back into the ordinary alternation. Every change colors the range on the sheet **immediately**, exactly like real Google Sheets — **Done** doesn't "apply" anything, it just closes the panel; **Cancel** (or Escape, an outside click, or the panel's own close button) discards the live preview entirely, with no trace left behind.
+
+The banding is **live**: insert or delete rows inside the range and it re-colors correctly from the range's own current top — the header stays pinned to whichever row is now first, and the alternation restarts from there, never from a stale original row position. An explicit cell fill you set yourself (Format ▸ Fill color) always shows through the band rather than being hidden by it, and a conditional-format rule's highlight always wins over both — it exists specifically to call out exceptional cells.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Format ▸ Alternating colors opens a right-docked panel with preset style swatches plus custom color pickers: a Header checkbox + color (defaults on), two required band colors that alternate down the range, and a Footer checkbox + color (defaults off). The header row (the range's own top row) and footer row (its own bottom row), when their checkboxes are on, always render in their own distinct color rather than joining the alternation; every other row alternates the two band colors starting from the first row after the header. Inserting or deleting rows inside the range re-derives the banding from the range's own current top, so the header/footer stay pinned to the range's top/bottom row and the alternation stays correct rather than tracking stale original row positions. The panel previews every field edit live on the grid, the same way every other Sheets format side panel does — Done just closes the panel, it is not an apply gate, and Cancel discards whatever was previewed with no trace left behind. (The live oracle session for this feature could not complete — see the oracle's own "Session method" section — so the panel's exact preset swatches, default hex colors, and precise Format-menu position are Studio's own considered choices, not pixel-matched against a live session.)
+
+#### Opening Format > Alternating colors shows the panel
+
+**Given**
+
+**When** I select **A1:A5**, then click menu item **format.alternatingColors**
+
+**Then**
+- `[data-testid="alternating-colors-dialog"]` is visible
+- `[data-testid="alternating-colors-header"]` is visible
+- `[data-testid="alternating-colors-footer"]` is visible
+
+#### Applying the default banding colors the header row and alternates the rest
+
+**Given**
+
+**When** I select **A1:A5**, then click menu item **format.alternatingColors**, then click **alternating-colors-done**
+
+**Then**
+- **A1** renders as fill=#d9d9d9
+- **A2** renders as fill=#ffffff
+- **A3** renders as fill=#f3f3f3
+- **A4** renders as fill=#ffffff
+
+#### Turning the header checkbox OFF lets the first row join the ordinary alternation instead
+
+**Given**
+
+**When** I select **A1:A5**, then click menu item **format.alternatingColors**, then click **alternating-colors-header**, then click **alternating-colors-done**
+
+**Then**
+- **A1** renders as fill=#ffffff
+- **A2** renders as fill=#f3f3f3
+
+#### Turning the footer checkbox ON colors the range's own last row distinctly
+
+**Given**
+
+**When** I select **A1:A5**, then click menu item **format.alternatingColors**, then click **alternating-colors-footer**, then click **alternating-colors-done**
+
+**Then**
+- **A5** renders as fill=#d9d9d9
+
+#### Editing a band color previews it LIVE on the grid, BEFORE Done is clicked
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **format.alternatingColors**, then fill **alternating-colors-first** with `#ff0000`
+
+**Then**
+- **A2** renders as fill=#ff0000
+
+#### Cancel discards the live-previewed banding entirely — the grid returns to its pre-panel state
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **format.alternatingColors**, then click **alternating-colors-cancel**
+
+**Then**
+- **A1** renders as fill=false
+
+#### An explicit cell fill always shows through the band
+
+**Given**
+
+**When** I click **A1**, then click menu item **format.fillColor**, then select **A1:A5**, then click menu item **format.alternatingColors**, then click **alternating-colors-done**
+
+**Then**
+- **A1** renders as fill=#fff2cc
