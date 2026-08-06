@@ -1,0 +1,162 @@
+---
+title: "Print & page setup"
+description: "File ▸ Print settings… opens a per-sheet page-setup form (orientation, scale, margins, print area, gridlines, header/footer text) that applies as one undoable command and survives a reload; File ▸ Print (Cmd+P) hands off to the browser's own native print dialog, styled from those settings."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**File ▸ Print settings…** opens a form for how the active sheet prints:
+
+- **Orientation** — Portrait or Landscape.
+- **Scale** — Normal (100%), Fit to width, or a Custom percentage.
+- **Margins** — Normal, Narrow, or Custom (four independent side values).
+- **Print area** — the whole sheet, or a specific range ("Use selection" adopts whatever's currently selected on the grid).
+- **Gridlines** — on or off for the printed page.
+- **Header / Footer** — three slots each (left/center/right), with `{page}`, `{pages}`, `{date}`, and `{sheet}` placeholders that substitute at print time.
+
+Save applies every field as **one undoable command**. Page setup is **per sheet** — switching tabs and reopening the dialog shows that sheet's own settings, and it survives a reload (it's part of the document, not session state).
+
+**File ▸ Print**, or **Cmd+P** / **Ctrl+P**, hands off directly to the browser's own native print dialog — styled by the page-setup settings above (orientation and margins via the printed page's own layout, print area by restricting what renders, scale via the same percentage, gridlines by including/omitting cell borders). The keyboard shortcut is intercepted so the browser never falls back to printing the raw, unstyled application chrome.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Region;B1=Revenue;A2=North;B2=1200;A3=South;B3=980" />
+
+Open **File ▸ Print settings…**, switch to Landscape, and Save. Then press **Cmd+P** (or **File ▸ Print**) to see the browser's own print preview pick it up.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' File ▸ Print (Ctrl+P/Cmd+P — the browser's own default print shortcut is intercepted, not left to print the raw unstyled page) opens a combined preview-plus-settings surface: paper size, orientation, scale (fit-to-width/height/page or a custom percentage), margins (Normal/Narrow/Custom), a print-scope selector (current sheet / workbook / selected cells), gridlines/notes checkboxes, and headers-and-footers with fixed left/center/right slots and insertable tokens (page number, page count, date, sheet name). Page setup is scoped PER SHEET — reopening after switching tabs shows that sheet's own settings. Live oracle verification was attempted this cycle across three separate authenticated-profile strategies and all three failed on the Sign-in wall before reaching the reference workbook (see the oracle brief's "Session method (transparency)" section for the full account — the same class of browser-tooling failure a couple of other recent features in this codebase document for their own oracle sessions) — Print is nonetheless a long-stable, extremely well-established feature across every major spreadsheet app, so this slice is built from general knowledge rather than left unshipped; every behavioral claim not independently re-verified is called out as a Studio decision in the oracle brief and this manifest's "How it works".
+
+#### Opening File ▸ Print settings shows the dialog seeded with defaults
+
+**Given**
+
+**When** I click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-dialog"]` is visible
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+- `[data-testid="page-setup-margins-mode"]` is visible with value "normal"
+- `[data-testid="page-setup-print-area-label"]` is visible containing "Whole sheet"
+
+#### Saving a changed field persists it — reopening the dialog shows the new value
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-save**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "landscape"
+
+#### Cancel discards an edited field — reopening still shows the old value
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-cancel**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### Selecting Custom scale reveals a percent field, which round-trips through Save
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `custom` in **page-setup-scale-mode**, then see `[data-testid="page-setup-scale-percent"]` on screen, then fill **page-setup-scale-percent** with `75`, then click **page-setup-save**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-scale-mode"]` is visible with value "custom"
+- `[data-testid="page-setup-scale-percent"]` is visible with value "75"
+
+#### "Use selection" adopts the current grid selection as the print area
+
+**Given**
+
+**When** I select **B2:C4**, then click menu item **file.pageSetup**, then click **page-setup-print-area-use-selection**
+
+**Then**
+- `[data-testid="page-setup-print-area-label"]` is visible containing "B2:C4"
+
+#### A saved print area survives closing and reopening the dialog
+
+**Given**
+
+**When** I select **B2:C4**, then click menu item **file.pageSetup**, then click **page-setup-print-area-use-selection**, then click **page-setup-save**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-print-area-label"]` is visible containing "B2:C4"
+
+#### "Whole sheet" clears a previously-set print area
+
+**Given**
+
+**When** I select **B2:C4**, then click menu item **file.pageSetup**, then click **page-setup-print-area-use-selection**, then click **page-setup-print-area-clear**, then click **page-setup-save**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-print-area-label"]` is visible containing "Whole sheet"
+
+#### Page setup is scoped PER SHEET — a second sheet starts at defaults
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-save**, then add a sheet (switching to it), then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### Switching back to the first sheet shows ITS page setup, untouched by the second sheet
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-save**, then add a sheet (switching to it), then switch to sheet **Sheet1**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "landscape"
+
+#### Switching sheets WHILE the dialog stays open resyncs it — Save cannot land on the wrong sheet
+
+**Given**
+
+**When** I add a sheet (switching to it), then switch to sheet **Sheet1**, then click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then switch to sheet **Sheet2**
+
+**Then**
+- `[data-testid="page-setup-dialog"]` is visible
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### Saving after a mid-dialog sheet switch writes to the NOW-active sheet, not the one shown when editing started — and never leaks the discarded edit anywhere
+
+**Given**
+
+**When** I add a sheet (switching to it), then switch to sheet **Sheet1**, then click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then switch to sheet **Sheet2**, then click **page-setup-save**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### The discarded mid-switch edit never lands on the ORIGINAL sheet either
+
+**Given**
+
+**When** I add a sheet (switching to it), then switch to sheet **Sheet1**, then click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then switch to sheet **Sheet2**, then click **page-setup-save**, then switch to sheet **Sheet1**, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### Saving a page-setup change is undoable
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-save**, then click **A1**, then undo, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "portrait"
+
+#### A page setup survives a reload — it is document state
+
+**Given**
+
+**When** I click menu item **file.pageSetup**, then choose `landscape` in **page-setup-orientation**, then click **page-setup-save**, then wait 1200ms, then reload the page, then click menu item **file.pageSetup**
+
+**Then**
+- `[data-testid="page-setup-orientation"]` is visible with value "landscape"
