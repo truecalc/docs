@@ -1,0 +1,125 @@
+---
+title: "Find and replace"
+description: "Edit ▸ Find and replace (Ctrl+H / Cmd+Shift+H) searches the active sheet's cells and lets you replace matches one at a time or all at once — case-sensitive or not, plain text or a regular expression, matching a substring or the whole cell, scoped to the whole sheet or just the current selection. A formula cell matches by its computed value by default and is never silently rewritten unless you explicitly ask to search within formulas too."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Edit ▸ Find and replace** (<kbd>Ctrl</kbd>+<kbd>H</kbd> / <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>) opens a panel to search the active sheet — or just the current selection — and replace what it finds, one match or all of them at once.
+
+- **Match case** — case-sensitive search (off by default).
+- **Match entire cell contents** — only a cell whose full text equals the query counts.
+- **Search using regular expressions** — the query is a regex instead of plain text.
+- **Also search within formulas** — by default a formula cell is matched by what it *shows* (its computed value); check this to search — and replace — its formula *text* instead.
+
+A formula cell is never silently rewritten by a plain-text replace. Finding "42" will happily count a cell showing `=A1+B1` that evaluates to 42, but Replace all leaves that formula's text untouched unless "Also search within formulas" is on — there's no sane edit to derive from replacing a *computed result*.
+
+Replace all is a single undoable step: one <kbd>Ctrl</kbd>+<kbd>Z</kbd> restores every cell it touched.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=cat;A2=category;B1=dog" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Edit ▸ Find and replace (Ctrl+H on Windows, Cmd+Shift+H on macOS) is a small dialog with a Find field, a Replace-with field, a scope dropdown (This sheet / All sheets / Specific range), and four checkboxes: Match case, Match entire cell contents, Search using regular expressions, and Also search within formulas. Find/Find previous/Replace/Replace all/Done buttons act on the current match. By default a formula cell is matched by its DISPLAYED value, not its formula text — searching "42" finds a cell showing 42 whether it was typed or computed — and a replace never rewrites a formula's text unless "Also search within formulas" is checked, in which case both search and replace operate on the formula's raw text instead. This daily-driver slice ships This-sheet and Current-selection scope (not "All sheets" or "Specific range" — see the oracle brief's "Explicitly deferred") and, per the same brief's disclosed tooling failure, is built from Sheets' own extremely well-established general behavior rather than a fresh live observation this session.
+
+#### Replace all rewrites every plain-text match on the sheet as ONE undoable command
+
+**Given**
+- **A1** = `cat`
+- **A2** = `category`
+- **B1** = `dog`
+
+**When** I click menu item **edit.findReplace**, then fill **find-replace-query** with `cat`, then fill **find-replace-replacement** with `dog`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `dog`
+- **A2** shows `dogegory`
+- **B1** shows `dog`
+
+#### Match case makes the search case-sensitive
+
+**Given**
+- **A1** = `Cat`
+- **A2** = `cat`
+
+**When** I click menu item **edit.findReplace**, then click **find-replace-match-case**, then fill **find-replace-query** with `cat`, then fill **find-replace-replacement** with `dog`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `Cat`
+- **A2** shows `dog`
+
+#### Match entire cell contents only replaces a cell whose FULL text equals the query
+
+**Given**
+- **A1** = `cat`
+- **A2** = `category`
+
+**When** I click menu item **edit.findReplace**, then click **find-replace-entire-cell**, then fill **find-replace-query** with `cat`, then fill **find-replace-replacement** with `dog`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `dog`
+- **A2** shows `category`
+
+#### Search using regular expressions enables real regex matching
+
+**Given**
+- **A1** = `abc123`
+- **A2** = `no digits here`
+
+**When** I click menu item **edit.findReplace**, then click **find-replace-regex**, then fill **find-replace-query** with `\d+`, then fill **find-replace-replacement** with `NUM`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `abcNUM`
+- **A2** shows `no digits here`
+
+#### A formula cell matches on its DISPLAYED value by default and is never rewritten by replace all
+
+**Given**
+- **A1** = `=1+1`
+
+**When** I click menu item **edit.findReplace**, then fill **find-replace-query** with `2`, then fill **find-replace-replacement** with `99`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `2`
+- **A1** has formula `=1+1`
+
+#### Also search within formulas rewrites the formula TEXT itself
+
+**Given**
+- **B1** = `3`
+- **B2** = `4`
+- **A1** = `=SUM(B1)`
+
+**When** I click menu item **edit.findReplace**, then click **find-replace-within-formulas**, then fill **find-replace-query** with `SUM(B1)`, then fill **find-replace-replacement** with `SUM(B1:B2)`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `7`
+- **A1** has formula `=SUM(B1:B2)`
+
+#### Scope "Current selection" only replaces matches inside the selected range
+
+**Given**
+- **A1** = `cat`
+- **B1** = `cat`
+
+**When** I select **A1:A1**, then click menu item **edit.findReplace**, then choose `selection` in **find-replace-scope**, then fill **find-replace-query** with `cat`, then fill **find-replace-replacement** with `dog`, then click **find-replace-replace-all**
+
+**Then**
+- **A1** shows `dog`
+- **B1** shows `cat`
+
+#### ONE undo restores every cell Replace all rewrote
+
+**Given**
+- **A1** = `cat`
+- **A2** = `cat`
+
+**When** I click menu item **edit.findReplace**, then fill **find-replace-query** with `cat`, then fill **find-replace-replacement** with `dog`, then click **find-replace-replace-all**, then click **find-replace-done**, then click **A1**, then undo
+
+**Then**
+- **A1** shows `cat`
+- **A2** shows `cat`
