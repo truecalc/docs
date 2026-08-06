@@ -1,4 +1,4 @@
-const PLAYGROUND_ORIGIN = 'https://try.truecalc.app';
+const PLAYGROUND_ORIGIN = 'https://workbook.truecalc.app';
 
 /**
  * Embeds the live TrueCalc playground as an iframe, seeded with the given
