@@ -52,7 +52,7 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - the active cell is **B2**
 
-#### Tab moves the active cell one column right
+#### Tab moves the active cell one column right without extending the selection
 
 **Given**
 
@@ -60,8 +60,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 
 **Then**
 - the active cell is **B1**
+- the selection is just **B1** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Shift+Tab moves the active cell one column left
+#### Shift+Tab moves the active cell one column left without extending the selection
 
 **Given**
 
@@ -69,8 +71,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 
 **Then**
 - the active cell is **B1**
+- the selection is just **B1** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Tab from an open editor commits the edit and moves one column right
+#### Tab from an open editor commits the edit, moves one column right, and keeps focus on the grid
 
 **Given**
 
@@ -79,8 +83,10 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - **B2** shows `9`
 - the active cell is **C2**
+- the selection is just **C2** — it did not extend
+- keyboard focus is on the **grid**
 
-#### Shift+Tab from an open editor commits the edit and moves one column left
+#### Shift+Tab from an open editor commits the edit, moves one column left, and keeps focus on the grid
 
 **Given**
 
@@ -89,6 +95,8 @@ _Matches Google Sheets:_ In Google Sheets, clicking a cell selects it alone; shi
 **Then**
 - **C2** shows `9`
 - the active cell is **B2**
+- the selection is just **B2** — it did not extend
+- keyboard focus is on the **grid**
 
 #### Committing an edit with Enter moves the active cell down
 

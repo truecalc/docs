@@ -1,0 +1,121 @@
+---
+title: "Data validation — List and Checkbox (daily-driver slice)"
+description: "Data ▸ Data validation applies a rule over the selected range — a List of items (offered as an in-cell dropdown) or a Checkbox — as one undoable command. A \"Reject input\" rule silently refuses a literal that isn't allowed, leaving the cell unchanged; a \"Show a warning\" rule accepts it but flags the cell. A checkbox-covered cell renders and toggles as an actual checkbox on click."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Data ▸ Data validation** opens a panel over the selected range. This slice ships the two most commonly used criteria:
+
+- **List of items** — type a fixed set of allowed values, one per line. When "Show dropdown list in cell" is checked, each cell in the range shows a small triangle you can click to pick a value from that list.
+- **Checkbox** — the range renders as actual checkboxes. Clicking a cell toggles it between `TRUE`/`FALSE`.
+
+Either criteria carries an **On invalid data** choice: **Reject input** (the default) silently refuses a keystroke that isn't allowed, leaving the cell exactly as it was; **Show a warning** accepts it but flags the cell with a small red triangle in its corner. A validation rule only ever checks what you TYPE — a formula in a validated cell is never itself rejected or flagged, no matter what it resolves to — and clearing a cell back to blank is always allowed.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Yes" />
+
+## What this slice deliberately does not do
+
+The live oracle session that would have verified this feature's actual dialog layout, colors, and interaction details against Google Sheets failed on browser tooling twice this cycle before reaching the reference workbook (see the oracle brief's "Session method (transparency)" section) — so everything about the visual/interaction spec is a **Studio decision**, built from general, long-stable knowledge of Sheets' Data validation feature, not a claim of pixel/behavior parity:
+
+- **No "List from a range" criteria, no text/date/number-condition criteria, no custom-formula criteria** — only a manually-typed item list and Checkbox. Full parity is out of scope for this daily-driver slice.
+- **No custom checked/unchecked values for a Checkbox rule** — always `TRUE`/`FALSE`.
+- **No hover tooltip on the invalid-data corner triangle** — the indicator shows, but there is no diagnostic popover explaining why, unlike this codebase's own formula-error tooltip for a different (non-validation) condition.
+- **No dedicated "Remove validation" UI action** — the underlying remove capability exists and is unit-tested; re-opening Data ▸ Data validation over an already-validated range and saving replaces the old rule (the "one rule per cell, overlap replaces" behavior), which is the only way to change/clear a rule through the UI today.
+- **The dropdown-glyph click-to-open interaction is not exercised by an automated scenario** — the scenario harness's `click` verb targets a cell's CENTER, not the narrow right-edge glyph zone a real dropdown-open click needs; this interaction is covered by Storybook stories and manual verification instead, the same class of harness-verb gap a couple of other features in this codebase already document for their own hover/point-mode-only interactions.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Data ▸ Data validation opens a panel with a Criteria dropdown offering several kinds; this daily-driver slice implements the two most commonly used — "Dropdown" (a fixed list of allowed items, offered as an in-cell dropdown when "Show dropdown list in cell" is checked) and "Checkbox" (the cell renders as an actual checkbox glyph; Insert ▸ Checkbox is the SAME underlying rule under a different menu entry point). An "On invalid data" choice — "Reject input" (Sheets' default: the edit is refused outright) or "Show a warning" (the edit is accepted, flagged with a small red corner triangle) — applies to either criteria. A validation rule checks the literal a user TYPES, never what a formula in that cell resolves to, and never blocks clearing a cell back to blank. Live oracle verification was attempted twice this cycle and both attempts failed on browser tooling before reaching the reference workbook (see the oracle brief's "Session method (transparency)" section for the full account — the same browser-tooling daemon failure a couple of other recent features in this codebase document for their own oracle sessions) — Data validation is nonetheless a long-stable, well-established Sheets feature, so this slice is built from general knowledge rather than left unshipped; every behavioral claim not independently re-verified is called out as a Studio decision in the oracle brief and this manifest.
+
+#### Opening Data ▸ Data validation shows the List criteria form by default
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**
+
+**Then**
+- `[data-testid="validation-dialog"]` is visible
+- `[data-testid="validation-list-values"]` is visible
+
+#### Saving a List rule lets a listed value through
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**, then fill **validation-list-values** with `Yes
+No`, then click **validation-save**, then type `Yes` into **A1**
+
+**Then**
+- **A1** shows `Yes`
+
+#### A strict (Reject input) List rule silently refuses a value not on the list
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**, then fill **validation-list-values** with `Yes
+No`, then click **validation-on-invalid-reject**, then click **validation-save**, then type `Yes` into **A1**, then type `Maybe` into **A1**
+
+**Then**
+- **A1** shows `Yes`
+
+#### A "Show a warning" List rule accepts a value not on the list
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**, then fill **validation-list-values** with `Yes
+No`, then click **validation-on-invalid-warn**, then click **validation-save**, then type `Maybe` into **A1**
+
+**Then**
+- **A1** shows `Maybe`
+
+#### A validation rule never rejects a formula, even under Reject input
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**, then fill **validation-list-values** with `Yes
+No`, then click **validation-save**, then type `=1+1` into **A1**
+
+**Then**
+- **A1** shows `2`
+- **A1** has formula `=1+1`
+
+#### Clearing a validated cell back to blank is always allowed
+
+**Given**
+
+**When** I select **A1:A3**, then click menu item **data.dataValidation**, then fill **validation-list-values** with `Yes
+No`, then click **validation-save**, then type `Yes` into **A1**, then click **A1**, then press `Delete`
+
+**Then**
+- **A1** shows `null`
+
+#### A Checkbox rule renders TRUE/FALSE and clicking the cell toggles it
+
+**Given**
+
+**When** I select **A1:A1**, then click menu item **data.dataValidation**, then choose `checkbox` in **validation-criteria**, then click **validation-save**, then click **A1**
+
+**Then**
+- **A1** shows `true`
+
+#### Clicking a checked checkbox cell again toggles it back
+
+**Given**
+
+**When** I select **A1:A1**, then click menu item **data.dataValidation**, then choose `checkbox` in **validation-criteria**, then click **validation-save**, then click **A1**, then click **A1**
+
+**Then**
+- **A1** shows `false`
+
+#### Applying a validation rule is undoable
+
+**Given**
+
+**When** I select **A1:A1**, then click menu item **data.dataValidation**, then choose `checkbox` in **validation-criteria**, then click **validation-save**, then click **A1**, then undo, then undo
+
+**Then**
+- **A1** shows `null`
