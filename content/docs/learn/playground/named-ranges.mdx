@@ -1,0 +1,90 @@
+---
+title: "Named ranges"
+description: "Data ▸ Named ranges lets you give a range a workbook-scoped name, usable in any formula on any sheet (=SUM(MyRange)). Adding, retargeting, and removing a name are each one undoable command; a name survives Save/Load and Import/Export."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+**Data ▸ Named ranges** opens a panel listing every named range in the workbook. Give a range a name (starting with a letter or underscore, letters/digits/underscores/periods only — not a name that reads as a cell reference, e.g. `A1`) and it becomes usable in any formula, on any sheet: `=SUM(MyRange)` resolves from wherever you type it, not just the sheet the range lives on.
+
+Adding, retargeting, or removing a named range is each **one undoable command**. A name survives Save/Load and Import/Export.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=10;A2=20" />
+
+## What this slice deliberately does not do
+
+The live oracle session that would have verified this feature's actual panel layout and interaction details against Google Sheets failed on browser tooling twice this cycle before reaching the reference workbook (see the oracle brief's "Session method (transparency)" section) — so the visual/interaction spec is a **Studio decision**, built from general, long-stable knowledge of Sheets' Named ranges feature:
+
+- **Deleting a name does not immediately break an already-typed formula** — a genuine, documented Studio limitation (not a design choice): the vendored `@truecalc/workbook` JS binding has no `remove_name`/`names` call exposed (the underlying Rust engine has both; they're just not surfaced to JavaScript yet as of the latest published release). A formula added AFTER the delete correctly fails to resolve the name (Store's own model no longer has it — the manager/autocomplete never offer it again); a formula that referenced it BEFORE the delete keeps resolving it via the stale engine binding until the next full rebuild. See `EngineAdapter.redefineName`'s own doc and the oracle's "Engine-binding note" for the exact mechanism.
+- **No in-place rename of an existing name** — delete and re-add achieves the same result; the manager offers no dedicated rename shortcut.
+- **Retargeting an existing name's range is only offered while viewing that name's own target sheet** — a Studio-side simplification to avoid silently moving a name onto the wrong sheet through a same-labeled-but-different-sheet range field.
+- **No confirm-before-delete dialog.**
+
+## Verified behavior
+
+_Matches Google Sheets:_ Google Sheets' Data ▸ Named ranges opens a panel listing every named range in the workbook, with an "Add a range" affordance seeded from the current selection. A name must start with a letter or underscore, contain only letters/digits/underscores/periods, and must not read as a cell reference (Sheets rejects "A1", "R1C1", etc., since that would be ambiguous inside a formula). A named range is WORKBOOK-scoped — usable from any sheet's formula, not just the one its range lives on. Editing an existing name's range repoints it; deleting a name removes it immediately, and any formula that already referenced it shows #NAME? from that point on. Live oracle verification was attempted twice this cycle and both attempts failed on browser tooling before reaching the reference workbook (see the oracle brief's "Session method (transparency)" section) — Named ranges is nonetheless one of Sheets' oldest, most stable features, so this slice is built from general knowledge rather than left unshipped; every claim not independently re-verified is a Studio decision in the oracle brief. One divergence IS load-bearing, not cosmetic: Studio's vendored engine binding (@truecalc/workbook) has no "undefine a name" call, so deleting a name here removes it from Studio's own manager/model immediately but leaves the underlying engine binding live until the next full engine rebuild (a sheet add/rename/delete/reorder, or a reload) — see the oracle brief's "Engine-binding note" for the exact mechanism and why.
+
+#### Opening Data ▸ Named ranges shows the panel
+
+**Given**
+
+**When** I click menu item **data.namedRanges**
+
+**Then**
+- `[data-testid="named-ranges-panel"]` is visible
+- `[data-testid="named-range-new-name"]` is visible
+
+#### Adding a named range makes it resolvable in a formula on the SAME sheet
+
+**Given**
+- **A1** = `10`
+- **A2** = `20`
+
+**When** I click menu item **data.namedRanges**, then fill **named-range-new-name** with `MyRange`, then fill **named-range-new-range** with `A1:A2`, then click **named-range-add**, then type `=SUM(MyRange)` into **B1**
+
+**Then**
+- **B1** shows `30`
+
+#### A named range is WORKBOOK-scoped — resolvable from a different sheet
+
+**Given**
+- **A1** = `7`
+
+**When** I click menu item **data.namedRanges**, then fill **named-range-new-name** with `Anchor`, then fill **named-range-new-range** with `A1`, then click **named-range-add**, then add a sheet (switching to it), then type `=Anchor*3` into **B1**
+
+**Then**
+- **B1** shows `21`
+
+#### A name that reads as a cell reference is rejected with an inline error
+
+**Given**
+
+**When** I click menu item **data.namedRanges**, then fill **named-range-new-name** with `A1`, then fill **named-range-new-range** with `B1:B2`, then click **named-range-add**
+
+**Then**
+- `[data-testid="named-range-new-name"]` is visible
+- `[data-testid="named-range-error"]` is visible
+
+#### Removing a named range drops it from the panel
+
+**Given**
+
+**When** I click menu item **data.namedRanges**, then fill **named-range-new-name** with `MyRange`, then fill **named-range-new-range** with `A1`, then click **named-range-add**, then click **named-range-remove-MyRange**
+
+**Then**
+- `[data-testid="named-ranges-panel"]` is visible
+- `[data-testid="named-range-row-MyRange"]` is hidden
+
+#### Adding a named range is undoable
+
+**Given**
+- **A1** = `5`
+
+**When** I click menu item **data.namedRanges**, then fill **named-range-new-name** with `MyRange`, then fill **named-range-new-range** with `A1`, then click **named-range-add**, then click **A1**, then undo, then type `=IFERROR(MyRange,"gone")` into **B1**
+
+**Then**
+- **B1** shows `gone`

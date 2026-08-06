@@ -55,6 +55,13 @@
     "sort-range",
     "structure-insert-delete",
     "views",
-    "chart-axis-labels"
+    "chart-axis-labels",
+    "alternating-colors",
+    "autofill",
+    "data-validation",
+    "filter-by-value",
+    "find-replace",
+    "named-ranges",
+    "pivot-table"
   ]
 }
