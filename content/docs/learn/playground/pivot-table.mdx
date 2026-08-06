@@ -1,0 +1,220 @@
+---
+title: "Insert a pivot table from a range (first vertical slice)"
+description: "Selecting a range and choosing Insert ▸ Pivot table opens a \"Create pivot table\" dialog; confirming it groups the range's first column and sums its second into a new sheet — the row field's own header in A1, \"SUM of <value field>\" in B1, one row per distinct row value, and a Grand Total row at the bottom — as one undoable insert. Editing a source cell inside the range updates the pivot's output immediately, with no manual refresh control."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Select a range and choose **Insert ▸ Pivot table**. A **"Create pivot table"** dialog
+opens — a Data range field and an Insert-to choice (New sheet is the only destination
+this first slice builds) — matching Google Sheets' own dialog shape. Confirming it groups
+the range's **first column** and sums its **second**, writing the result into a brand new
+sheet: the row field's own header name, a `SUM of <value field>` column, one row per
+distinct group, and a **Grand Total** row.
+
+A blank or non-numeric value cell is skipped, never treated as zero. Editing a cell inside
+the pivot's source range updates the output immediately — there is no manual refresh
+button to click, because the output is recomputed from the live data on every relevant
+edit rather than cached.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=Region;B1=Sales;A2=East;B2=10;A3=West;B3=15;A4=East;B4=20" />
+
+## What this slice deliberately does not do
+
+Full Sheets pivot parity is epic-sized, so this first slice ships one real path end to
+end and defers the rest (each tracked as its own follow-up issue, filed alongside this
+manifest):
+
+- **Exactly one row field and one value field, SUM only.** No Rows/Columns/Values/Filters
+ picker panel yet — the range's first two columns are the only input. No COUNT, AVERAGE,
+ MAX, MIN, or any other aggregation.
+- **No Columns (cross-tab) field, no Filters zone.**
+- **"Existing sheet" is not a real destination yet** — the dialog shows the radio (oracle
+ fidelity) but it stays disabled.
+- **Live recompute covers only the single-cell/batch commit path.** A source range edited
+ via paste, fill, sort, import, clear-range, or a structural row/column insert/delete
+ does not retrigger the pivot yet — the same "known gap, not silent corruption" posture
+ `Store.applyStructuralShift` already documents for a chart's own `range` field (which
+ has never re-pointed through a structural edit either). A pivot chained off ANOTHER
+ pivot's own output does not cascade either.
+- **A value-column cell holding a FORMULA is not summed** — `computePivotTable` reads raw
+ input only, not an engine-resolved value (a documented v1 trade-off, not an oversight;
+ see "How it works").
+- **No wire command or MCP tool yet** (`pivot:insert` et al.) — the pure core and Store
+ method are already headless-composable (no React dependency), so a thin wire adapter is
+ a fast follow-up, not a redesign.
+
+## Verified behavior
+
+_Matches Google Sheets:_ Live-verified in the reference workbook (this feature's oracle brief, "Observed behavior" #1-#3): Insert ▸ Pivot table is a plain menu item (no submenu) sitting directly after Chart in Sheets' own Insert-menu order. Clicking it opens a modal "Create pivot table" dialog — a "Data range" text field (empty unless a real selection was active) with a range-picker icon, an "Insert to" choice of "New sheet" (checked by default) or "Existing sheet", and Cancel/Create buttons. This is the one clear divergence from this app's own Insert ▸ Chart, which never shows a dialog at all.
+Everything about the pivot EDITOR itself — the Rows/Columns/Values/Filters panel, the aggregation dropdown, the output's exact row/column shape, and whether a manual refresh exists — could not be reached this session (the live automation used to drive the reference workbook could enter a range selection or a menu click, but not type text into a cell to populate a usable source range; see the oracle brief's own "Session method (transparency)" section for the detailed, reproducible account). That part of this manifest's ground truth is Studio's own reading of long-public, extensively documented Sheets/Excel-family pivot table conventions (the classic row-field header / "SUM of X" column header / Grand Total shape), explicitly flagged in the oracle brief as REPORTED, NOT LIVE-VERIFIED — not a claim of direct observation.
+
+#### Insert ▸ Pivot table groups the selection's first column and sums its second, into a new sheet
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+- **A4** = `East`
+- **B4** = `20`
+- **A5** = `West`
+- **B5** = `25`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B5`, then click **pivot-dialog-create**
+
+**Then**
+- **A1** shows `Region`
+- **B1** shows `SUM of Sales`
+- **A2** shows `East`
+- **B2** shows `30`
+- **A3** shows `West`
+- **B3** shows `40`
+- **A4** shows `Grand Total`
+- **B4** shows `70`
+
+#### The destination sheet is named "Pivot Table 1", the first free counter value
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**, then switch to sheet **Pivot Table 1**
+
+**Then**
+- **A1** shows `Region`
+
+#### A 1-column range is refused — an error shows and no sheet is created
+
+**Given**
+- **A1** = `Region`
+- **A2** = `East`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:A2`, then click **pivot-dialog-create**
+
+**Then**
+- `[data-testid="pivot-dialog-error"]` is visible
+
+#### Editing a source cell inside the pivot's range updates the pivot output immediately
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**, then switch to sheet **Sheet1**, then type `100` into **B2**, then switch to sheet **Pivot Table 1**
+
+**Then**
+- **B2** shows `100`
+- **B4** shows `115`
+
+#### Editing a source cell OUTSIDE the pivot's range leaves the pivot output untouched
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+- **D10** = `untouched`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**, then switch to sheet **Sheet1**, then type `changed` into **D10**, then switch to sheet **Pivot Table 1**
+
+**Then**
+- **B2** shows `10`
+
+#### A blank or non-numeric value cell is skipped by the pivot, not summed as zero
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `East`
+- **B3** = `n/a`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**
+
+**Then**
+- **A2** shows `East`
+- **B2** shows `10`
+- **A3** shows `Grand Total`
+- **B3** shows `10`
+
+#### A recompute that shrinks the distinct-group count clears the previous output's stale rows
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+- **A4** = `East`
+- **B4** = `20`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B4`, then click **pivot-dialog-create**, then switch to sheet **Sheet1**, then type `East` into **A3**, then switch to sheet **Pivot Table 1**
+
+**Then**
+- **A3** shows `Grand Total`
+- **B3** shows `45`
+- **A4** shows `null`
+- **B4** shows `null`
+
+#### Undo of a live-recompute-triggering edit reverts what's on screen, not just the stored edit
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**, then switch to sheet **Sheet1**, then type `100` into **B2**, then click **A1**, then undo, then switch to sheet **Pivot Table 1**
+
+**Then**
+- **B2** shows `10`
+- **B4** shows `25`
+
+#### A typed range extending past the sheet's used content is refused
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B999999`, then click **pivot-dialog-create**
+
+**Then**
+- `[data-testid="pivot-dialog-error"]` is visible
+
+#### Undo after inserting a pivot table removes the sheet and the record in one step
+
+**Given**
+- **A1** = `Region`
+- **B1** = `Sales`
+- **A2** = `East`
+- **B2** = `10`
+- **A3** = `West`
+- **B3** = `15`
+
+**When** I click menu item **insert.pivotTable**, then fill **pivot-dialog-range** with `A1:B3`, then click **pivot-dialog-create**, then switch to sheet **Sheet1**, then undo
+
+**Then**
+- `[data-menu-trigger="insert"]` is visible
