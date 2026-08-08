@@ -1,0 +1,86 @@
+---
+title: "Drag to reorder rows & columns"
+description: "Grabbing an already-selected column or row header and dragging it (alone, or as part of a multi-selected contiguous band) relocates it to a new position — siblings shift to fill the gap and make room, and every formula reference into the moved band, or to a shifted sibling, follows the move — matching Google Sheets."
+---
+
+{/* GENERATED — do not edit by hand */}
+
+## What it does
+
+Grab a column-letter or row-number header that's already selected — the pointer turns into a grabbing hand — and drag it to reorder it, matching Google Sheets. While dragging, a gray highlight tracks whichever column/row the pointer is currently over, and a marker line shows exactly where the dragged column/row will land on release. Release to drop: siblings shift to fill the gap and make room, and every formula that referenced a cell in the moved column/row — including formulas that live elsewhere on the sheet entirely — keeps pointing at the same logical cell. A contiguous multi-column or multi-row selection drags as one band. The whole move is a single undoable step.
+
+## Try it
+
+<TrueCalc mode="standalone" seed="A1=1;B1=2;C1=3;A2==A1+B1" />
+
+## Verified behavior
+
+_Matches Google Sheets:_ Re-grabbing an already-selected column/row header (mousedown on a header that is already part of the current selection) and moving the pointer arms a drag: a grabbing cursor, a gray highlight over the ONE column/row currently under the pointer (the "shift target"), and a thin insertion- marker line at whichever edge of that shift-target is FARTHER from the dragged band's own original position — i.e. dragging left of the source, the marker sits at the shift-target's left edge; dragging right, its right edge. That marker is exactly where the band lands on release, confirmed against actual drop behavior, not just the in-flight visual. Releasing moves the whole band there in ONE undoable step: every column/ row between the source and the drop point shifts by the band's width to fill the vacated slot and open the new one, and every formula reference — whether it's part of the moved band itself, points at a sibling that shifted, or lives anywhere else on the sheet and simply points INTO the moved band — is rewritten to keep pointing at the same logical cell, $-blind (a structural move, not a copy — the referenced cell itself relocated). A multi-column or multi-row contiguous selection drags as one band with identical mechanics; dragging never mixes row and column selections. A mousedown on a header that is NOT already selected performs the ordinary header click/extend-selection gesture instead — the drag only arms on a re-grab of an existing selection (live-verified; see this feature's oracle brief).
+
+#### dragging a selected column swaps it with the column it's dropped before, moving its own content and formula with it
+
+**Given**
+- **F1** = `100`
+- **G1** = `10`
+- **G2** = `=G1*2`
+
+**When** I drag column **G** and drop it over column **F**
+
+**Then**
+- **F1** shows `10`
+- **F2** shows `20`
+- **G1** shows `100`
+- **F2** has formula `=F1*2`
+
+#### a formula elsewhere on the sheet that references into the moved column follows it to its new address
+
+**Given**
+- **G1** = `10`
+- **K1** = `=G1+5`
+
+**When** I drag column **G** and drop it over column **F**
+
+**Then**
+- **F1** shows `10`
+- **K1** shows `15`
+- **K1** has formula `=F1+5`
+
+#### a multi-column band drags as one unit, preserving the relative order of its columns
+
+**Given**
+- **C1** = `1`
+- **D1** = `2`
+
+**When** I drag column **C:D** and drop it over column **F**
+
+**Then**
+- **C1** shows `null`
+- **D1** shows `null`
+- **E1** shows `1`
+- **F1** shows `2`
+
+#### dragging a row mirrors the column case, including the shifted sibling's own formula following the cell it references
+
+**Given**
+- **A13** = `100`
+- **A14** = `10`
+- **B14** = `=A14*2`
+
+**When** I drag row **14** and drop it over row **13**
+
+**Then**
+- **A13** shows `10`
+- **B13** shows `20`
+- **A14** shows `100`
+- **B13** has formula `=A13*2`
+
+#### the move is undoable in one step
+
+**Given**
+- **G1** = `10`
+
+**When** I drag column **G** and drop it over column **F**, then click **A1**, then undo
+
+**Then**
+- **F1** shows `null`
+- **G1** shows `10`
