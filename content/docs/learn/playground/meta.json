@@ -63,6 +63,7 @@
     "find-replace",
     "named-ranges",
     "pivot-table",
-    "print-page-setup"
+    "print-page-setup",
+    "reorder-rows-columns"
   ]
 }
