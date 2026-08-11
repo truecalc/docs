@@ -1,7 +1,86 @@
 ---
 title: REST API
-description: The hosted TrueCalc API (planned).
+description: The TrueCalc Studio command/query API — pre-release, not yet deployed.
+seoTitle: "TrueCalc REST API: Command/Query Reference (Pre-release)"
+seoDescription: "The TrueCalc Studio REST API: one command endpoint covering 61 spreadsheet operations. Pre-release, not deployed, and does not yet authenticate callers."
+llmsDescription: "The TrueCalc REST API is a pre-release command/query API: POST /workbooks/{id}/commands accepts 61 discriminated-union command types covering nearly every spreadsheet operation. Not yet deployed; does not authenticate callers."
 ---
 
-Stub — REST endpoint pages will be generated from the hosted API's
-`openapi.json` (fumadocs-openapi) when `truecalc/cloud` ships its v1 surface.
+<Callout title="Pre-release — nothing is deployed" type="warn">
+  There is no hosted TrueCalc REST API today. The reference on this page is
+  generated from the API's contract (the same schema its server validates
+  every request against), not from a running service. Nothing below can
+  currently be called — treat this section as a preview of the shape the API
+  will have, not as a live endpoint.
+</Callout>
+
+The REST API is a **command/query API** for a TrueCalc Studio workbook: every
+spreadsheet operation — setting a cell, inserting a row, adding a chart,
+reading a range — is a **command**, and almost the entire write surface goes
+through one route.
+
+## One endpoint carries the write surface
+
+```
+POST /workbooks/{id}/commands
+```
+
+The request body is `{ "commands": [...] }`, where each entry is one of
+**61 command types**, chosen by a `type` field like `edit:setCell` or
+`chart:insert`. A single request can batch several commands together; each
+one gets its own pass/fail result, so a batch can partially succeed.
+
+Because that one endpoint carries the whole write (and most of the read)
+surface, treating it as a single opaque request body would hide the API's
+real shape. Two pages unpack it instead of collapsing it:
+
+- **[Commands](/api/rest/commands)** — every one of the 61 commands, grouped
+  by category (Edit, Format, Structure, Data, Charts, Sheet, ...), with what
+  it does and what it requires.
+- **[`POST /workbooks/{id}/commands`](/api/rest/reference/post-commands)** —
+  the generated reference for the route itself, including the exact schema
+  for any one command: pick it by name from the request-body schema
+  selector.
+
+Three smaller routes round it out:
+
+- **[`POST /workbooks`](/api/rest/reference/create-workbook)** — a
+  convenience route that creates a workbook. It sits outside the command
+  contract proper.
+- **[`GET /workbooks/{id}`](/api/rest/reference/get-workbook)** — read a
+  workbook's checkpoint.
+- **[`GET /workbooks/{id}/cells/{a1}`](/api/rest/reference/get-cell)** — read
+  a single cell.
+
+(Everything else you'd want to read — ranges, sheets, formats, charts,
+named ranges, and more — is one of the `read:*` commands, submitted through
+the commands endpoint like any other command; see the Read section on the
+[commands](/api/rest/commands) page.)
+
+## Authentication: not yet real
+
+The commands endpoint accepts an `Authorization: Bearer <token>` header, but
+**the token is read, not verified.** An `ak_`-prefixed value is attributed to
+an API-key actor and anything else — including a missing header — is
+attributed to a generic user actor for logging purposes. Any string, or none
+at all, is currently accepted.
+
+This is attribution, not access control. Nothing about the token is checked
+against a real credential store, so it grants no real protection today. Until
+key issuance ships, this is not a surface to point at anything you don't
+already trust.
+
+## Concurrency control
+
+Writes can optionally be made conditional with an `If-Match` header carrying
+the workbook's last-known version (its **OCC token** — optimistic
+concurrency control: the write proceeds only if nothing else changed the
+workbook since you read that version). A mismatch returns `409` with both
+the token you sent and the current one, so a caller can re-read and retry
+instead of silently overwriting someone else's change.
+
+## Reference
+
+Full generated documentation for every route, including request/response
+schemas: browse the **REST reference** section in the sidebar, starting with
+[`POST /workbooks/{id}/commands`](/api/rest/reference/post-commands).

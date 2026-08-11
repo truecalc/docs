@@ -1,0 +1,4197 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "info": {
+    "title": "TrueCalc Studio Cloud API",
+    "version": "2026-07-17.preview",
+    "description": "The TrueCalc Studio command/query API. Every spreadsheet operation is a Command submitted to `POST /workbooks/{id}/commands`; the request body is a discriminated union over `type`, so one endpoint carries the whole write surface. Reads are their own `read:*` commands plus two GET routes.\n\nThis document is generated from the same schemas the server validates every request against, so it cannot drift from the implementation.\n\nPRE-RELEASE: the API is not yet deployed and does not yet authenticate callers — see the security scheme. `POST /workbooks` is a convenience route for creating a workbook and is not part of the command contract proper."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8787",
+      "description": "Local development server."
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {}
+  ],
+  "paths": {
+    "/workbooks": {
+      "post": {
+        "operationId": "createWorkbook",
+        "summary": "Create a workbook (convenience route)",
+        "description": "A convenience route, not part of the core command contract: a real server's create flow is billing/entitlement-gated, out of scope for this mock. Ignores any request body; the created workbook always gets the mock defaults (1000 rows x 26 columns, one sheet named \"Sheet1\").",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {}
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StudioChannelHeader"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Workbook created — its identity and initial checkpoint version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkbookResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workbooks/{id}/commands": {
+      "post": {
+        "operationId": "postCommands",
+        "summary": "Apply a batch of commands to a workbook",
+        "description": "Validates the WHOLE batch (shape, capability, sheet, commandId reuse) before applying anything; a commandId already committed in a prior batch is recognized and its cached result replayed rather than re-applied, so retrying a batch with the same commandIds is safe. A per-command apply() failure is NOT a batch failure — it lands as an `ok: false` CommandResult with its own `error.code` (see CommandResult); the whole batch is still 200 unless the batch itself was rejected pre-apply (400) or an OCC precondition failed (409).",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {}
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkbookIdPath"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchHeader"
+          },
+          {
+            "$ref": "#/components/parameters/ApiVersionHeader"
+          },
+          {
+            "$ref": "#/components/parameters/StudioChannelHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandsRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch was accepted (every command validated + dispatched); check each result's own `ok` for whether ITS apply succeeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandsSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/VersionConflict"
+          }
+        }
+      }
+    },
+    "/workbooks/{id}": {
+      "get": {
+        "operationId": "getWorkbook",
+        "summary": "Read a workbook's checkpoint",
+        "description": "Only the latest checkpoint is servable today (no history endpoint yet). No request headers are read by this route — neither `Authorization` nor any of the three contract headers; `security: []` reflects that faithfully rather than implying a check that does not exist.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkbookIdPath"
+          },
+          {
+            "$ref": "#/components/parameters/CheckpointVersionQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The workbook's current checkpoint.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWorkbookResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/workbooks/{id}/cells/{a1}": {
+      "get": {
+        "operationId": "getCell",
+        "summary": "Read a single cell",
+        "description": "A per-call agent read, answered from an in-memory cache of the workbook when resident. No request headers are read by this route — same `security: []` note as GET /workbooks/{id}.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkbookIdPath"
+          },
+          {
+            "$ref": "#/components/parameters/CellA1Path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The cell's raw formula, resolved value, display string, and format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCellResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChartInsert": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "chartType": {
+            "type": "string",
+            "enum": [
+              "column",
+              "bar",
+              "line",
+              "area",
+              "pie",
+              "scatter",
+              "box-plot",
+              "slope",
+              "dumbbell",
+              "small-multiples",
+              "calendar-heatmap",
+              "sankey"
+            ],
+            "description": "Which chart form to draw. An inapplicable form (e.g. scatter over a single numeric column) is REJECTED server-side with the reason, rather than inserted blank."
+          },
+          "options": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {},
+            "description": "Renderer options, e.g. { orientation: 'rows' } to switch rows/columns, or { columnRoles: ['date','value'] } for a calendar heatmap / Sankey."
+          },
+          "type": {
+            "type": "string",
+            "const": "chart:insert"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "chartType",
+          "options",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Chart a range — creates a chart bound to those cells (a live reference, not a snapshot) and returns its chartId. Undoes in one step. Rejected with the reason if the range is a single cell, or if the chart form cannot render the data that is in the range RIGHT NOW (checked once, at insert time). column/bar/line/area are never rejected on shape — they accept any data, including an empty range, so with those you may insert first and fill the cells afterwards. Every other form needs its data in place first. Note: charts are reachable here regardless of the browser-side \"Enable charts\" preview toggle, which gates only the Insert menu item."
+      },
+      "ChartUpdate": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "chartId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The chart to change — chart:insert's returned chartId."
+          },
+          "chartType": {
+            "type": "string",
+            "enum": [
+              "column",
+              "bar",
+              "line",
+              "area",
+              "pie",
+              "scatter",
+              "box-plot",
+              "slope",
+              "dumbbell",
+              "small-multiples",
+              "calendar-heatmap",
+              "sankey"
+            ],
+            "description": "Which chart form to draw. An inapplicable form (e.g. scatter over a single numeric column) is REJECTED server-side with the reason, rather than inserted blank."
+          },
+          "options": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {},
+            "description": "Renderer options, e.g. { orientation: 'rows' } to switch rows/columns, or { columnRoles: ['date','value'] } for a calendar heatmap / Sankey."
+          },
+          "type": {
+            "type": "string",
+            "const": "chart:update"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "chartId",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Change an existing chart's form and/or renderer options, by the chartId chart:insert returned. The bound range is never patchable — a new range means a new chart. A form that cannot render the chart's data is rejected with the reason."
+      },
+      "ChartRemove": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "chartId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The chart to delete — chart:insert's returned chartId."
+          },
+          "type": {
+            "type": "string",
+            "const": "chart:remove"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "chartId",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Delete one chart by the chartId chart:insert returned, as one undoable command. An unknown chartId is an error, not a silent no-op."
+      },
+      "ClipboardPaste": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "source": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "The clipboard origin cell, e.g. \"A1\" — the ref-adjust anchor for a copy-paste, cleared for a cut-paste."
+          },
+          "raw": {
+            "type": "string",
+            "description": "The clipboard contents: source's raw input at copy/cut time (a formula or literal)."
+          },
+          "target": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "Where to paste, e.g. \"B2\"."
+          },
+          "cut": {
+            "description": "true = cut-paste (move source verbatim to target, then clear source). false or omitted = copy-paste (ref-adjust formulas, leave source untouched). Defaults to false.",
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "const": "clipboard:paste"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "source",
+          "raw",
+          "target",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Apply clipboard contents (an origin cell's raw input) at a target cell. cut: true moves it verbatim and clears source; cut: false (default) ref-adjusts formulas and leaves source untouched."
+      },
+      "EditSetCell": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:setCell"
+          },
+          "a1": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "Target cell, e.g. \"A1\"."
+          },
+          "value": {
+            "type": "string",
+            "description": "Raw input: a literal or a formula."
+          },
+          "inputMode": {
+            "description": "Reserved, not currently enforced: formula-vs-literal is always inferred from a leading \"=\" in value. Omit this field.",
+            "type": "string",
+            "enum": [
+              "raw"
+            ]
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "a1",
+          "value"
+        ],
+        "additionalProperties": false,
+        "description": "Set the raw content of one cell — a literal (\"10\", \"hello\") or a formula (\"=A1+B1\", computed by the real TrueCalc engine server-side)."
+      },
+      "EditClear": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:clear"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range"
+        ],
+        "additionalProperties": false,
+        "description": "Empty every cell in a range (value/formula cleared, format untouched)."
+      },
+      "EditFillDown": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:fillDown"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range"
+        ],
+        "additionalProperties": false,
+        "description": "Extend the top row of a range downward through every remaining row."
+      },
+      "EditFillRight": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:fillRight"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range"
+        ],
+        "additionalProperties": false,
+        "description": "Extend the left column of a range rightward through every remaining column."
+      },
+      "EditFindReplace": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:findReplace"
+          },
+          "range": {
+            "description": "Restrict the search/replace to this range. Omit to search the WHOLE active sheet (every non-empty cell) — never inferred from a \"current selection\", since the wire has no such concept.",
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The text (or, when useRegex is true, pattern) to find."
+          },
+          "replacement": {
+            "type": "string",
+            "description": "The replacement text. May be empty, which removes every match."
+          },
+          "matchCase": {
+            "default": false,
+            "description": "Case-sensitive comparison. Sheets' default is case-INsensitive (false).",
+            "type": "boolean"
+          },
+          "useRegex": {
+            "default": false,
+            "description": "Treat query as a JavaScript RegExp pattern (an accepted divergence from Sheets' own RE2 engine). An invalid pattern matches nothing rather than erroring.",
+            "type": "boolean"
+          },
+          "matchEntireCell": {
+            "default": false,
+            "description": "Only count a cell whose ENTIRE search text equals query as a match.",
+            "type": "boolean"
+          },
+          "withinFormulas": {
+            "default": false,
+            "description": "When false (default), a formula cell is matched by its computed DISPLAY value and is never replaced (only found/counted) — never silently rewriting a formula's semantics from a value-level text match. When true, a formula cell is matched AND replaced by its RAW FORMULA TEXT instead, Sheets' \"Also search within formulas\".",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "query",
+          "replacement",
+          "matchCase",
+          "useRegex",
+          "matchEntireCell",
+          "withinFormulas"
+        ],
+        "additionalProperties": false,
+        "description": "Replace every occurrence of query with replacement across a range (or the whole active sheet) — the wire equivalent of Find and replace's \"Replace all\", applied as ONE undoable command."
+      },
+      "EditAutofill": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "edit:autofill"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "The seed range the fill-handle drag STARTS from — its cells are read (never rewritten) to detect the series."
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "The cell the drag ENDS at (the fill handle's final position), e.g. \"A10\". Extends down when below source's bottom edge, right when past its right edge; any other position is a well-defined no-op (nothing to fill)."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "source",
+          "to"
+        ],
+        "additionalProperties": false,
+        "description": "Extend source into a series (drag-the-fill-handle behavior): numeric/date trends extrapolate, recognized weekday/month names advance, everything else repeats — the same detection Sheets' own fill handle performs. Applied as ONE undoable command."
+      },
+      "FormatFillColor": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Background fill color as a hex string (e.g. \"#fff2cc\"), or null to EXPLICITLY clear the fill back to none. null is a real value here, not an omission — this field is always required."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:fillColor"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set (hex color) or explicitly clear (null) the background fill of every cell in a range."
+      },
+      "FormatSetBold": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "boolean",
+            "description": "true = bold on, false = bold off, applied to every cell in range. Always explicit — never \"toggle the current state\" (idempotent under retries/races)."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setBold"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Explicit bold on/off (never a toggle) for every cell in a range."
+      },
+      "FormatSetItalic": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "boolean",
+            "description": "true = italic on, false = italic off, applied to every cell in range. Always explicit — never \"toggle the current state\" (idempotent under retries/races)."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setItalic"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Explicit italic on/off (never a toggle) for every cell in a range."
+      },
+      "FormatSetStrike": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "boolean",
+            "description": "true = strikethrough on, false = off, applied to every cell in range. Always explicit — never \"toggle the current state\" (idempotent under retries/races)."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setStrike"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Explicit strikethrough on/off (never a toggle) for every cell in a range."
+      },
+      "FormatSetUnderline": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "boolean",
+            "description": "true = underline on, false = off, applied to every cell in range. Always explicit — never \"toggle the current state\" (idempotent under retries/races)."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setUnderline"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Explicit underline on/off (never a toggle) for every cell in a range."
+      },
+      "FormatTextColor": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Text color as a hex string (e.g. \"#333333\"), or null to EXPLICITLY clear the color back to default. null is a real value here, not an omission — this field is always required."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:textColor"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set (hex color) or explicitly clear (null) the text color of every cell in a range."
+      },
+      "FormatSetFontFamily": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The font family/name to apply, e.g. \"Arial\" or \"Roboto Mono\", applied to every cell in range. No default clear — this command only sets, it does not offer a null/clear form."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setFontFamily"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set the font family of every cell in a range."
+      },
+      "FormatSetFontSize": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setFontSize"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Font size in points, e.g. 12 or 14.5, applied to every cell in range."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range",
+          "value"
+        ],
+        "additionalProperties": false,
+        "description": "Set the font size (positive number) of every cell in a range."
+      },
+      "FormatSetBorders": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "all",
+              "inner",
+              "horizontal",
+              "vertical",
+              "outer",
+              "left",
+              "top",
+              "right",
+              "bottom",
+              "clear"
+            ],
+            "description": "Which border edges to apply the line to, Sheets-style: \"all\" every edge of every cell, \"inner\"/\"horizontal\"/\"vertical\" the internal grid lines only, \"outer\"/\"left\"/\"top\"/\"right\"/\"bottom\" the range perimeter (or one side of it), \"clear\" removes borders instead of drawing them."
+          },
+          "edge": {
+            "type": "object",
+            "properties": {
+              "style": {
+                "type": "string",
+                "enum": [
+                  "solid",
+                  "dashed",
+                  "dotted",
+                  "double"
+                ],
+                "description": "The line pattern drawn along the edge, e.g. \"dashed\"."
+              },
+              "weight": {
+                "type": "string",
+                "enum": [
+                  "thin",
+                  "medium",
+                  "thick"
+                ],
+                "description": "The line thickness drawn along the edge, e.g. \"thin\"."
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+                "description": "The line color as a hex string, e.g. \"#000000\"."
+              }
+            },
+            "required": [
+              "style",
+              "weight",
+              "color"
+            ],
+            "additionalProperties": false,
+            "description": "How the border edge looks, e.g. { style: \"solid\", weight: \"thin\", color: \"#000000\" }."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setBorders"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "mode",
+          "edge",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Apply a Sheets border mode (all/inner/horizontal/vertical/outer/left/top/right/bottom/clear) with a given line edge (style/weight/color) over every cell in a range."
+      },
+      "FormatSetAlign": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "left",
+                  "center",
+                  "right"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Horizontal alignment, or null to EXPLICITLY clear back to automatic. null is a real value here, not an omission — this field is always required."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setAlign"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set (or, with value: null, explicitly clear back to automatic) the horizontal alignment of every cell in a range."
+      },
+      "FormatSetValign": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "middle",
+                  "bottom"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Vertical alignment, or null to EXPLICITLY clear back to the default (bottom). null is a real value here, not an omission — this field is always required."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setValign"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set (or, with value: null, explicitly clear back to the default, bottom) the vertical alignment of every cell in a range."
+      },
+      "FormatSetRotation": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Text rotation in degrees (e.g. 45, -90), or null to EXPLICITLY clear back to none. NOT clamped at this layer — the toolbar clamps to [-90, 90] but this wire field accepts any number as-is."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setRotation"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set (or, with value: null, explicitly clear back to none) the text rotation, in degrees, of every cell in a range. Unclamped at the wire layer."
+      },
+      "FormatSetWrap": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "boolean",
+            "description": "true = wrap text on, false = off, applied to every cell in range. Always explicit — never \"toggle the current state\"."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setWrap"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Explicit text-wrap on/off (never a toggle) for every cell in a range."
+      },
+      "FormatClear": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:clear"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Reset every cell in a range to the default (empty) format, leaving the cell value/formula untouched."
+      },
+      "FormatSetNumberFormat": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "number",
+                  "percent",
+                  "currency",
+                  "date",
+                  "datetime"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The number-display category to apply, or null to EXPLICITLY clear back to automatic. null is a real value here, not an omission — this field is always required."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setNumberFormat"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set the number-display category (currency/date/datetime/number/percent), or explicitly clear it back to automatic (value: null), for every cell in a range."
+      },
+      "FormatSetDecimals": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "value": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "The exact number of decimal places to show (0-10), e.g. 2 for \"10.00\". Always an absolute count, never a relative \"+1/-1\" step."
+          },
+          "numberFormat": {
+            "description": "Optionally also (re)state the display category (e.g. \"number\") in this same edit — useful when the current category is non-numeric (automatic/date) and decimals would otherwise be meaningless. Omit to leave the category untouched.",
+            "type": "string",
+            "enum": [
+              "number",
+              "percent",
+              "currency",
+              "date",
+              "datetime"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setDecimals"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "value",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Set the exact decimal-place count (0..10) for every cell in a range, optionally also (re)stating the display category in the same edit. Never a relative step."
+      },
+      "FormatSetConditionalFormat": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "rule": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "const": "singleCondition"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "greaterThan",
+                      "greaterThanOrEqual",
+                      "lessThan",
+                      "lessThanOrEqual",
+                      "equal",
+                      "notEqual",
+                      "between",
+                      "notBetween"
+                    ],
+                    "description": "How the cell value is compared to value (and value2 for between/notBetween), e.g. \"greaterThan\"."
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The comparison bound, e.g. 100 for \"greater than 100\"."
+                  },
+                  "value2": {
+                    "description": "The second bound — required for between/notBetween.",
+                    "type": "number"
+                  },
+                  "style": {
+                    "type": "object",
+                    "properties": {
+                      "bold": {
+                        "description": "Bold the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "italic": {
+                        "description": "Italicize the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "underline": {
+                        "description": "Underline the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "strike": {
+                        "description": "Strike through the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "color": {
+                        "description": "Text color when the rule matches, as a hex string, e.g. \"#274e13\".",
+                        "type": "string",
+                        "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+                      },
+                      "fill": {
+                        "description": "Cell background color when the rule matches, as a hex string, e.g. \"#b7e1cd\".",
+                        "type": "string",
+                        "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "The format applied when a singleCondition rule matches, e.g. { fill: \"#b7e1cd\" }."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "operator",
+                  "value",
+                  "style"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "const": "colorScale"
+                  },
+                  "minColor": {
+                    "type": "string",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+                    "description": "Fill color for the range's lowest value, as a hex string, e.g. \"#f8696b\"."
+                  },
+                  "maxColor": {
+                    "type": "string",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+                    "description": "Fill color for the range's highest value, as a hex string, e.g. \"#63be7b\"."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "minColor",
+                  "maxColor"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "const": "customFormula"
+                  },
+                  "formula": {
+                    "type": "string",
+                    "pattern": "^=.*",
+                    "description": "A formula string starting with \"=\", e.g. \"=A1>B1\"."
+                  },
+                  "style": {
+                    "type": "object",
+                    "properties": {
+                      "bold": {
+                        "description": "Bold the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "italic": {
+                        "description": "Italicize the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "underline": {
+                        "description": "Underline the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "strike": {
+                        "description": "Strike through the text when the rule matches.",
+                        "type": "boolean"
+                      },
+                      "color": {
+                        "description": "Text color when the rule matches, as a hex string, e.g. \"#274e13\".",
+                        "type": "string",
+                        "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+                      },
+                      "fill": {
+                        "description": "Cell background color when the rule matches, as a hex string, e.g. \"#b7e1cd\".",
+                        "type": "string",
+                        "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "The format applied when a singleCondition rule matches, e.g. { fill: \"#b7e1cd\" }."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "formula",
+                  "style"
+                ],
+                "additionalProperties": false
+              }
+            ],
+            "description": "A single-condition value-comparison rule, a 2-stop color scale, or a custom-formula rule (an arbitrary boolean formula checked per cell)."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setConditionalFormat"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "rule",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Add ONE conditional-format rule (a single-condition value-comparison rule, a 2-stop color scale, or a custom-formula rule) over a range — the daily-driver conditional-formatting slice."
+      },
+      "FormatSetBandedRange": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "style": {
+            "type": "object",
+            "properties": {
+              "headerColor": {
+                "description": "Distinct fill for the range's first row, if any.",
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+              },
+              "firstBandColor": {
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+                "description": "Fill for the first (odd) row of each repeating band, e.g. \"#ffffff\"."
+              },
+              "secondBandColor": {
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+                "description": "Fill for the second (even) row of each repeating band, e.g. \"#f3f3f3\"."
+              },
+              "footerColor": {
+                "description": "Distinct fill for the range's last row, if any.",
+                "type": "string",
+                "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+              }
+            },
+            "required": [
+              "firstBandColor",
+              "secondBandColor"
+            ],
+            "additionalProperties": false,
+            "description": "Alternating-colors banding: header/odd/even/footer fills, e.g. { firstBandColor: \"#ffffff\", secondBandColor: \"#f3f3f3\" }."
+          },
+          "type": {
+            "type": "string",
+            "const": "format:setBandedRange"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "style",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Add ONE banded range (Format > Alternating colors) over a range — a repeating header/odd/even/footer fill pattern. A DIFFERENT feature from setConditionalFormat (no condition to evaluate; pure range formatting)."
+      },
+      "StructureInsertRow": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "beforeRow": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "1-based row index the new row(s) are inserted BEFORE, e.g. 3 inserts above the current row 3, pushing it (and everything below) down. Never omitted or inferred from \"the current selection\" — always state the exact row."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many blank rows to insert, all before beforeRow. Defaults to 1 if omitted.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:insertRow"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "beforeRow",
+          "count",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Insert blank row(s) before a 1-based row index — content and formula references at/after it shift down."
+      },
+      "StructureInsertColumn": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "beforeColumn": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}$",
+            "description": "Column letters, e.g. \"C\"."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many blank columns to insert, all before beforeColumn. Defaults to 1 if omitted.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:insertColumn"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "beforeColumn",
+          "count",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Insert blank column(s) before a column letter (e.g. \"C\") — content and formula references at/after it shift right."
+      },
+      "StructureDeleteRow": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "row": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "1-based row index the deletion STARTS at, e.g. 3 deletes row 3 (and count-1 rows after it). Never omitted or inferred from \"the current selection\" — always state the exact row."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many consecutive rows to delete, starting at row. Defaults to 1 if omitted.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:deleteRow"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "row",
+          "count",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Delete row(s) starting at a 1-based row index — content in the deleted band is gone; a reference into it (or a formula the deletion otherwise invalidates) becomes #REF!."
+      },
+      "StructureDeleteColumn": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "column": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}$",
+            "description": "Column letters, e.g. \"C\"."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many consecutive columns to delete, starting at column. Defaults to 1 if omitted.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:deleteColumn"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "column",
+          "count",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Delete column(s) starting at a column letter (e.g. \"C\") — content in the deleted band is gone; a reference into it (or a formula the deletion otherwise invalidates) becomes #REF!."
+      },
+      "StructureMergeCells": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:mergeCells"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Merge a rectangular range into one spanning cell."
+      },
+      "StructureMergeVertically": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:mergeVertically"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Merge a range into one spanning cell PER COLUMN — a 3-col x 4-row selection produces 3 independent vertical merges, as one undoable command."
+      },
+      "StructureMergeHorizontally": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:mergeHorizontally"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Merge a range into one spanning cell PER ROW — the row analogue of structure:mergeVertically, as one undoable command."
+      },
+      "StructureUnmergeCells": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "a1": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "Target cell, e.g. \"A1\"."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:unmergeCells"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "a1",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Unmerge the merge (anchor or interior cell) covering one cell — the same active-cell-only semantics the toolbar Unmerge control has."
+      },
+      "StructureReorderRows": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:reorderRows"
+          },
+          "fromRow": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "1-based row index where the band to move STARTS, e.g. 3 starts at row 3."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many consecutive rows to move, starting at fromRow. Defaults to 1.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "toRow": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "1-based row index the band moves to BEFORE — a gap index (Sheets' own insertion-point semantics), not a destination row. Moving rows 3..4 to toRow=1 puts them at the very top. A toRow landing back inside the moved band (or unchanged) is a no-op."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "fromRow",
+          "count",
+          "toRow"
+        ],
+        "additionalProperties": false,
+        "description": "Move a contiguous band of rows to a new position on the active sheet — content, formats, and formula references travel with the move. Applied as ONE undoable command."
+      },
+      "StructureReorderColumns": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "structure:reorderColumns"
+          },
+          "fromColumn": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}$",
+            "description": "Column letters where the band to move STARTS, e.g. \"C\"."
+          },
+          "count": {
+            "default": 1,
+            "description": "How many consecutive columns to move, starting at fromColumn. Defaults to 1.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "toColumn": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}$",
+            "description": "Column letters the band moves to BEFORE — a gap index (Sheets' own insertion-point semantics), not a destination column. A toColumn landing back inside the moved band (or unchanged) is a no-op."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "fromColumn",
+          "count",
+          "toColumn"
+        ],
+        "additionalProperties": false,
+        "description": "Move a contiguous band of columns to a new position on the active sheet — content, formats, and formula references travel with the move. Applied as ONE undoable command."
+      },
+      "DataSetValidation": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:setValidation"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "const": "list"
+                  },
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The allowed cell values, e.g. [\"Yes\", \"No\", \"Maybe\"] for a dropdown list."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "values"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "{ kind: \"list\", values: [...] } or null to clear."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range",
+          "rule"
+        ],
+        "additionalProperties": false,
+        "description": "Set (or, with rule: null, clear) a cell-range \"List of items\" data-validation rule — the range shows an in-cell dropdown offering only the listed values. One undoable command either way."
+      },
+      "DataSortRange": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "sortColumn": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}$",
+            "description": "A1 column letter INSIDE the range whose values order the rows, e.g. \"B\"."
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "description": "Sort order for sortColumn's values: \"asc\" (A→Z, 1→9) or \"desc\" (Z→A, 9→1)."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:sortRange"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "sortColumn",
+          "direction",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Sort the rows of a range by one of its columns, ascending or descending. Only cells INSIDE the range move — a one-column range reorders that column alone and leaves the rest of each row behind (this is what Google Sheets does; pass the whole table if you mean to sort the whole table). Formulas move with their row: relative references translate, $-anchored ones stay pinned. The whole sort is one undoable step."
+      },
+      "DataSetNamedRange": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$",
+            "description": "The named range's identifier, e.g. \"MyRange\" — starts with a letter or underscore, then only letters/digits/underscores/periods; must not read as a cell reference (e.g. \"A1\", \"R1C1\")."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:setNamedRange"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "name",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Define a workbook-scoped named range over range, usable in any formula on any sheet (=SUM(MyRange)) — or, when name already names one, retarget it to range. One undoable command either way."
+      },
+      "DataDeleteNamedRange": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The named range to remove, e.g. \"MyRange\"."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:deleteNamedRange"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "name",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Remove a workbook-scoped named range by name. One undoable command. A formula that already referenced it may keep resolving it until the next engine rebuild — see this command's own module doc for the documented engine-binding gap."
+      },
+      "DataSetFilter": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "criteria": {
+            "default": [],
+            "description": "Per-column checked-value lists to apply right after creating the filter. A column omitted here starts unfiltered (every row visible in it). Defaults to [] — filter created with nothing hidden yet.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "column": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z]{1,3}$",
+                  "description": "A1 column letter INSIDE range whose checked (visible) values are set, e.g. \"B\"."
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The raw values to keep VISIBLE (checked) in this column — every value not listed here hides its row. Use the literal string \" blank \" (BLANK_VALUE) to include/exclude blank cells as their own entry."
+                }
+              },
+              "required": [
+                "column",
+                "values"
+              ],
+              "additionalProperties": false,
+              "description": "One column's checked-value list, e.g. { column: \"B\", values: [\"East\", \"West\"] }."
+            }
+          },
+          "type": {
+            "type": "string",
+            "const": "data:setFilter"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "criteria",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Create a single-column-value filter over range (Data > Create a filter), replacing any existing filter on this sheet, then apply explicit per-column checked-value criteria. The header row (range's first row) is never hidden; two columns' criteria combine as AND."
+      },
+      "DataClearFilter": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:clearFilter"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Remove the active sheet's filter (Data > Remove filter), restoring every row it had hidden. One undoable command. A no-op (removed: false) if the sheet has no filter."
+      },
+      "DataInsertPivot": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          },
+          "type": {
+            "type": "string",
+            "const": "data:insertPivot"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "range",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Insert a pivot table (Insert > Pivot table) grouping range's first column and summing its second, into a brand new sheet: the row field's own header, \"SUM of <value field>\", one row per distinct group, and a Grand Total row. One undoable command. range must be at least 2 columns x 2 rows and must not extend past the active sheet's used content. Returns the new destination sheet's real sheetId — usable by a FOLLOW-UP command/batch, not the one that created it."
+      },
+      "FileExport": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "file:export"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "json",
+              "csv",
+              "xlsx"
+            ],
+            "description": "Output format: \"json\" and \"csv\" return the exported content inline as text; \"xlsx\" returns a downloadable Blob (built via SheetJS)."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "format"
+        ],
+        "additionalProperties": false,
+        "description": "Export the whole document as json, csv, or xlsx."
+      },
+      "FileImport": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "file:import"
+          },
+          "format": {
+            "default": "json",
+            "description": "Only \"json\" (canonical-JSON workbook) is currently accepted — csv/xlsx import is not yet supported.",
+            "type": "string",
+            "const": "json"
+          },
+          "encoding": {
+            "default": "text",
+            "description": "Only \"text\" is currently accepted — data is a JSON string, not base64/binary.",
+            "type": "string",
+            "const": "text"
+          },
+          "data": {
+            "type": "string",
+            "description": "The canonical-JSON workbook payload as a string — the same shape produced by file:export with format:\"json\". A malformed payload is rejected with a descriptive parse error. A valid payload is loaded for real: every sheet is created as a NEW sheet on this workbook (never replacing/overwriting an existing sheet) and filled with the FULL document graph the payload carries — cells, formats, column/row size overrides, frozen panes, the single-column filter, merged ranges, charts, conditional-format rules, banded ranges, data-validation rules, and page setup. Chart/conditional-format/banded-range/validation-rule ids are preserved verbatim from the payload (never re-minted). Workbook-scoped named ranges are also restored, retargeted to whatever (possibly deduped, e.g. \"Sheet1 (2)\") name each sheet actually lands on — a named range whose NAME collides with one already defined in this workbook, OR with any sheet name (existing or newly imported), is skipped (the existing binding, or the sheet, wins), not overwritten and not a fatal error. A file:export -> file:import round trip therefore preserves the full document graph."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "format",
+          "encoding",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "Load a canonical-JSON workbook payload (the same shape file:export produces) as one or more NEW sheets appended to this workbook, restoring the full document graph: cells, formats, size overrides, frozen panes, filter, merges, charts, conditional formats, banded ranges, validation rules, page setup, and named ranges (retargeted to the actual imported sheet names)."
+      },
+      "ReadGetRange": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getRange"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range"
+        ],
+        "additionalProperties": false,
+        "description": "Read every cell (value/display/formula/format) in a range. Never OCC-guarded — succeeds even with a stale local version."
+      },
+      "ReadGetSheets": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getSheets"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "List every sheet in the workbook — id, name, tab order, and which one is active. Never OCC-guarded."
+      },
+      "ReadGetFormats": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getFormats"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false,
+            "description": "Inclusive rectangle, e.g. { from: \"A1\", to: \"B3\" }. A single cell repeats from/to."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "range"
+        ],
+        "additionalProperties": false,
+        "description": "Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Never OCC-guarded — succeeds even with a stale local version. Bounded to 10,000 cells per call."
+      },
+      "ReadGetCharts": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getCharts"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no \"sheet!\" prefix) — pass it straight to chart:update/chart:remove as-is. Never OCC-guarded."
+      },
+      "ReadGetConditionalFormats": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getConditionalFormats"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded."
+      },
+      "ReadGetBandedRanges": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getBandedRanges"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "List every banded range (Format > Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded."
+      },
+      "ReadGetNamedRanges": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getNamedRanges"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "List every workbook-scoped named range — name, target sheet, and target range. Never OCC-guarded."
+      },
+      "ReadGetExtent": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "read:getExtent"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Never OCC-guarded."
+      },
+      "SheetAdd": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "Any sheet already in this workbook — context only (e.g. the tab currently open); the new sheet is always appended as the LAST tab regardless of which sheet is named here."
+          },
+          "type": {
+            "type": "string",
+            "const": "sheet:add"
+          },
+          "name": {
+            "description": "Explicit name for the new sheet. Omit to use the workbook's own default naming (a \"SheetN\" counter). Must not collide, case-insensitively, with an existing sheet name.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Create a new sheet, appended as the last tab and made active. Returns the newly minted sheetId — usable by a FOLLOW-UP command/batch, not the one that created it."
+      },
+      "SheetDelete": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The sheet to delete."
+          },
+          "type": {
+            "type": "string",
+            "const": "sheet:delete"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Delete a sheet. Dependent formulas on OTHER sheets are NOT rewritten — their text is preserved verbatim and they evaluate to #REF! until the sheet is restored (e.g. by undo) or re-created under the same name. Refuses to delete the workbook's only sheet. No reference-count warning is returned (Google Sheets does not detect dependents at delete time either)."
+      },
+      "SheetRename": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The sheet to rename."
+          },
+          "type": {
+            "type": "string",
+            "const": "sheet:rename"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The new name for the sheet. Must not collide, case-insensitively, with any other sheet on this workbook — a colliding name is REFUSED with a clean error, not deduplicated (unlike file:import, which resolves a colliding imported name via \" (2)\", \" (3)\", …; sheet:rename never does)."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "name"
+        ],
+        "additionalProperties": false,
+        "description": "Rename a sheet. Google Sheets REWRITES every dependent formula's TEXT to the new name (e.g. =OldName!A1*2 becomes =NewName!A1*2, value unchanged) — the exact opposite of sheet:delete, which preserves a referencing formula's text verbatim and lets it evaluate to #REF!. A colliding name (case-insensitive) is refused with a clean error; the rename does not happen."
+      },
+      "SheetReorder": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The sheet to move."
+          },
+          "type": {
+            "type": "string",
+            "const": "sheet:reorder"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "description": "Move the sheet one position toward the start (\"left\") or end (\"right\") of the tab order. A no-op when the sheet is already at that end — moving right from the rightmost tab, or left from the leftmost, changes nothing, matching Google Sheets' own bounds-aware \"Move right\"/\"Move left\" tab-menu items."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type",
+          "direction"
+        ],
+        "additionalProperties": false,
+        "description": "Move a sheet one tab position left or right. Presentation only — no formula or computed value is affected (the engine addresses sheets by name, not position). Bounds-aware: a no-op at either end of the tab order."
+      },
+      "SheetSetActive": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The sheet to make active."
+          },
+          "type": {
+            "type": "string",
+            "const": "sheet:setActive"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Make sheet the active (current) sheet on this workbook — the tab GET /workbooks reports as sheetId/sheetName. A pure view change (matches a tab-bar click); no cell content is touched, and it is not undoable."
+      },
+      "ViewSetPageSetup": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "type": {
+            "type": "string",
+            "const": "view:setPageSetup"
+          },
+          "orientation": {
+            "type": "string",
+            "enum": [
+              "portrait",
+              "landscape"
+            ],
+            "description": "Page orientation. Omit to leave unchanged."
+          },
+          "scale": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "normal",
+                  "fitWidth",
+                  "custom"
+                ],
+                "description": "Print scale mode: fit at 100%, fit to page width, or a custom percent."
+              },
+              "percent": {
+                "type": "number",
+                "description": "Custom scale percent — only meaningful (and only used) when mode is \"custom\"; clamped server-side into [10, 500]. Ignored for \"normal\"/\"fitWidth\"."
+              }
+            },
+            "required": [
+              "mode"
+            ],
+            "additionalProperties": false,
+            "description": "Print scale. Omit to leave unchanged."
+          },
+          "marginsMode": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "narrow",
+              "custom"
+            ],
+            "description": "Margins preset. Setting this to \"custom\" without customMargins keeps whatever custom margins were already stored (or normal margins, if none were). Omit to leave unchanged."
+          },
+          "customMargins": {
+            "type": "object",
+            "properties": {
+              "top": {
+                "type": "number",
+                "description": "Top margin, in inches."
+              },
+              "right": {
+                "type": "number",
+                "description": "Right margin, in inches."
+              },
+              "bottom": {
+                "type": "number",
+                "description": "Bottom margin, in inches."
+              },
+              "left": {
+                "type": "number",
+                "description": "Left margin, in inches."
+              }
+            },
+            "required": [
+              "top",
+              "right",
+              "bottom",
+              "left"
+            ],
+            "additionalProperties": false,
+            "description": "Explicit margins — only stored when marginsMode is (or is already) \"custom\". Omit to leave unchanged."
+          },
+          "printArea": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "r0": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "0-based first row of the print area (inclusive)."
+                  },
+                  "r1": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "0-based last row of the print area (inclusive)."
+                  },
+                  "c0": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "0-based first column of the print area (inclusive)."
+                  },
+                  "c1": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991,
+                    "description": "0-based last column of the print area (inclusive)."
+                  }
+                },
+                "required": [
+                  "r0",
+                  "r1",
+                  "c0",
+                  "c1"
+                ],
+                "additionalProperties": false,
+                "description": "A 0-based inclusive rectangle print area."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The print area. Provide a rectangle to set it, null to explicitly CLEAR it (revert to \"whole sheet\"), or omit the field entirely to leave whatever print area is already set untouched."
+          },
+          "showGridlines": {
+            "type": "boolean",
+            "description": "Whether gridlines print. Omit to leave unchanged."
+          },
+          "header": {
+            "type": "object",
+            "properties": {
+              "left": {
+                "type": "string",
+                "description": "Left slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              },
+              "center": {
+                "type": "string",
+                "description": "Center slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              },
+              "right": {
+                "type": "string",
+                "description": "Right slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              }
+            },
+            "additionalProperties": false,
+            "description": "Header text patch. Omit to leave unchanged."
+          },
+          "footer": {
+            "type": "object",
+            "properties": {
+              "left": {
+                "type": "string",
+                "description": "Left slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              },
+              "center": {
+                "type": "string",
+                "description": "Center slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              },
+              "right": {
+                "type": "string",
+                "description": "Right slot text. May embed {page}/{pages}/{date}/{sheet} tokens."
+              }
+            },
+            "additionalProperties": false,
+            "description": "Footer text patch. Omit to leave unchanged."
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Patch the active sheet's print & page-setup settings (File ▸ Print) — orientation, scale, margins, print area, gridlines, header/footer text. Every field optional; unset fields leave the existing setting untouched. Applied as ONE undoable command."
+      },
+      "Command": {
+        "description": "The full command union — every batch entry in POST /workbooks/{id}/commands is one of these, discriminated on `type`.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ChartInsert"
+          },
+          {
+            "$ref": "#/components/schemas/ChartUpdate"
+          },
+          {
+            "$ref": "#/components/schemas/ChartRemove"
+          },
+          {
+            "$ref": "#/components/schemas/ClipboardPaste"
+          },
+          {
+            "$ref": "#/components/schemas/EditSetCell"
+          },
+          {
+            "$ref": "#/components/schemas/EditClear"
+          },
+          {
+            "$ref": "#/components/schemas/EditFillDown"
+          },
+          {
+            "$ref": "#/components/schemas/EditFillRight"
+          },
+          {
+            "$ref": "#/components/schemas/EditFindReplace"
+          },
+          {
+            "$ref": "#/components/schemas/EditAutofill"
+          },
+          {
+            "$ref": "#/components/schemas/FormatFillColor"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetBold"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetItalic"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetStrike"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetUnderline"
+          },
+          {
+            "$ref": "#/components/schemas/FormatTextColor"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetFontFamily"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetFontSize"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetBorders"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetAlign"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetValign"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetRotation"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetWrap"
+          },
+          {
+            "$ref": "#/components/schemas/FormatClear"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetNumberFormat"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetDecimals"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetConditionalFormat"
+          },
+          {
+            "$ref": "#/components/schemas/FormatSetBandedRange"
+          },
+          {
+            "$ref": "#/components/schemas/StructureInsertRow"
+          },
+          {
+            "$ref": "#/components/schemas/StructureInsertColumn"
+          },
+          {
+            "$ref": "#/components/schemas/StructureDeleteRow"
+          },
+          {
+            "$ref": "#/components/schemas/StructureDeleteColumn"
+          },
+          {
+            "$ref": "#/components/schemas/StructureMergeCells"
+          },
+          {
+            "$ref": "#/components/schemas/StructureMergeVertically"
+          },
+          {
+            "$ref": "#/components/schemas/StructureMergeHorizontally"
+          },
+          {
+            "$ref": "#/components/schemas/StructureUnmergeCells"
+          },
+          {
+            "$ref": "#/components/schemas/StructureReorderRows"
+          },
+          {
+            "$ref": "#/components/schemas/StructureReorderColumns"
+          },
+          {
+            "$ref": "#/components/schemas/DataSetValidation"
+          },
+          {
+            "$ref": "#/components/schemas/DataSortRange"
+          },
+          {
+            "$ref": "#/components/schemas/DataSetNamedRange"
+          },
+          {
+            "$ref": "#/components/schemas/DataDeleteNamedRange"
+          },
+          {
+            "$ref": "#/components/schemas/DataSetFilter"
+          },
+          {
+            "$ref": "#/components/schemas/DataClearFilter"
+          },
+          {
+            "$ref": "#/components/schemas/DataInsertPivot"
+          },
+          {
+            "$ref": "#/components/schemas/FileExport"
+          },
+          {
+            "$ref": "#/components/schemas/FileImport"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetRange"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetSheets"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetFormats"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetCharts"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetConditionalFormats"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetBandedRanges"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetNamedRanges"
+          },
+          {
+            "$ref": "#/components/schemas/ReadGetExtent"
+          },
+          {
+            "$ref": "#/components/schemas/SheetAdd"
+          },
+          {
+            "$ref": "#/components/schemas/SheetDelete"
+          },
+          {
+            "$ref": "#/components/schemas/SheetRename"
+          },
+          {
+            "$ref": "#/components/schemas/SheetReorder"
+          },
+          {
+            "$ref": "#/components/schemas/SheetSetActive"
+          },
+          {
+            "$ref": "#/components/schemas/ViewSetPageSetup"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "chart:insert": "#/components/schemas/ChartInsert",
+            "chart:update": "#/components/schemas/ChartUpdate",
+            "chart:remove": "#/components/schemas/ChartRemove",
+            "clipboard:paste": "#/components/schemas/ClipboardPaste",
+            "edit:setCell": "#/components/schemas/EditSetCell",
+            "edit:clear": "#/components/schemas/EditClear",
+            "edit:fillDown": "#/components/schemas/EditFillDown",
+            "edit:fillRight": "#/components/schemas/EditFillRight",
+            "edit:findReplace": "#/components/schemas/EditFindReplace",
+            "edit:autofill": "#/components/schemas/EditAutofill",
+            "format:fillColor": "#/components/schemas/FormatFillColor",
+            "format:setBold": "#/components/schemas/FormatSetBold",
+            "format:setItalic": "#/components/schemas/FormatSetItalic",
+            "format:setStrike": "#/components/schemas/FormatSetStrike",
+            "format:setUnderline": "#/components/schemas/FormatSetUnderline",
+            "format:textColor": "#/components/schemas/FormatTextColor",
+            "format:setFontFamily": "#/components/schemas/FormatSetFontFamily",
+            "format:setFontSize": "#/components/schemas/FormatSetFontSize",
+            "format:setBorders": "#/components/schemas/FormatSetBorders",
+            "format:setAlign": "#/components/schemas/FormatSetAlign",
+            "format:setValign": "#/components/schemas/FormatSetValign",
+            "format:setRotation": "#/components/schemas/FormatSetRotation",
+            "format:setWrap": "#/components/schemas/FormatSetWrap",
+            "format:clear": "#/components/schemas/FormatClear",
+            "format:setNumberFormat": "#/components/schemas/FormatSetNumberFormat",
+            "format:setDecimals": "#/components/schemas/FormatSetDecimals",
+            "format:setConditionalFormat": "#/components/schemas/FormatSetConditionalFormat",
+            "format:setBandedRange": "#/components/schemas/FormatSetBandedRange",
+            "structure:insertRow": "#/components/schemas/StructureInsertRow",
+            "structure:insertColumn": "#/components/schemas/StructureInsertColumn",
+            "structure:deleteRow": "#/components/schemas/StructureDeleteRow",
+            "structure:deleteColumn": "#/components/schemas/StructureDeleteColumn",
+            "structure:mergeCells": "#/components/schemas/StructureMergeCells",
+            "structure:mergeVertically": "#/components/schemas/StructureMergeVertically",
+            "structure:mergeHorizontally": "#/components/schemas/StructureMergeHorizontally",
+            "structure:unmergeCells": "#/components/schemas/StructureUnmergeCells",
+            "structure:reorderRows": "#/components/schemas/StructureReorderRows",
+            "structure:reorderColumns": "#/components/schemas/StructureReorderColumns",
+            "data:setValidation": "#/components/schemas/DataSetValidation",
+            "data:sortRange": "#/components/schemas/DataSortRange",
+            "data:setNamedRange": "#/components/schemas/DataSetNamedRange",
+            "data:deleteNamedRange": "#/components/schemas/DataDeleteNamedRange",
+            "data:setFilter": "#/components/schemas/DataSetFilter",
+            "data:clearFilter": "#/components/schemas/DataClearFilter",
+            "data:insertPivot": "#/components/schemas/DataInsertPivot",
+            "file:export": "#/components/schemas/FileExport",
+            "file:import": "#/components/schemas/FileImport",
+            "read:getRange": "#/components/schemas/ReadGetRange",
+            "read:getSheets": "#/components/schemas/ReadGetSheets",
+            "read:getFormats": "#/components/schemas/ReadGetFormats",
+            "read:getCharts": "#/components/schemas/ReadGetCharts",
+            "read:getConditionalFormats": "#/components/schemas/ReadGetConditionalFormats",
+            "read:getBandedRanges": "#/components/schemas/ReadGetBandedRanges",
+            "read:getNamedRanges": "#/components/schemas/ReadGetNamedRanges",
+            "read:getExtent": "#/components/schemas/ReadGetExtent",
+            "sheet:add": "#/components/schemas/SheetAdd",
+            "sheet:delete": "#/components/schemas/SheetDelete",
+            "sheet:rename": "#/components/schemas/SheetRename",
+            "sheet:reorder": "#/components/schemas/SheetReorder",
+            "sheet:setActive": "#/components/schemas/SheetSetActive",
+            "view:setPageSetup": "#/components/schemas/ViewSetPageSetup"
+          }
+        }
+      },
+      "CommandsRequestBody": {
+        "type": "object",
+        "properties": {
+          "commands": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Command"
+            },
+            "description": "a command batch must contain at least one command"
+          }
+        },
+        "required": [
+          "commands"
+        ],
+        "additionalProperties": false,
+        "description": "POST /workbooks/{id}/commands request body. Each entry in `commands` is one member of the Command union below, and is validated against its declared `type` before being applied."
+      },
+      "CommandResult": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "type": "boolean",
+                "const": true
+              },
+              "commandId": {
+                "type": "string",
+                "pattern": "^cmd_[A-Za-z0-9_-]+$",
+                "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+              },
+              "type": {
+                "type": "string"
+              },
+              "result": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "ok",
+              "commandId",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "ok": {
+                "type": "boolean",
+                "const": false
+              },
+              "commandId": {
+                "type": "string",
+                "pattern": "^cmd_[A-Za-z0-9_-]+$",
+                "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+              },
+              "type": {
+                "type": "string"
+              },
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "A stable, machine-readable failure reason for a single command in the batch. Two codes are produced today: \"not_implemented\" for a command whose operation is documented as not yet supported (no command currently reports this), and \"apply_failed\" for any other runtime failure — a malformed payload that passed schema validation, an out-of-range write, or a refused operation. Deliberately not an `enum`: a future command may introduce its own code, and a client should treat an unrecognised value as a generic failure rather than rejecting the response.",
+                    "examples": [
+                      "apply_failed",
+                      "not_implemented"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "ok",
+              "commandId",
+              "type",
+              "error"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "CommandsSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "const": true
+                    },
+                    "commandId": {
+                      "type": "string",
+                      "pattern": "^cmd_[A-Za-z0-9_-]+$",
+                      "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "commandId",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "const": false
+                    },
+                    "commandId": {
+                      "type": "string",
+                      "pattern": "^cmd_[A-Za-z0-9_-]+$",
+                      "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "commandId",
+                    "type",
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "version",
+          "results"
+        ],
+        "additionalProperties": false
+      },
+      "InvalidRequestResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "const": "invalid_request"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "const": "not_found"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "VersionConflictResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "const": "version_conflict"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+          },
+          "currentVersion": {
+            "type": "string",
+            "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+          }
+        },
+        "required": [
+          "error",
+          "expectedVersion",
+          "currentVersion"
+        ],
+        "additionalProperties": false
+      },
+      "GetWorkbookResponse": {
+        "type": "object",
+        "properties": {
+          "workbookId": {
+            "type": "string",
+            "pattern": "^wb_[A-Za-z0-9_-]+$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+          },
+          "sheets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sheetId": {
+                  "type": "string",
+                  "pattern": "^sh_[A-Za-z0-9_-]+$",
+                  "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+                },
+                "name": {
+                  "type": "string"
+                },
+                "cells": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                    "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "formats": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+                    "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {}
+                  }
+                }
+              },
+              "required": [
+                "sheetId",
+                "name",
+                "cells",
+                "formats"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "workbookId",
+          "version",
+          "sheets"
+        ],
+        "additionalProperties": false
+      },
+      "GetCellResponse": {
+        "type": "object",
+        "properties": {
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "a1": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+            "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "display": {
+            "type": "string"
+          },
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "format": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "sheet",
+          "a1",
+          "value",
+          "display",
+          "formula",
+          "format"
+        ],
+        "additionalProperties": false
+      },
+      "CreateWorkbookResponse": {
+        "type": "object",
+        "properties": {
+          "workbookId": {
+            "type": "string",
+            "pattern": "^wb_[A-Za-z0-9_-]+$"
+          },
+          "sheetId": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The target sheet within the workbook, e.g. \"sh_a1B2c3D4\". Obtained from the workbook document (its sheet list), not chosen freely by an agent."
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+          }
+        },
+        "required": [
+          "workbookId",
+          "sheetId",
+          "version"
+        ],
+        "additionalProperties": false,
+        "description": "The newly created workbook's identity and its initial (empty) checkpoint version."
+      }
+    },
+    "parameters": {
+      "WorkbookIdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^wb_[A-Za-z0-9_-]+$"
+        }
+      },
+      "CellA1Path": {
+        "name": "a1",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{1,3}[1-9][0-9]*$",
+          "description": "An A1-style single-cell reference (column letters + a 1-based row), e.g. \"B3\"."
+        }
+      },
+      "CheckpointVersionQuery": {
+        "name": "version",
+        "in": "query",
+        "required": false,
+        "description": "Only the LATEST checkpoint is servable (no history) — a value that does not match the current version returns a clean 404, never a silent fall-through to HEAD.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+        }
+      },
+      "IfMatchHeader": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "description": "Optimistic-concurrency precondition — the VersionId this batch's caller last read as HEAD. Enforced ONLY when the resolved X-Studio-Api-Version declares the \"command_batch_occ\" capability AND the batch contains at least one mutating command (a batch containing ONLY read:* commands — getRange, getFormats, getSheets, etc. — is exempt, matched by the \"read:\" prefix); on an incapable or unrecognized API version this header is silently ignored and the write proceeds unconditionally. A stale or missing token on an enforcing version returns 409 version_conflict, echoing both the token the caller sent and the actual current version.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+        }
+      },
+      "ApiVersionHeader": {
+        "name": "X-Studio-Api-Version",
+        "in": "header",
+        "required": false,
+        "description": "Selects which behavioral capabilities this request gets — dated version strings, looked up in a plain registry, never regex-parsed. An unrecognized or missing value resolves to \"no capabilities\", identically. Only \"2026-07-17.preview\" is registered today, and is exactly what a missing header resolves to (DEFAULT_VERSION).",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "2026-07-17.preview"
+          ]
+        }
+      },
+      "StudioChannelHeader": {
+        "name": "X-Studio-Channel",
+        "in": "header",
+        "required": false,
+        "description": "Declares the calling surface, recorded as per-commit attribution in the checkpoint history. An unrecognized or missing value defaults to \"api\".",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "web",
+            "mcp-hosted",
+            "api"
+          ]
+        }
+      }
+    },
+    "responses": {
+      "InvalidRequest": {
+        "description": "The batch was rejected before anything was applied: malformed shape, an unrecognized command type, a schema-shape violation, a command whose type requires a capability the resolved API version lacks, an unknown `sheet`, or a `commandId` reused across commits with a different payload.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InvalidRequestResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No such workbook, no such cell (out of the sheet's declared extent), or (GET /workbooks/{id}?version=) a requested checkpoint version other than the current HEAD.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundResponse"
+            }
+          }
+        }
+      },
+      "VersionConflict": {
+        "description": "`If-Match` did not match the current HEAD version, on an API version that enforces the \"command_batch_occ\" capability.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VersionConflictResponse"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "PRE-RELEASE: this API does not yet authenticate callers. The bearer token is read but never verified — an \"ak_\"-prefixed value is attributed to an API-key actor and anything else, including an absent or empty header, to a generic user actor. Any string, or none at all, is accepted. Attribution only, not authentication: do not expose this surface to untrusted callers until key issuance ships."
+      }
+    }
+  }
+}
