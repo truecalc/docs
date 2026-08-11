@@ -64,6 +64,6 @@ source file (e.g. after editing this script), run
 - Spec title: `TrueCalc Studio Cloud API`
 - Spec version: `2026-07-17.preview`
 - Vendored on: 2026-08-11
-- SHA-256 (first 12 hex chars): `402a2d9817e8`
+- SHA-256 (first 12 hex chars): `1b6329c8140d`
 
 <!-- LAST-SYNCED:END -->

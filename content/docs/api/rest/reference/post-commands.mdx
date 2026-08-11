@@ -7,7 +7,8 @@ description: >-
   a batch with the same commandIds is safe. A per-command apply() failure is NOT
   a batch failure — it lands as an `ok: false` CommandResult with its own
   `error.code` (see CommandResult); the whole batch is still 200 unless the
-  batch itself was rejected pre-apply (400) or an OCC precondition failed (409).
+  batch itself was rejected pre-apply (400) or the `If-Match` precondition
+  failed (409).
 full: true
 seoTitle: Apply a batch of commands to a workbook — TrueCalc REST API
 llmsDescription: >-
@@ -28,7 +29,8 @@ _openapi:
           per-command apply() failure is NOT a batch failure — it lands as an
           `ok: false` CommandResult with its own `error.code` (see
           CommandResult); the whole batch is still 200 unless the batch itself
-          was rejected pre-apply (400) or an OCC precondition failed (409).
+          was rejected pre-apply (400) or the `If-Match` precondition failed
+          (409).
 ---
 
 {/* This file was generated from openapi\/rest-api.json by scripts\/gen-openapi-docs.mjs. Do not edit directly — see openapi\/README.md. */}

@@ -4,12 +4,12 @@
   "info": {
     "title": "TrueCalc Studio Cloud API",
     "version": "2026-07-17.preview",
-    "description": "The TrueCalc Studio command/query API. Every spreadsheet operation is a Command submitted to `POST /workbooks/{id}/commands`; the request body is a discriminated union over `type`, so one endpoint carries the whole write surface. Reads are their own `read:*` commands plus two GET routes.\n\nThis document is generated from the same schemas the server validates every request against, so it cannot drift from the implementation.\n\nPRE-RELEASE: the API is not yet deployed and does not yet authenticate callers — see the security scheme. `POST /workbooks` is a convenience route for creating a workbook and is not part of the command contract proper."
+    "description": "The TrueCalc Studio command/query API. Every spreadsheet operation is a Command submitted to `POST /workbooks/{id}/commands`; the request body is a discriminated union over `type`, so one endpoint carries the whole write surface. Reads are their own `read:*` commands plus two GET routes.\n\nWrites use optimistic concurrency: you send the version you last read in `If-Match`, and the batch is rejected with 409 if the workbook has moved on since. Reads never require it.\n\nThis document is generated from the same schemas the server validates every request against, so it cannot drift from the implementation.\n\nPRE-RELEASE: the API is not yet deployed and does not yet authenticate callers — see the security scheme. `POST /workbooks` is a convenience route for creating a workbook and is not part of the command contract proper."
   },
   "servers": [
     {
       "url": "http://localhost:8787",
-      "description": "Local development server."
+      "description": "Local development server — the ONLY server this API has. There is no hosted endpoint yet: code samples on this page point at a server you run yourself, not at a service you can call."
     }
   ],
   "security": [
@@ -23,7 +23,7 @@
       "post": {
         "operationId": "createWorkbook",
         "summary": "Create a workbook (convenience route)",
-        "description": "A convenience route, not part of the core command contract: a real server's create flow is billing/entitlement-gated, out of scope for this mock. Ignores any request body; the created workbook always gets the mock defaults (1000 rows x 26 columns, one sheet named \"Sheet1\").",
+        "description": "Create an empty workbook and return its identifiers. A convenience route, deliberately outside the core command contract — creating a workbook is expected to become billing- and entitlement-gated, so its shape is not yet fixed. Any request body is ignored: every workbook is created with the same defaults (1000 rows x 26 columns, one sheet named \"Sheet1\").",
         "security": [
           {
             "bearerAuth": []
@@ -53,7 +53,7 @@
       "post": {
         "operationId": "postCommands",
         "summary": "Apply a batch of commands to a workbook",
-        "description": "Validates the WHOLE batch (shape, capability, sheet, commandId reuse) before applying anything; a commandId already committed in a prior batch is recognized and its cached result replayed rather than re-applied, so retrying a batch with the same commandIds is safe. A per-command apply() failure is NOT a batch failure — it lands as an `ok: false` CommandResult with its own `error.code` (see CommandResult); the whole batch is still 200 unless the batch itself was rejected pre-apply (400) or an OCC precondition failed (409).",
+        "description": "Validates the WHOLE batch (shape, capability, sheet, commandId reuse) before applying anything; a commandId already committed in a prior batch is recognized and its cached result replayed rather than re-applied, so retrying a batch with the same commandIds is safe. A per-command apply() failure is NOT a batch failure — it lands as an `ok: false` CommandResult with its own `error.code` (see CommandResult); the whole batch is still 200 unless the batch itself was rejected pre-apply (400) or the `If-Match` precondition failed (409).",
         "security": [
           {
             "bearerAuth": []
@@ -2898,7 +2898,7 @@
           "range"
         ],
         "additionalProperties": false,
-        "description": "Read every cell (value/display/formula/format) in a range. Never OCC-guarded — succeeds even with a stale local version."
+        "description": "Read every cell (value/display/formula/format) in a range. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale."
       },
       "ReadGetSheets": {
         "type": "object",
@@ -2924,7 +2924,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "List every sheet in the workbook — id, name, tab order, and which one is active. Never OCC-guarded."
+        "description": "List every sheet in the workbook — id, name, tab order, and which one is active. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "ReadGetFormats": {
         "type": "object",
@@ -2972,7 +2972,7 @@
           "range"
         ],
         "additionalProperties": false,
-        "description": "Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Never OCC-guarded — succeeds even with a stale local version. Bounded to 10,000 cells per call."
+        "description": "Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale. Bounded to 10,000 cells per call."
       },
       "ReadGetCharts": {
         "type": "object",
@@ -2998,7 +2998,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no \"sheet!\" prefix) — pass it straight to chart:update/chart:remove as-is. Never OCC-guarded."
+        "description": "List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no \"sheet!\" prefix) — pass it straight to chart:update/chart:remove as-is. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "ReadGetConditionalFormats": {
         "type": "object",
@@ -3024,7 +3024,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded."
+        "description": "List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "ReadGetBandedRanges": {
         "type": "object",
@@ -3050,7 +3050,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "List every banded range (Format > Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded."
+        "description": "List every banded range (Format > Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form \"sheet!<nanoid>\" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "ReadGetNamedRanges": {
         "type": "object",
@@ -3076,7 +3076,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "List every workbook-scoped named range — name, target sheet, and target range. Never OCC-guarded."
+        "description": "List every workbook-scoped named range — name, target sheet, and target range. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "ReadGetExtent": {
         "type": "object",
@@ -3102,7 +3102,7 @@
           "type"
         ],
         "additionalProperties": false,
-        "description": "The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Never OCC-guarded."
+        "description": "The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Read-only, so it is never version-guarded: no `If-Match` header is required."
       },
       "SheetAdd": {
         "type": "object",
@@ -3436,6 +3436,58 @@
         "additionalProperties": false,
         "description": "Patch the active sheet's print & page-setup settings (File ▸ Print) — orientation, scale, margins, print area, gridlines, header/footer text. Every field optional; unset fields leave the existing setting untouched. Applied as ONE undoable command."
       },
+      "HistoryUndo": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The workbook's sheet — undo is NOT actually scoped to one sheet (it may revert an edit on any sheet the calling actor made); this field exists only to satisfy the uniform commandBase/dispatch shape every wire command carries."
+          },
+          "type": {
+            "type": "string",
+            "const": "history:undo"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Undo the calling actor's own most recent command — ONLY when it is topmost on the shared undo stack. Undo is per-actor, matching a spreadsheet's per-collaborator Ctrl+Z: your undo never reverts someone else's edit. When a DIFFERENT actor has edited more recently, this REFUSES (reported as `blocked`) rather than undoing their work or skipping past it to an older entry of yours — undoing a buried entry is not yet supported. A no-op when the caller has nothing left to undo."
+      },
+      "HistoryRedo": {
+        "type": "object",
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9_-]+$",
+            "description": "Client-minted idempotency key for this command, e.g. \"cmd_a1B2c3D4\". Generate a fresh one per command; resubmitting the same commandId is treated as a retry of the same operation, not a new one."
+          },
+          "sheet": {
+            "type": "string",
+            "pattern": "^sh_[A-Za-z0-9_-]+$",
+            "description": "The workbook's sheet — redo is NOT actually scoped to one sheet; this field exists only to satisfy the uniform commandBase/dispatch shape every wire command carries (see history:undo's module doc)."
+          },
+          "type": {
+            "type": "string",
+            "const": "history:redo"
+          }
+        },
+        "required": [
+          "commandId",
+          "sheet",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Redo the calling actor's own most recently-undone command — ONLY when it is topmost on the shared redo stack. Redo is per-actor, mirroring history:undo. When a different actor's entry is on top this REFUSES (reported as `blocked`) rather than skipping past it. A no-op when the caller has nothing left to redo."
+      },
       "Command": {
         "description": "The full command union — every batch entry in POST /workbooks/{id}/commands is one of these, discriminated on `type`.",
         "oneOf": [
@@ -3621,6 +3673,12 @@
           },
           {
             "$ref": "#/components/schemas/ViewSetPageSetup"
+          },
+          {
+            "$ref": "#/components/schemas/HistoryUndo"
+          },
+          {
+            "$ref": "#/components/schemas/HistoryRedo"
           }
         ],
         "discriminator": {
@@ -3686,7 +3744,9 @@
             "sheet:rename": "#/components/schemas/SheetRename",
             "sheet:reorder": "#/components/schemas/SheetReorder",
             "sheet:setActive": "#/components/schemas/SheetSetActive",
-            "view:setPageSetup": "#/components/schemas/ViewSetPageSetup"
+            "view:setPageSetup": "#/components/schemas/ViewSetPageSetup",
+            "history:undo": "#/components/schemas/HistoryUndo",
+            "history:redo": "#/components/schemas/HistoryRedo"
           }
         }
       },

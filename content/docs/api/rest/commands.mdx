@@ -1,14 +1,14 @@
 ---
 title: Commands
 description: All commands accepted by POST /workbooks/{id}/commands, grouped by category.
-seoTitle: "TrueCalc REST API Commands — All 61 Command Types"
-seoDescription: "All 61 commands TrueCalc's REST API accepts in POST /workbooks/{id}/commands, grouped by category: edit, format, structure, data, charts, sheets, and more."
-llmsDescription: "Catalog of all 61 commands accepted by the TrueCalc REST API's command endpoint (POST /workbooks/{id}/commands), grouped by category with each command's required fields."
+seoTitle: "TrueCalc REST API Commands — All 63 Command Types"
+seoDescription: "All 63 commands TrueCalc's REST API accepts in POST /workbooks/{id}/commands, grouped by category: edit, format, structure, data, charts, sheets, and more."
+llmsDescription: "Catalog of all 63 commands accepted by the TrueCalc REST API's command endpoint (POST /workbooks/{id}/commands), grouped by category with each command's required fields."
 ---
 
 {/* Generated from openapi/rest-api.json by scripts/gen-openapi-docs.mjs. Do not edit directly — see openapi/README.md. */}
 
-Every entry in a `POST /workbooks/{id}/commands` batch is one of these 61 commands, chosen by its `type`. This page lists them all by name so the union isn't a single opaque blob; for the exact field-level schema of any one command (including validation rules), open [the commands endpoint reference](/api/rest/reference/post-commands) and pick it from the request-body schema selector — the `type` value below (e.g. `edit:setCell`) is what to look for there.
+Every entry in a `POST /workbooks/{id}/commands` batch is one of these 63 commands, chosen by its `type`. This page lists them all by name so the union isn't a single opaque blob; for the exact field-level schema of any one command (including validation rules), open [the commands endpoint reference](/api/rest/reference/post-commands) and pick it from the request-body schema selector — the `type` value below (e.g. `edit:setCell`) is what to look for there.
 
 ## Charts
 
@@ -310,49 +310,49 @@ Required fields beyond `commandId`, `sheet`, `type`: `format`, `encoding`, `data
 
 ### `read:getRange`
 
-Read every cell (value/display/formula/format) in a range. Never OCC-guarded — succeeds even with a stale local version.
+Read every cell (value/display/formula/format) in a range. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale.
 
 Required fields beyond `commandId`, `sheet`, `type`: `range`.
 
 ### `read:getSheets`
 
-List every sheet in the workbook — id, name, tab order, and which one is active. Never OCC-guarded.
+List every sheet in the workbook — id, name, tab order, and which one is active. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
 ### `read:getFormats`
 
-Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Never OCC-guarded — succeeds even with a stale local version. Bounded to 10,000 cells per call.
+Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale. Bounded to 10,000 cells per call.
 
 Required fields beyond `commandId`, `sheet`, `type`: `range`.
 
 ### `read:getCharts`
 
-List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no "sheet!" prefix) — pass it straight to chart:update/chart:remove as-is. Never OCC-guarded.
+List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no "sheet!" prefix) — pass it straight to chart:update/chart:remove as-is. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
 ### `read:getConditionalFormats`
 
-List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded.
+List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
 ### `read:getBandedRanges`
 
-List every banded range (Format &gt; Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Never OCC-guarded.
+List every banded range (Format &gt; Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
 ### `read:getNamedRanges`
 
-List every workbook-scoped named range — name, target sheet, and target range. Never OCC-guarded.
+List every workbook-scoped named range — name, target sheet, and target range. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
 ### `read:getExtent`
 
-The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Never OCC-guarded.
+The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Read-only, so it is never version-guarded: no `If-Match` header is required.
 
 No required fields beyond `commandId`, `sheet`, `type`.
 
@@ -393,5 +393,19 @@ No required fields beyond `commandId`, `sheet`, `type`.
 ### `view:setPageSetup`
 
 Patch the active sheet's print & page-setup settings (File ▸ Print) — orientation, scale, margins, print area, gridlines, header/footer text. Every field optional; unset fields leave the existing setting untouched. Applied as ONE undoable command.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+## history
+
+### `history:undo`
+
+Undo the calling actor's own most recent command — ONLY when it is topmost on the shared undo stack. Undo is per-actor, matching a spreadsheet's per-collaborator Ctrl+Z: your undo never reverts someone else's edit. When a DIFFERENT actor has edited more recently, this REFUSES (reported as `blocked`) rather than undoing their work or skipping past it to an older entry of yours — undoing a buried entry is not yet supported. A no-op when the caller has nothing left to undo.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `history:redo`
+
+Redo the calling actor's own most recently-undone command — ONLY when it is topmost on the shared redo stack. Redo is per-actor, mirroring history:undo. When a different actor's entry is on top this REFUSES (reported as `blocked`) rather than skipping past it. A no-op when the caller has nothing left to redo.
 
 No required fields beyond `commandId`, `sheet`, `type`.

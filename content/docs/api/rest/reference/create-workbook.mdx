@@ -1,10 +1,11 @@
 ---
 title: Create a workbook (convenience route)
 description: >-
-  A convenience route, not part of the core command contract: a real server's
-  create flow is billing/entitlement-gated, out of scope for this mock. Ignores
-  any request body; the created workbook always gets the mock defaults (1000
-  rows x 26 columns, one sheet named "Sheet1").
+  Create an empty workbook and return its identifiers. A convenience route,
+  deliberately outside the core command contract — creating a workbook is
+  expected to become billing- and entitlement-gated, so its shape is not yet
+  fixed. Any request body is ignored: every workbook is created with the same
+  defaults (1000 rows x 26 columns, one sheet named "Sheet1").
 full: true
 seoTitle: Create a workbook (convenience route) — TrueCalc REST API
 llmsDescription: >-
@@ -18,10 +19,12 @@ _openapi:
     headings: []
     contents:
       - content: >-
-          A convenience route, not part of the core command contract: a real
-          server's create flow is billing/entitlement-gated, out of scope for
-          this mock. Ignores any request body; the created workbook always gets
-          the mock defaults (1000 rows x 26 columns, one sheet named "Sheet1").
+          Create an empty workbook and return its identifiers. A convenience
+          route, deliberately outside the core command contract — creating a
+          workbook is expected to become billing- and entitlement-gated, so its
+          shape is not yet fixed. Any request body is ignored: every workbook is
+          created with the same defaults (1000 rows x 26 columns, one sheet
+          named "Sheet1").
 ---
 
 {/* This file was generated from openapi\/rest-api.json by scripts\/gen-openapi-docs.mjs. Do not edit directly — see openapi\/README.md. */}
