@@ -1,0 +1,411 @@
+---
+title: Commands
+description: All commands accepted by POST /workbooks/{id}/commands, grouped by category.
+seoTitle: "TrueCalc REST API Commands — All 63 Command Types"
+seoDescription: "All 63 commands TrueCalc's REST API accepts in POST /workbooks/{id}/commands, grouped by category: edit, format, structure, data, charts, sheets, and more."
+llmsDescription: "Catalog of all 63 commands accepted by the TrueCalc REST API's command endpoint (POST /workbooks/{id}/commands), grouped by category with each command's required fields."
+---
+
+{/* Generated from openapi/rest-api.json by scripts/gen-openapi-docs.mjs. Do not edit directly — see openapi/README.md. */}
+
+Every entry in a `POST /workbooks/{id}/commands` batch is one of these 63 commands, chosen by its `type`. This page lists them all by name so the union isn't a single opaque blob; for the exact field-level schema of any one command (including validation rules), open [the commands endpoint reference](/api/rest/reference/post-commands) and pick it from the request-body schema selector — the `type` value below (e.g. `edit:setCell`) is what to look for there.
+
+## Charts
+
+### `chart:insert`
+
+Chart a range — creates a chart bound to those cells (a live reference, not a snapshot) and returns its chartId. Undoes in one step. Rejected with the reason if the range is a single cell, or if the chart form cannot render the data that is in the range RIGHT NOW (checked once, at insert time). column/bar/line/area are never rejected on shape — they accept any data, including an empty range, so with those you may insert first and fill the cells afterwards. Every other form needs its data in place first. Note: charts are reachable here regardless of the browser-side "Enable charts" preview toggle, which gates only the Insert menu item.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `chartType`, `options`.
+
+### `chart:update`
+
+Change an existing chart's form and/or renderer options, by the chartId chart:insert returned. The bound range is never patchable — a new range means a new chart. A form that cannot render the chart's data is rejected with the reason.
+
+Required fields beyond `commandId`, `sheet`, `type`: `chartId`.
+
+### `chart:remove`
+
+Delete one chart by the chartId chart:insert returned, as one undoable command. An unknown chartId is an error, not a silent no-op.
+
+Required fields beyond `commandId`, `sheet`, `type`: `chartId`.
+
+## Clipboard
+
+### `clipboard:paste`
+
+Apply clipboard contents (an origin cell's raw input) at a target cell. cut: true moves it verbatim and clears source; cut: false (default) ref-adjusts formulas and leaves source untouched.
+
+Required fields beyond `commandId`, `sheet`, `type`: `source`, `raw`, `target`.
+
+## Edit
+
+### `edit:setCell`
+
+Set the raw content of one cell — a literal ("10", "hello") or a formula ("=A1+B1", computed by the real TrueCalc engine server-side).
+
+Required fields beyond `commandId`, `sheet`, `type`: `a1`, `value`.
+
+### `edit:clear`
+
+Empty every cell in a range (value/formula cleared, format untouched).
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `edit:fillDown`
+
+Extend the top row of a range downward through every remaining row.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `edit:fillRight`
+
+Extend the left column of a range rightward through every remaining column.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `edit:findReplace`
+
+Replace every occurrence of query with replacement across a range (or the whole active sheet) — the wire equivalent of Find and replace's "Replace all", applied as ONE undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `query`, `replacement`, `matchCase`, `useRegex`, `matchEntireCell`, `withinFormulas`.
+
+### `edit:autofill`
+
+Extend source into a series (drag-the-fill-handle behavior): numeric/date trends extrapolate, recognized weekday/month names advance, everything else repeats — the same detection Sheets' own fill handle performs. Applied as ONE undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `source`, `to`.
+
+## Format
+
+### `format:fillColor`
+
+Set (hex color) or explicitly clear (null) the background fill of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setBold`
+
+Explicit bold on/off (never a toggle) for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setItalic`
+
+Explicit italic on/off (never a toggle) for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setStrike`
+
+Explicit strikethrough on/off (never a toggle) for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setUnderline`
+
+Explicit underline on/off (never a toggle) for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:textColor`
+
+Set (hex color) or explicitly clear (null) the text color of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setFontFamily`
+
+Set the font family of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setFontSize`
+
+Set the font size (positive number) of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setBorders`
+
+Apply a Sheets border mode (all/inner/horizontal/vertical/outer/left/top/right/bottom/clear) with a given line edge (style/weight/color) over every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `mode`, `edge`.
+
+### `format:setAlign`
+
+Set (or, with value: null, explicitly clear back to automatic) the horizontal alignment of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setValign`
+
+Set (or, with value: null, explicitly clear back to the default, bottom) the vertical alignment of every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setRotation`
+
+Set (or, with value: null, explicitly clear back to none) the text rotation, in degrees, of every cell in a range. Unclamped at the wire layer.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setWrap`
+
+Explicit text-wrap on/off (never a toggle) for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:clear`
+
+Reset every cell in a range to the default (empty) format, leaving the cell value/formula untouched.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `format:setNumberFormat`
+
+Set the number-display category (currency/date/datetime/number/percent), or explicitly clear it back to automatic (value: null), for every cell in a range.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setDecimals`
+
+Set the exact decimal-place count (0..10) for every cell in a range, optionally also (re)stating the display category in the same edit. Never a relative step.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `value`.
+
+### `format:setConditionalFormat`
+
+Add ONE conditional-format rule (a single-condition value-comparison rule, a 2-stop color scale, or a custom-formula rule) over a range — the daily-driver conditional-formatting slice.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `rule`.
+
+### `format:setBandedRange`
+
+Add ONE banded range (Format &gt; Alternating colors) over a range — a repeating header/odd/even/footer fill pattern. A DIFFERENT feature from setConditionalFormat (no condition to evaluate; pure range formatting).
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `style`.
+
+## Structure
+
+### `structure:insertRow`
+
+Insert blank row(s) before a 1-based row index — content and formula references at/after it shift down.
+
+Required fields beyond `commandId`, `sheet`, `type`: `beforeRow`, `count`.
+
+### `structure:insertColumn`
+
+Insert blank column(s) before a column letter (e.g. "C") — content and formula references at/after it shift right.
+
+Required fields beyond `commandId`, `sheet`, `type`: `beforeColumn`, `count`.
+
+### `structure:deleteRow`
+
+Delete row(s) starting at a 1-based row index — content in the deleted band is gone; a reference into it (or a formula the deletion otherwise invalidates) becomes #REF!.
+
+Required fields beyond `commandId`, `sheet`, `type`: `row`, `count`.
+
+### `structure:deleteColumn`
+
+Delete column(s) starting at a column letter (e.g. "C") — content in the deleted band is gone; a reference into it (or a formula the deletion otherwise invalidates) becomes #REF!.
+
+Required fields beyond `commandId`, `sheet`, `type`: `column`, `count`.
+
+### `structure:mergeCells`
+
+Merge a rectangular range into one spanning cell.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `structure:mergeVertically`
+
+Merge a range into one spanning cell PER COLUMN — a 3-col x 4-row selection produces 3 independent vertical merges, as one undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `structure:mergeHorizontally`
+
+Merge a range into one spanning cell PER ROW — the row analogue of structure:mergeVertically, as one undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `structure:unmergeCells`
+
+Unmerge the merge (anchor or interior cell) covering one cell — the same active-cell-only semantics the toolbar Unmerge control has.
+
+Required fields beyond `commandId`, `sheet`, `type`: `a1`.
+
+### `structure:reorderRows`
+
+Move a contiguous band of rows to a new position on the active sheet — content, formats, and formula references travel with the move. Applied as ONE undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `fromRow`, `count`, `toRow`.
+
+### `structure:reorderColumns`
+
+Move a contiguous band of columns to a new position on the active sheet — content, formats, and formula references travel with the move. Applied as ONE undoable command.
+
+Required fields beyond `commandId`, `sheet`, `type`: `fromColumn`, `count`, `toColumn`.
+
+## Data
+
+### `data:setValidation`
+
+Set (or, with rule: null, clear) a cell-range "List of items" data-validation rule — the range shows an in-cell dropdown offering only the listed values. One undoable command either way.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `rule`.
+
+### `data:sortRange`
+
+Sort the rows of a range by one of its columns, ascending or descending. Only cells INSIDE the range move — a one-column range reorders that column alone and leaves the rest of each row behind (this is what Google Sheets does; pass the whole table if you mean to sort the whole table). Formulas move with their row: relative references translate, $-anchored ones stay pinned. The whole sort is one undoable step.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `sortColumn`, `direction`.
+
+### `data:setNamedRange`
+
+Define a workbook-scoped named range over range, usable in any formula on any sheet (=SUM(MyRange)) — or, when name already names one, retarget it to range. One undoable command either way.
+
+Required fields beyond `commandId`, `sheet`, `type`: `name`, `range`.
+
+### `data:deleteNamedRange`
+
+Remove a workbook-scoped named range by name. One undoable command. A formula that already referenced it may keep resolving it until the next engine rebuild — see this command's own module doc for the documented engine-binding gap.
+
+Required fields beyond `commandId`, `sheet`, `type`: `name`.
+
+### `data:setFilter`
+
+Create a single-column-value filter over range (Data &gt; Create a filter), replacing any existing filter on this sheet, then apply explicit per-column checked-value criteria. The header row (range's first row) is never hidden; two columns' criteria combine as AND.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`, `criteria`.
+
+### `data:clearFilter`
+
+Remove the active sheet's filter (Data &gt; Remove filter), restoring every row it had hidden. One undoable command. A no-op (removed: false) if the sheet has no filter.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `data:insertPivot`
+
+Insert a pivot table (Insert &gt; Pivot table) grouping range's first column and summing its second, into a brand new sheet: the row field's own header, "SUM of &lt;value field&gt;", one row per distinct group, and a Grand Total row. One undoable command. range must be at least 2 columns x 2 rows and must not extend past the active sheet's used content. Returns the new destination sheet's real sheetId — usable by a FOLLOW-UP command/batch, not the one that created it.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+## File
+
+### `file:export`
+
+Export the whole document as json, csv, or xlsx.
+
+Required fields beyond `commandId`, `sheet`, `type`: `format`.
+
+### `file:import`
+
+Load a canonical-JSON workbook payload (the same shape file:export produces) as one or more NEW sheets appended to this workbook, restoring the full document graph: cells, formats, size overrides, frozen panes, filter, merges, charts, conditional formats, banded ranges, validation rules, page setup, and named ranges (retargeted to the actual imported sheet names).
+
+Required fields beyond `commandId`, `sheet`, `type`: `format`, `encoding`, `data`.
+
+## Read
+
+### `read:getRange`
+
+Read every cell (value/display/formula/format) in a range. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `read:getSheets`
+
+List every sheet in the workbook — id, name, tab order, and which one is active. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `read:getFormats`
+
+Read the effective presentation of every cell in a range: the grid-owned format, the EFFECTIVE format (grid format merged with any matching conditional-format rule), and whether the cell is covered by a merge or a spilled dynamic array. Read-only, so it is never version-guarded: it succeeds without an `If-Match` header and even when your last-read version is stale. Bounded to 10,000 cells per call.
+
+Required fields beyond `commandId`, `sheet`, `type`: `range`.
+
+### `read:getCharts`
+
+List every chart on the sheet — id, the range it is bound to, its chart type, and its options. Each returned chartId is BARE (no "sheet!" prefix) — pass it straight to chart:update/chart:remove as-is. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `read:getConditionalFormats`
+
+List every conditional-format rule on the sheet — id, the range it applies to, and its definition (single-condition value comparison, 2-stop color scale, or custom formula). Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `read:getBandedRanges`
+
+List every banded range (Format &gt; Alternating colors) on the sheet — id, the range it applies to, and its header/odd/even/footer color style. Each returned id is the FULL COMPOSITE form "sheet!&lt;nanoid&gt;" — not a bare id, and a different shape from read:getCharts' chartId. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `read:getNamedRanges`
+
+List every workbook-scoped named range — name, target sheet, and target range. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `read:getExtent`
+
+The sheet's used dimensions (row/column count) — size a range or a scan against the real sheet extent instead of guessing. Read-only, so it is never version-guarded: no `If-Match` header is required.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+## Sheet
+
+### `sheet:add`
+
+Create a new sheet, appended as the last tab and made active. Returns the newly minted sheetId — usable by a FOLLOW-UP command/batch, not the one that created it.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `sheet:delete`
+
+Delete a sheet. Dependent formulas on OTHER sheets are NOT rewritten — their text is preserved verbatim and they evaluate to #REF! until the sheet is restored (e.g. by undo) or re-created under the same name. Refuses to delete the workbook's only sheet. No reference-count warning is returned (Google Sheets does not detect dependents at delete time either).
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `sheet:rename`
+
+Rename a sheet. Google Sheets REWRITES every dependent formula's TEXT to the new name (e.g. =OldName!A1*2 becomes =NewName!A1*2, value unchanged) — the exact opposite of sheet:delete, which preserves a referencing formula's text verbatim and lets it evaluate to #REF!. A colliding name (case-insensitive) is refused with a clean error; the rename does not happen.
+
+Required fields beyond `commandId`, `sheet`, `type`: `name`.
+
+### `sheet:reorder`
+
+Move a sheet one tab position left or right. Presentation only — no formula or computed value is affected (the engine addresses sheets by name, not position). Bounds-aware: a no-op at either end of the tab order.
+
+Required fields beyond `commandId`, `sheet`, `type`: `direction`.
+
+### `sheet:setActive`
+
+Make sheet the active (current) sheet on this workbook — the tab GET /workbooks reports as sheetId/sheetName. A pure view change (matches a tab-bar click); no cell content is touched, and it is not undoable.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+## View
+
+### `view:setPageSetup`
+
+Patch the active sheet's print & page-setup settings (File ▸ Print) — orientation, scale, margins, print area, gridlines, header/footer text. Every field optional; unset fields leave the existing setting untouched. Applied as ONE undoable command.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+## history
+
+### `history:undo`
+
+Undo the calling actor's own most recent command — ONLY when it is topmost on the shared undo stack. Undo is per-actor, matching a spreadsheet's per-collaborator Ctrl+Z: your undo never reverts someone else's edit. When a DIFFERENT actor has edited more recently, this REFUSES (reported as `blocked`) rather than undoing their work or skipping past it to an older entry of yours — undoing a buried entry is not yet supported. A no-op when the caller has nothing left to undo.
+
+No required fields beyond `commandId`, `sheet`, `type`.
+
+### `history:redo`
+
+Redo the calling actor's own most recently-undone command — ONLY when it is topmost on the shared redo stack. Redo is per-actor, mirroring history:undo. When a different actor's entry is on top this REFUSES (reported as `blocked`) rather than skipping past it. A no-op when the caller has nothing left to redo.
+
+No required fields beyond `commandId`, `sheet`, `type`.

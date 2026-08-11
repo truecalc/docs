@@ -25,6 +25,12 @@ jobs:
           git add -N content/docs/reference/functions
           git diff --exit-code -- content/docs/reference/functions
 
+      - name: gen-openapi-docs drift check
+        run: |
+          node scripts/gen-openapi-docs.mjs
+          git add -N content/docs/api/rest
+          git diff --exit-code -- content/docs/api/rest
+
       - name: test-docs (Learn examples)
         run: node scripts/test-docs.mjs
 

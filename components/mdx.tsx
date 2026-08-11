@@ -3,6 +3,7 @@ import type { MDXComponents } from 'mdx/types';
 import { Mermaid } from '@/components/mermaid';
 import { TryIt } from '@/components/try-it';
 import { TrueCalc } from '@/components/truecalc';
+import { APIPage } from '@/components/api-page';
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
@@ -10,6 +11,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Mermaid,
     TryIt,
     TrueCalc,
+    APIPage,
     ...components,
   } satisfies MDXComponents;
 }

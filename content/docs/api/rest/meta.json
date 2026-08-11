@@ -1,3 +1,8 @@
 {
-  "title": "REST"
+  "title": "REST",
+  "pages": [
+    "index",
+    "commands",
+    "reference"
+  ]
 }

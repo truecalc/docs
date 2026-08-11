@@ -1,0 +1,38 @@
+---
+title: Apply a batch of commands to a workbook
+description: >-
+  Validates the WHOLE batch (shape, capability, sheet, commandId reuse) before
+  applying anything; a commandId already committed in a prior batch is
+  recognized and its cached result replayed rather than re-applied, so retrying
+  a batch with the same commandIds is safe. A per-command apply() failure is NOT
+  a batch failure — it lands as an `ok: false` CommandResult with its own
+  `error.code` (see CommandResult); the whole batch is still 200 unless the
+  batch itself was rejected pre-apply (400) or the `If-Match` precondition
+  failed (409).
+full: true
+seoTitle: Apply a batch of commands to a workbook — TrueCalc REST API
+llmsDescription: >-
+  TrueCalc REST API: Apply a batch of commands to a workbook. Pre-release — see
+  /api/rest for deployment and auth status.
+_openapi:
+  method: POST
+  webhook: false
+  toc: []
+  structuredData:
+    headings: []
+    contents:
+      - content: >-
+          Validates the WHOLE batch (shape, capability, sheet, commandId reuse)
+          before applying anything; a commandId already committed in a prior
+          batch is recognized and its cached result replayed rather than
+          re-applied, so retrying a batch with the same commandIds is safe. A
+          per-command apply() failure is NOT a batch failure — it lands as an
+          `ok: false` CommandResult with its own `error.code` (see
+          CommandResult); the whole batch is still 200 unless the batch itself
+          was rejected pre-apply (400) or the `If-Match` precondition failed
+          (409).
+---
+
+{/* This file was generated from openapi\/rest-api.json by scripts\/gen-openapi-docs.mjs. Do not edit directly — see openapi\/README.md. */}
+
+<APIPage document={"./openapi/rest-api.json"} operations={[{"path":"/workbooks/{id}/commands","method":"post"}]} />
