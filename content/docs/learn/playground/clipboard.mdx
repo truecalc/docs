@@ -1,6 +1,6 @@
 ---
 title: "Copy, cut, and paste"
-description: "Copy adjusts references to the paste target; cut moves a cell verbatim."
+description: "Copy adjusts references to the paste target; cut moves the range and rewrites every reference into it — inside the moved range or anywhere else on the sheet — to follow, with a dashed border marking a pending cut and no clipboard-permission prompt on paste."
 ---
 
 {/* GENERATED — do not edit by hand */}
@@ -10,11 +10,12 @@ description: "Copy adjusts references to the paste target; cut moves a cell verb
 Select a cell and press **Ctrl+C** to copy or **Ctrl+X** to cut, then select a target and press **Ctrl+V** to paste.
 
 - **Copy + paste** adjusts the formula's relative references by the paste offset — `=A1+B1` copied from **C1** to **C3** becomes `=A3+B3`, while `$`-anchored parts stay put (`=$A$1+B1` → `=$A$1+B3`). The source is left untouched and the clipboard stays loaded, so you can paste it again.
-- **Cut + paste** _moves_ the cell: the formula is written to the destination **verbatim** (no reference adjustment) and the source cell is cleared. The clipboard is consumed after that one paste.
+- **Cut + paste** _moves_ the range: every reference into the cut range follows it to its new address — whether that reference is in a formula that's itself part of the moved range, or in a completely different cell elsewhere on the sheet. A reference to something outside the cut range is left exactly as written. The source is cleared and the clipboard is consumed after that one paste.
+- While a cut is pending, the cut range is marked with a dashed border so it reads as distinct from a plain selection, and pasting never interrupts you for clipboard permission.
 
 ## Verified behavior
 
-_Matches Google Sheets:_ In Google Sheets, copying a formula and pasting it adjusts the formula's relative references by the row/column offset (copying "=A1+B1" from C1 to C3 yields "=A3+B3"), while $-anchored parts stay fixed ("=$A$1+B1" → "=$A$1+B3"); copy leaves the source and the clipboard intact, so it can be pasted again. Cutting and pasting instead MOVES the cell: the formula is written to the destination verbatim (no reference adjustment) and the source is cleared, and the clipboard is consumed after that one paste. (Sheets additionally rewrites OTHER formulas that referenced the moved cell so they keep pointing at it — that cross-reference remap needs engine support and is not yet modeled here; tracked as a follow-up.)
+_Matches Google Sheets:_ In Google Sheets, copying a formula and pasting it adjusts the formula's relative references by the row/column offset (copying "=A1+B1" from C1 to C3 yields "=A3+B3"), while $-anchored parts stay fixed ("=$A$1+B1" → "=$A$1+B3"); copy leaves the source and the clipboard intact, so it can be pasted again. Cutting and pasting instead MOVES the range: every reference anywhere in the workbook that points at a cell inside the cut range is rewritten to follow that cell to its new address — whether the reference lives in a formula that is itself part of the moved range (e.g. cutting two cells together where one formula refers to the other) or in a completely different, untouched cell elsewhere on the sheet. A reference to a cell that was NOT part of the cut range is left exactly as written either way, since nothing it points at moved. While a cut is pending (cut but not yet pasted), Sheets marks the range with a dashed border, visually distinct from a plain selection; pasting never prompts for clipboard permission.
 
 #### Copy a relative formula and paste — references shift by the offset
 
@@ -48,7 +49,7 @@ _Matches Google Sheets:_ In Google Sheets, copying a formula and pasting it adju
 - **D3** shows `12`
 - **D3** has formula `=B3+C3`
 
-#### Cut and paste — the formula moves verbatim and the source is cleared
+#### Cut and paste — a reference to a cell OUTSIDE the cut range is left as written (moves unchanged)
 
 **Given**
 - **A1** = `10`
@@ -61,3 +62,31 @@ _Matches Google Sheets:_ In Google Sheets, copying a formula and pasting it adju
 - **C3** shows `30`
 - **C1** shows `null`
 - **C3** has formula `=A1+B1`
+
+#### Cut and paste a block — a formula's reference to another cell in the SAME block follows the move
+
+**Given**
+- **A1** = `10`
+- **A2** = `=A1*2`
+
+**When** I select **A1:A2**, then press `Control+x`, then click **A5**, then press `Control+v`
+
+**Then**
+- **A5** shows `10`
+- **A6** shows `20`
+- **A1** shows `null`
+- **A2** shows `null`
+- **A6** has formula `=A5*2`
+
+#### Cut and paste — an untouched formula elsewhere that referenced the cut cell follows the move too
+
+**Given**
+- **A1** = `10`
+- **B1** = `=A1+5`
+
+**When** I click **A1**, then press `Control+x`, then click **A5**, then press `Control+v`
+
+**Then**
+- **A5** shows `10`
+- **B1** shows `15`
+- **B1** has formula `=A5+5`
