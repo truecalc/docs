@@ -31,6 +31,12 @@ jobs:
           git add -N content/docs/api/rest
           git diff --exit-code -- content/docs/api/rest
 
+      - name: gen-mcp-docs drift check
+        run: |
+          node scripts/gen-mcp-docs.mjs
+          git add -N content/docs/api/mcp
+          git diff --exit-code -- content/docs/api/mcp
+
       - name: test-docs (Learn examples)
         run: node scripts/test-docs.mjs
 

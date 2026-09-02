@@ -9,6 +9,7 @@
     "postinstall": "fumadocs-mdx",
     "test-docs": "node scripts/test-docs.mjs",
     "gen-docs": "node scripts/gen-docs.mjs",
+    "gen-mcp-docs": "node scripts/gen-mcp-docs.mjs",
     "sync:openapi": "node scripts/sync-openapi.mjs",
     "gen:openapi-docs": "node scripts/gen-openapi-docs.mjs",
     "lint:enrichment": "node scripts/lint-enrichment.mjs",
