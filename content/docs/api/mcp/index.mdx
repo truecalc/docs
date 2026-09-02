@@ -1,8 +1,64 @@
 ---
 title: MCP server
-description: TrueCalc tools for MCP clients such as Claude Desktop and Claude Code.
+description: TrueCalc's native MCP server exposes 66 tools for reading and editing a workbook to Claude Desktop, Claude Code, and other MCP clients.
+seoTitle: "TrueCalc MCP Server: 66 Tools for AI Agents to Edit Spreadsheets"
+seoDescription: "TrueCalc's MCP server gives AI agents 66 tools to read and edit a spreadsheet workbook — cells, formatting, charts, sheets, and more — over the Model Context Protocol."
+llmsDescription: "TrueCalc's MCP server: a native process exposing 66 tools (edit, format, structure, data, chart, sheet, read, history, file, view, clipboard) for reading and editing one open workbook, for MCP clients like Claude Desktop and Claude Code."
 ---
 
-Stub — this section will be generated from the `truecalc-mcp` tool schemas
-(`evaluate`, `validate`, `explain`, `batch_evaluate`, `list_functions`, and the
-upcoming `workbook_*` tools).
+TrueCalc ships a native [MCP](https://modelcontextprotocol.io) server: a
+process that speaks the Model Context Protocol and exposes spreadsheet
+editing and reading as **66 tools**, so an MCP-compatible agent can work with
+a TrueCalc workbook the same way a person would in the grid — setting cell
+values, formatting ranges, inserting charts, sorting data, and reading back
+what's there.
+
+Each tool is named after the operation it performs, grouped by area with a
+colon, like `edit:setCell` or `chart:insert`. The tables below group all 66
+by area; every tool has its own reference page with its full parameter list,
+return shape, and JSON Schema.
+
+## What it replaces
+
+This section used to describe a different, now-removed tool set from an
+earlier, unrelated crate. The server documented here is a new, native
+implementation with its own tool surface — nothing on this page describes
+that earlier one.
+
+## Connecting
+
+The server communicates over **stdio**: it's a subprocess your MCP client
+starts and talks to over standard input/output, not a network service you
+point a URL at. Because this is a newly shipped server, this page
+deliberately doesn't prescribe exact installation or configuration commands
+that haven't been verified end-to-end — consult the documentation for the
+MCP client you're using (Claude Desktop, Claude Code, or another) for how it
+expects a stdio MCP server to be registered, and point it at this server's
+executable.
+
+The server holds **one open workbook per process** — there's no
+multi-workbook session or workbook-ID concept in this tool surface. A client
+that needs to work with more than one workbook runs more than one server
+process.
+
+## The tool surface
+
+| Area | Tools | What it covers |
+| --- | --- | --- |
+| `edit` | 7 | Cell values: set, clear, fill down/right, find & replace |
+| `format` | 18 | Cell presentation: bold/italic/underline/strike, colors, number formats, borders, alignment, wrapping, banded ranges, conditional formatting |
+| `structure` | 10 | Rows, columns, and merged cells: insert, delete, reorder, merge, unmerge |
+| `read` | 9 | Reading back values, formulas, formats, charts, named ranges, banded ranges, conditional formats, and sheet metadata |
+| `data` | 7 | Filters, named ranges, data validation, sorting, and pivot tables |
+| `sheet` | 5 | Adding, deleting, renaming, reordering, and activating sheets |
+| `chart` | 3 | Inserting, updating, and removing charts |
+| `history` | 3 | Undo, redo, and restoring an earlier point in the edit history |
+| `file` | 2 | Importing and exporting a workbook — see each tool's own page for which formats are implemented today |
+| `clipboard` | 1 | Pasting previously copied or cut cells |
+| `view` | 1 | Page setup for printing |
+
+## Reference
+
+Every one of the 66 tools has its own page in the sidebar under **MCP**,
+listing its parameters, what it returns, and its full JSON Schema for
+callers that want to validate requests structurally rather than read prose.

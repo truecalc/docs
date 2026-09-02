@@ -1,0 +1,5572 @@
+{
+  "chart:insert": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet `range` is relative to.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The rectangle to bind the chart to, as A1 corners.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "chartType": {
+          "description": "The chart form to draw, a closed wire vocabulary.",
+          "type": "string"
+        },
+        "options": {
+          "description": "Renderer-specific knobs, opaque here on purpose, defaults to `{}`.",
+          "type": "object",
+          "additionalProperties": true,
+          "default": {}
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "chartType"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "chartId": {
+          "description": "The new chart's id.",
+          "type": "string"
+        },
+        "range": {
+          "description": "Canonicalized top-left/bottom-right corners.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "chartType": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "chartId",
+        "range",
+        "chartType"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "chart:update": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "chartId": {
+          "description": "The chart to patch.",
+          "type": "string"
+        },
+        "chartType": {
+          "description": "The new chart form, or omitted to leave it unchanged.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        },
+        "options": {
+          "description": "Replaces the chart's options wholesale, or omitted to leave them unchanged.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true,
+          "default": null
+        }
+      },
+      "required": [
+        "chartId"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "chartId": {
+          "type": "string"
+        },
+        "chartType": {
+          "description": "The EFFECTIVE, post-patch chart form, the patch's own value if it supplied one, else the chart's unchanged existing type.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chartId",
+        "chartType"
+      ]
+    }
+  },
+  "chart:remove": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "chartId": {
+          "description": "The chart to remove.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chartId"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "chartId": {
+          "type": "string"
+        },
+        "removed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "chartId",
+        "removed"
+      ]
+    }
+  },
+  "clipboard:paste": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "source": {
+          "description": "The cell the clipboard content was copied/cut FROM, e.g. `\"A1\"`.",
+          "type": "string"
+        },
+        "raw": {
+          "description": "The clipboard contents AT COPY/CUT TIME, a literal, a formula, leading `=`, or `\"\"`.",
+          "type": "string"
+        },
+        "target": {
+          "description": "The cell being pasted INTO, e.g. `\"B2\"`.",
+          "type": "string"
+        },
+        "cut": {
+          "description": "`false` = copy, the default, `true` = cut, move.",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "sheet",
+        "source",
+        "raw",
+        "target"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:setCell": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "a1": {
+          "description": "Target cell, e.g. `\"A1\"`.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Raw input: a literal, a formula, leading `=`, or `\"\"` to clear.",
+          "type": "string"
+        },
+        "inputMode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InputMode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "a1",
+        "value"
+      ],
+      "$defs": {
+        "InputMode": {
+          "type": "string",
+          "enum": [
+            "raw"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:clear": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:setValues": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "A rectangular block of raw strings, row-major, anchored at `anchor`.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "anchor": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "sheet",
+        "anchor",
+        "values"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:fillDown": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:fillRight": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "A range whose leading column is the fill source.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "edit:findReplace": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "description": "The scope to search, the whole sheet's occupied footprint when absent.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "query": {
+          "type": "string"
+        },
+        "replacement": {
+          "type": "string"
+        },
+        "matchCase": {
+          "type": "boolean",
+          "default": false
+        },
+        "useRegex": {
+          "type": "boolean",
+          "default": false
+        },
+        "matchEntireCell": {
+          "type": "boolean",
+          "default": false
+        },
+        "withinFormulas": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "sheet",
+        "query",
+        "replacement"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "description": "This command's own extra result fields.",
+      "type": "object",
+      "properties": {
+        "queryCompiled": {
+          "description": "Whether `query` compiled as a regex, always `true` when `useRegex` is `false`, since the literal form is always `regex::escape`d before compiling, escaping cannot fail.",
+          "type": "boolean"
+        },
+        "matched": {
+          "description": "How many scope cells' search text matched, counted whether or not the match was eligible to be written back.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "queryCompiled",
+        "matched"
+      ]
+    }
+  },
+  "edit:autofill": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "to": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet",
+        "source",
+        "to"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:fillColor": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The fill colour to set, or `null` to clear it.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Color"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setBold": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "Whether the range should be bold.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setItalic": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "Whether the range should be italic.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setStrike": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "Whether the range should be strike.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setUnderline": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "Whether the range should be underline.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:textColor": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The text colour to set, or `null` to clear it.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Color"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setFontFamily": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The font family to set. Non-nullable.",
+          "$ref": "#/$defs/FontFamily"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "FontFamily": {
+          "description": "A font family name.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setFontSize": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The font size to set. Non-nullable.",
+          "$ref": "#/$defs/FontSize"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "FontSize": {
+          "description": "A font size in points.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setBorders": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "mode": {
+          "description": "Which edges to target.",
+          "$ref": "#/$defs/BorderMode"
+        },
+        "edge": {
+          "description": "How the targeted edges should look. Required even for `mode: clear`, parsed but unused there.",
+          "$ref": "#/$defs/BorderEdge"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "mode",
+        "edge"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "BorderMode": {
+          "description": "The Sheets border-position options.",
+          "oneOf": [
+            {
+              "description": "Every edge of every cell in the range.",
+              "type": "string",
+              "const": "all"
+            },
+            {
+              "description": "The internal grid lines only, neither the range's outer perimeter.",
+              "type": "string",
+              "const": "inner"
+            },
+            {
+              "description": "The internal horizontal grid lines only, between rows.",
+              "type": "string",
+              "const": "horizontal"
+            },
+            {
+              "description": "The internal vertical grid lines only, between columns.",
+              "type": "string",
+              "const": "vertical"
+            },
+            {
+              "description": "The range's outer perimeter only.",
+              "type": "string",
+              "const": "outer"
+            },
+            {
+              "description": "The range's left edge only.",
+              "type": "string",
+              "const": "left"
+            },
+            {
+              "description": "The range's top edge only.",
+              "type": "string",
+              "const": "top"
+            },
+            {
+              "description": "The range's right edge only.",
+              "type": "string",
+              "const": "right"
+            },
+            {
+              "description": "The range's bottom edge only.",
+              "type": "string",
+              "const": "bottom"
+            },
+            {
+              "description": "Removes borders instead of drawing them, `edge` is parsed but never read for this mode.",
+              "type": "string",
+              "const": "clear"
+            }
+          ]
+        },
+        "BorderEdge": {
+          "description": "One drawn edge: how it looks.",
+          "type": "object",
+          "properties": {
+            "style": {
+              "description": "The line pattern.",
+              "$ref": "#/$defs/BorderStyle"
+            },
+            "weight": {
+              "description": "The line weight.",
+              "$ref": "#/$defs/BorderWeight"
+            },
+            "color": {
+              "description": "The line colour.",
+              "$ref": "#/$defs/Color"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "style",
+            "weight",
+            "color"
+          ]
+        },
+        "BorderStyle": {
+          "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
+          "oneOf": [
+            {
+              "description": "An unbroken line.",
+              "type": "string",
+              "const": "solid"
+            },
+            {
+              "description": "A dashed line.",
+              "type": "string",
+              "const": "dashed"
+            },
+            {
+              "description": "A dotted line.",
+              "type": "string",
+              "const": "dotted"
+            },
+            {
+              "description": "Two parallel lines.",
+              "type": "string",
+              "const": "double"
+            }
+          ]
+        },
+        "BorderWeight": {
+          "description": "Line weight, Sheets' thin / medium / thick.",
+          "oneOf": [
+            {
+              "description": "The default pen.",
+              "type": "string",
+              "const": "thin"
+            },
+            {
+              "description": "One step heavier.",
+              "type": "string",
+              "const": "medium"
+            },
+            {
+              "description": "The heaviest pen.",
+              "type": "string",
+              "const": "thick"
+            }
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setAlign": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The horizontal alignment to set, or `null` for automatic, type-based: numbers and dates right, everything else left.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "HAlign": {
+          "description": "Horizontal text alignment.",
+          "oneOf": [
+            {
+              "description": "Hug the left edge of the cell box.",
+              "type": "string",
+              "const": "left"
+            },
+            {
+              "description": "Centre within the cell box.",
+              "type": "string",
+              "const": "center"
+            },
+            {
+              "description": "Hug the right edge of the cell box.",
+              "type": "string",
+              "const": "right"
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setValign": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The vertical alignment to set, or `null` for Sheets' default, bottom.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "VAlign": {
+          "description": "Vertical text alignment within the cell box.",
+          "oneOf": [
+            {
+              "description": "Top of the cell box.",
+              "type": "string",
+              "const": "top"
+            },
+            {
+              "description": "Vertically centred.",
+              "type": "string",
+              "const": "middle"
+            },
+            {
+              "description": "Bottom of the cell box, Sheets' default.",
+              "type": "string",
+              "const": "bottom"
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setRotation": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The rotation in degrees to set, or `null`, equivalently `0` to clear it.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rotation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Rotation": {
+          "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setWrap": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "Whether the range should wrap text. `false` clears the attribute.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:clear": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "No `value` field.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setNumberFormat": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumberFormat"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "NumberFormat": {
+          "description": "A number-display category, studio#10.",
+          "oneOf": [
+            {
+              "description": "Grouped fixed-point: `1,234.57`.",
+              "type": "string",
+              "const": "number"
+            },
+            {
+              "description": "The value times 100, with a `%` suffix.",
+              "type": "string",
+              "const": "percent"
+            },
+            {
+              "description": "Grouped fixed-point with a currency symbol.",
+              "type": "string",
+              "const": "currency"
+            },
+            {
+              "description": "The value read as a date serial. **Implies date typing**.",
+              "type": "string",
+              "const": "date"
+            },
+            {
+              "description": "The value read as a date-time serial.",
+              "type": "string",
+              "const": "datetime"
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setDecimals": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "value": {
+          "description": "The decimal count to set. `0` is a real value here.",
+          "$ref": "#/$defs/Decimals"
+        },
+        "numberFormat": {
+          "description": "An optional companion category to set alongside `value` in the same call. Omitted, not merely `null` means \"leave the category alone\".",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NumberFormat"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "value"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Decimals": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "NumberFormat": {
+          "description": "A number-display category, studio#10.",
+          "oneOf": [
+            {
+              "description": "Grouped fixed-point: `1,234.57`.",
+              "type": "string",
+              "const": "number"
+            },
+            {
+              "description": "The value times 100, with a `%` suffix.",
+              "type": "string",
+              "const": "percent"
+            },
+            {
+              "description": "Grouped fixed-point with a currency symbol.",
+              "type": "string",
+              "const": "currency"
+            },
+            {
+              "description": "The value read as a date serial. **Implies date typing**.",
+              "type": "string",
+              "const": "date"
+            },
+            {
+              "description": "The value read as a date-time serial.",
+              "type": "string",
+              "const": "datetime"
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "format:setConditionalFormat": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "rule": {
+          "$ref": "#/$defs/RuleWire"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "rule"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "RuleWire": {
+          "description": "One conditional-format rule's wire shape.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "operator": {
+                  "$ref": "#/$defs/OperatorWire"
+                },
+                "value": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "value2": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "format": "double"
+                },
+                "style": {
+                  "$ref": "#/$defs/StyleWire"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "singleCondition"
+                }
+              },
+              "required": [
+                "kind",
+                "operator",
+                "value",
+                "style"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "minColor": {
+                  "$ref": "#/$defs/HexColor"
+                },
+                "maxColor": {
+                  "$ref": "#/$defs/HexColor"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "colorScale"
+                }
+              },
+              "required": [
+                "kind",
+                "minColor",
+                "maxColor"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "formula": {
+                  "type": "string"
+                },
+                "style": {
+                  "$ref": "#/$defs/StyleWire"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "customFormula"
+                }
+              },
+              "required": [
+                "kind",
+                "formula",
+                "style"
+              ]
+            }
+          ]
+        },
+        "OperatorWire": {
+          "description": "The wire shape of a single-condition rule's numeric comparison operator.",
+          "type": "string",
+          "enum": [
+            "greaterThan",
+            "greaterThanOrEqual",
+            "lessThan",
+            "lessThanOrEqual",
+            "equal",
+            "notEqual",
+            "between",
+            "notBetween"
+          ]
+        },
+        "StyleWire": {
+          "description": "A conditional-format rule's style, as the wire restricts it.",
+          "type": "object",
+          "properties": {
+            "bold": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "italic": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "underline": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "strike": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "color": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "HexColor": {
+          "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "id": {
+          "description": "The new rule's id.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "range",
+        "id"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "format:setBandedRange": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "style": {
+          "$ref": "#/$defs/StyleWire"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "style"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "StyleWire": {
+          "description": "The wire shape of a banded range's color assignment.",
+          "type": "object",
+          "properties": {
+            "headerColor": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "firstBandColor": {
+              "$ref": "#/$defs/HexColor"
+            },
+            "secondBandColor": {
+              "$ref": "#/$defs/HexColor"
+            },
+            "footerColor": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "firstBandColor",
+            "secondBandColor"
+          ]
+        },
+        "HexColor": {
+          "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
+          "type": "string"
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "id": {
+          "description": "The new banded range's id.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "range",
+        "id"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "structure:insertRow": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "`beforeRow`/`count`, matching studio's `insert-row` schema.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "beforeRow": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        }
+      },
+      "required": [
+        "sheet",
+        "beforeRow"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:insertColumn": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "beforeColumn": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        }
+      },
+      "required": [
+        "sheet",
+        "beforeColumn"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:deleteRow": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        }
+      },
+      "required": [
+        "sheet",
+        "row"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:deleteColumn": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "column": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        }
+      },
+      "required": [
+        "sheet",
+        "column"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:reorderRows": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "fromRow": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        },
+        "toRow": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "sheet",
+        "fromRow",
+        "toRow"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:reorderColumns": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "fromColumn": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "default": 1
+        },
+        "toColumn": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet",
+        "fromColumn",
+        "toColumn"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:mergeCells": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:mergeVertically": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:mergeHorizontally": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "structure:unmergeCells": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "The single cell, anchor or interior whose covering merge should be dissolved.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "a1": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet",
+        "a1"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "data:setValidation": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "rule": {
+          "description": "`Some(_)` sets a rule. Required on the wire, as literal `null` to clear.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireRule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "WireRule": {
+          "description": "The one rule kind on the wire today. because the tag is checked at deserialize time.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "values"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "description": "**Echoes `payload.range`/`payload.rule` verbatim**.",
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "rule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireRule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "WireRule": {
+          "description": "The one rule kind on the wire today. because the tag is checked at deserialize time.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "list"
+                }
+              },
+              "required": [
+                "kind",
+                "values"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "data:sortRange": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "description": "The rectangle to permute. Nothing outside it is read or written.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "sortColumn": {
+          "description": "The column whose values order the rows, as an A1 column letter, `\"A\"`, `\"AB\"`. Must lie inside `range`.",
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/SortDirection"
+        }
+      },
+      "required": [
+        "sheet",
+        "range",
+        "sortColumn",
+        "direction"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "SortDirection": {
+          "description": "Sort order for `sortColumn`'s values.",
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "description": "The normalized rectangle actually sorted.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "sortColumn": {
+          "description": "The sort column, canonical uppercase.",
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/SortDirection"
+        }
+      },
+      "required": [
+        "range",
+        "sortColumn",
+        "direction"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "SortDirection": {
+          "description": "Sort order for `sortColumn`'s values.",
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        }
+      }
+    }
+  },
+  "data:setNamedRange": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "`commandId` is not modeled.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet `range` is relative to.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The named range's identifier, e.g. `\"MyRange\"`.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The rectangle to bind `name` to.",
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "name",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Echoed exactly as the caller sent it, never trimmed or re-cased.",
+          "type": "string"
+        },
+        "range": {
+          "description": "Not a raw echo of whatever case or corner order `range.from`/`range.to` arrived in.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "created": {
+          "description": "`true` when this call DEFINED a brand-new name, `false` when it RETARGETED an existing one.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "range",
+        "created"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "data:deleteNamedRange": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "name": {
+          "description": "The named range to remove, e.g. `\"MyRange\"`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet",
+        "name"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "removed": {
+          "description": "Whether a named range by this name actually existed and was removed.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "removed"
+      ]
+    }
+  },
+  "data:setFilter": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "description": "The filter's own range, its FIRST row is the un-hideable header row. Must span more than one row, a single-row range has no body rows to filter.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "criteria": {
+          "description": "Per-column checked-value lists to apply right after creating the filter. A column omitted here starts unfiltered.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Criterion"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Criterion": {
+          "description": "One column's checked-value list.",
+          "type": "object",
+          "properties": {
+            "column": {
+              "description": "An A1 column letter INSIDE `range`, e.g. `\"B\"`, case-insensitive.",
+              "type": "string"
+            },
+            "values": {
+              "description": "The raw values to keep VISIBLE, checked in this column, every value not listed here hides its row.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "column",
+            "values"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "criteria": {
+          "description": "Echoed back exactly as applied.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Criterion"
+          }
+        }
+      },
+      "required": [
+        "range",
+        "criteria"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Criterion": {
+          "description": "One column's checked-value list.",
+          "type": "object",
+          "properties": {
+            "column": {
+              "description": "An A1 column letter INSIDE `range`, e.g. `\"B\"`, case-insensitive.",
+              "type": "string"
+            },
+            "values": {
+              "description": "The raw values to keep VISIBLE, checked in this column, every value not listed here hides its row.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "column",
+            "values"
+          ]
+        }
+      }
+    }
+  },
+  "data:clearFilter": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "removed": {
+          "description": "A no-op, `false` if `sheet` had no filter.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "removed"
+      ]
+    }
+  },
+  "data:insertPivot": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "$ref": "#/$defs/CellRange"
+        },
+        "destSheet": {
+          "description": "The newly-created destination sheet's name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "range",
+        "destSheet"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "file:export": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "`commandId` is dropped, the same Batch-0 convention `edit::set_cell::Payload` already uses.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet named on the wire, validated to exist for every `format`.",
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/$defs/Format"
+        }
+      },
+      "required": [
+        "sheet",
+        "format"
+      ],
+      "$defs": {
+        "Format": {
+          "description": "Every variant PARSES.",
+          "type": "string",
+          "enum": [
+            "json",
+            "csv",
+            "xlsx"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "description": "`file:export`'s typed result.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/$defs/Format"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "content"
+      ],
+      "$defs": {
+        "Format": {
+          "description": "Every variant PARSES.",
+          "type": "string",
+          "enum": [
+            "json",
+            "csv",
+            "xlsx"
+          ]
+        }
+      }
+    }
+  },
+  "file:import": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "format": {
+          "$ref": "#/$defs/Format"
+        },
+        "encoding": {
+          "$ref": "#/$defs/Encoding",
+          "default": "text"
+        },
+        "data": {
+          "type": "string"
+        },
+        "sheetName": {
+          "description": "Base name for the created sheet. Omitted defaults to `\"Imported\"`. NOT validated the way `sheet:add`'s `name` field is.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "format",
+        "data"
+      ],
+      "$defs": {
+        "Format": {
+          "type": "string",
+          "enum": [
+            "json",
+            "csv",
+            "tsv",
+            "xlsx"
+          ]
+        },
+        "Encoding": {
+          "description": "How `data` is encoded on the wire. `base64` is required for `xlsx`, binary, and allowed for `csv`/`tsv`/`json` too if the caller's bytes happen to be base64-wrapped UTF-8.",
+          "type": "string",
+          "enum": [
+            "text",
+            "base64"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "description": "This command only ever creates one.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The created sheet's final, deduped, sanitized name.",
+          "type": "string"
+        },
+        "cellsWritten": {
+          "description": "Computed by reading the engine back after the write, never a count of attempted writes, the same discipline `sheet:add`/`sheet:rename`/ `edit:setCell` all already apply, never assume a write landed.",
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "sheet",
+        "cellsWritten"
+      ]
+    }
+  },
+  "read:getRange": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The inclusive rectangle to read.",
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "description": "The rectangle this call answered for, completely.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "cells": {
+          "description": "One entry per address in `range`, keyed by its plain A1 form.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Cell"
+          }
+        }
+      },
+      "required": [
+        "range",
+        "cells"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Cell": {
+          "description": "One cell's read-back.",
+          "type": "object",
+          "properties": {
+            "value": {
+              "description": "`unknown` already covers the `null` case too, so no separate `| null` is needed."
+            },
+            "display": {
+              "description": "**Known Batch-0 approximation**. Not a real number-format-aware render, a plain literal rendering of `value`.",
+              "type": "string"
+            },
+            "formula": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "rawInput": {
+              "description": "The formula string when present, otherwise the same approximation as `display`.",
+              "type": "string"
+            },
+            "format": {
+              "description": "This cell's effective format.",
+              "$ref": "#/$defs/CellFormat"
+            }
+          },
+          "required": [
+            "display",
+            "rawInput",
+            "format"
+          ]
+        },
+        "CellFormat": {
+          "description": "A cell's grid-owned presentation.",
+          "type": "object",
+          "properties": {
+            "bold": {
+              "description": "Bold text. Absent or `false` = not bold.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "italic": {
+              "description": "Italic text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "strike": {
+              "description": "Struck-through text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "underline": {
+              "description": "Underlined text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "description": "Font family. Absent = the grid's default face.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontFamily"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontSize": {
+              "description": "Font size in points. Absent = the grid's default size.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontSize"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "borders": {
+              "description": "Per-edge cell borders. Absent = no borders, never present-and-empty.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CellBorders"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "description": "Text colour. Absent = the grid's default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "description": "Background fill. Absent = none, the grid's own background shows.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "numberFormat": {
+              "description": "Number-display category. Absent = automatic, the engine's raw display.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NumberFormat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decimals": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Decimals"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "align": {
+              "description": "Horizontal alignment. Absent = automatic, numbers right, else left.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "valign": {
+              "description": "Vertical alignment. Absent = bottom, Sheets' default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/VAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "Wrap text into lines within the column width, growing the row to fit.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rotation": {
+              "description": "Text rotation in degrees. Absent, or `0` = none.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rotation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "FontFamily": {
+          "description": "A font family name.",
+          "type": "string"
+        },
+        "FontSize": {
+          "description": "A font size in points.",
+          "type": "number",
+          "format": "double"
+        },
+        "CellBorders": {
+          "description": "A cell's borders, any **non-empty** subset of the four edges.",
+          "type": "object",
+          "properties": {
+            "bottom": {
+              "description": "The bottom edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "left": {
+              "description": "The left edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "right": {
+              "description": "The right edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "top": {
+              "description": "The top edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "BorderEdge": {
+          "description": "One drawn edge: how it looks.",
+          "type": "object",
+          "properties": {
+            "style": {
+              "description": "The line pattern.",
+              "$ref": "#/$defs/BorderStyle"
+            },
+            "weight": {
+              "description": "The line weight.",
+              "$ref": "#/$defs/BorderWeight"
+            },
+            "color": {
+              "description": "The line colour.",
+              "$ref": "#/$defs/Color"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "style",
+            "weight",
+            "color"
+          ]
+        },
+        "BorderStyle": {
+          "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
+          "oneOf": [
+            {
+              "description": "An unbroken line.",
+              "type": "string",
+              "const": "solid"
+            },
+            {
+              "description": "A dashed line.",
+              "type": "string",
+              "const": "dashed"
+            },
+            {
+              "description": "A dotted line.",
+              "type": "string",
+              "const": "dotted"
+            },
+            {
+              "description": "Two parallel lines.",
+              "type": "string",
+              "const": "double"
+            }
+          ]
+        },
+        "BorderWeight": {
+          "description": "Line weight, Sheets' thin / medium / thick.",
+          "oneOf": [
+            {
+              "description": "The default pen.",
+              "type": "string",
+              "const": "thin"
+            },
+            {
+              "description": "One step heavier.",
+              "type": "string",
+              "const": "medium"
+            },
+            {
+              "description": "The heaviest pen.",
+              "type": "string",
+              "const": "thick"
+            }
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        },
+        "NumberFormat": {
+          "description": "A number-display category, studio#10.",
+          "oneOf": [
+            {
+              "description": "Grouped fixed-point: `1,234.57`.",
+              "type": "string",
+              "const": "number"
+            },
+            {
+              "description": "The value times 100, with a `%` suffix.",
+              "type": "string",
+              "const": "percent"
+            },
+            {
+              "description": "Grouped fixed-point with a currency symbol.",
+              "type": "string",
+              "const": "currency"
+            },
+            {
+              "description": "The value read as a date serial. **Implies date typing**.",
+              "type": "string",
+              "const": "date"
+            },
+            {
+              "description": "The value read as a date-time serial.",
+              "type": "string",
+              "const": "datetime"
+            }
+          ]
+        },
+        "Decimals": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "HAlign": {
+          "description": "Horizontal text alignment.",
+          "oneOf": [
+            {
+              "description": "Hug the left edge of the cell box.",
+              "type": "string",
+              "const": "left"
+            },
+            {
+              "description": "Centre within the cell box.",
+              "type": "string",
+              "const": "center"
+            },
+            {
+              "description": "Hug the right edge of the cell box.",
+              "type": "string",
+              "const": "right"
+            }
+          ]
+        },
+        "VAlign": {
+          "description": "Vertical text alignment within the cell box.",
+          "oneOf": [
+            {
+              "description": "Top of the cell box.",
+              "type": "string",
+              "const": "top"
+            },
+            {
+              "description": "Vertically centred.",
+              "type": "string",
+              "const": "middle"
+            },
+            {
+              "description": "Bottom of the cell box, Sheets' default.",
+              "type": "string",
+              "const": "bottom"
+            }
+          ]
+        },
+        "Rotation": {
+          "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    }
+  },
+  "read:getValues": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The inclusive rectangle to read.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "layers": {
+          "$ref": "#/$defs/Layers",
+          "default": "values"
+        },
+        "encoding": {
+          "$ref": "#/$defs/Encoding",
+          "default": "rows"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Layers": {
+          "description": "Which layer(s) to read. Google Sheets' own `getValues()` default.",
+          "type": "string",
+          "enum": [
+            "values",
+            "formulas",
+            "both"
+          ]
+        },
+        "Encoding": {
+          "description": "How to shape `values`/`formulas` in the response.",
+          "oneOf": [
+            {
+              "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s `i`-th row, `j`-th column.",
+              "type": "string",
+              "const": "rows"
+            },
+            {
+              "description": "A map keyed by plain A1 form, `\"A1\"`, one entry per address in `range`.",
+              "type": "string",
+              "const": "a1"
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "description": "The rectangle this call answered for, completely.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "rows": {
+          "description": "`range`'s row count.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "cols": {
+          "description": "`range`'s column count.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "encoding": {
+          "description": "Echoes the requested shape, so a caller reading `values`/`formulas` out of band still knows how to interpret it.",
+          "$ref": "#/$defs/Encoding"
+        },
+        "nonEmpty": {
+          "description": "Every address in `range` whose display text is non-empty or which holds a formula, in row-major, reading order, the sparse summary a caller wants before paying to decode a mostly-empty rectangle.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "values": {
+          "description": "Present iff `layers` was `values`/`both`. Row-major `Vec<Vec<String>>` or an A1-keyed map, depending on `encoding`."
+        },
+        "formulas": {
+          "description": "Present iff `layers` was `formulas`/`both`. Same shape rule as `values`, an empty string where a cell holds no formula."
+        }
+      },
+      "required": [
+        "range",
+        "rows",
+        "cols",
+        "encoding",
+        "nonEmpty"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Encoding": {
+          "description": "How to shape `values`/`formulas` in the response.",
+          "oneOf": [
+            {
+              "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s `i`-th row, `j`-th column.",
+              "type": "string",
+              "const": "rows"
+            },
+            {
+              "description": "A map keyed by plain A1 form, `\"A1\"`, one entry per address in `range`.",
+              "type": "string",
+              "const": "a1"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "read:getSheets": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "Deliberately empty. Accepts any JSON object, including `{}`, ignoring unknown fields.",
+      "type": "object"
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "sheets": {
+          "description": "Every sheet, in tab order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SheetInfo"
+          }
+        }
+      },
+      "required": [
+        "sheets"
+      ],
+      "$defs": {
+        "SheetInfo": {
+          "description": "One sheet's identity and tab position.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "The sheet's name, exactly as stored.",
+              "type": "string"
+            },
+            "order": {
+              "description": "0-based tab position.",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "name",
+            "order"
+          ]
+        }
+      }
+    }
+  },
+  "read:getFormats": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        },
+        "range": {
+          "description": "The inclusive rectangle to read.",
+          "$ref": "#/$defs/CellRange"
+        }
+      },
+      "required": [
+        "sheet",
+        "range"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "range": {
+          "description": "The rectangle this call answered for, completely.",
+          "$ref": "#/$defs/CellRange"
+        },
+        "cells": {
+          "description": "One entry per address in `range`, keyed by its plain A1 form.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/Cell"
+          }
+        }
+      },
+      "required": [
+        "range",
+        "cells"
+      ],
+      "$defs": {
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Cell": {
+          "description": "One cell's format read-back.",
+          "type": "object",
+          "properties": {
+            "format": {
+              "description": "This cell's own stored format, grid-owned presentation only.",
+              "$ref": "#/$defs/CellFormat"
+            },
+            "effectiveFormat": {
+              "description": "**Known Batch-0 approximation**. Always equal to `format` today, not yet a real base → banded → conditional merge.",
+              "$ref": "#/$defs/CellFormat"
+            },
+            "merged": {
+              "description": "Whether this cell falls inside a merged range.",
+              "type": "boolean"
+            },
+            "spilled": {
+              "description": "Whether this cell is a spill anchor, an authored formula whose stored array occupies more than itself or one of the cells it spills into, an \"echo\" cell.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "format",
+            "effectiveFormat",
+            "merged",
+            "spilled"
+          ]
+        },
+        "CellFormat": {
+          "description": "A cell's grid-owned presentation.",
+          "type": "object",
+          "properties": {
+            "bold": {
+              "description": "Bold text. Absent or `false` = not bold.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "italic": {
+              "description": "Italic text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "strike": {
+              "description": "Struck-through text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "underline": {
+              "description": "Underlined text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "description": "Font family. Absent = the grid's default face.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontFamily"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontSize": {
+              "description": "Font size in points. Absent = the grid's default size.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontSize"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "borders": {
+              "description": "Per-edge cell borders. Absent = no borders, never present-and-empty.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CellBorders"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "description": "Text colour. Absent = the grid's default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "description": "Background fill. Absent = none, the grid's own background shows.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "numberFormat": {
+              "description": "Number-display category. Absent = automatic, the engine's raw display.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NumberFormat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decimals": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Decimals"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "align": {
+              "description": "Horizontal alignment. Absent = automatic, numbers right, else left.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "valign": {
+              "description": "Vertical alignment. Absent = bottom, Sheets' default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/VAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "Wrap text into lines within the column width, growing the row to fit.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rotation": {
+              "description": "Text rotation in degrees. Absent, or `0` = none.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rotation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "FontFamily": {
+          "description": "A font family name.",
+          "type": "string"
+        },
+        "FontSize": {
+          "description": "A font size in points.",
+          "type": "number",
+          "format": "double"
+        },
+        "CellBorders": {
+          "description": "A cell's borders, any **non-empty** subset of the four edges.",
+          "type": "object",
+          "properties": {
+            "bottom": {
+              "description": "The bottom edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "left": {
+              "description": "The left edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "right": {
+              "description": "The right edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "top": {
+              "description": "The top edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "BorderEdge": {
+          "description": "One drawn edge: how it looks.",
+          "type": "object",
+          "properties": {
+            "style": {
+              "description": "The line pattern.",
+              "$ref": "#/$defs/BorderStyle"
+            },
+            "weight": {
+              "description": "The line weight.",
+              "$ref": "#/$defs/BorderWeight"
+            },
+            "color": {
+              "description": "The line colour.",
+              "$ref": "#/$defs/Color"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "style",
+            "weight",
+            "color"
+          ]
+        },
+        "BorderStyle": {
+          "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
+          "oneOf": [
+            {
+              "description": "An unbroken line.",
+              "type": "string",
+              "const": "solid"
+            },
+            {
+              "description": "A dashed line.",
+              "type": "string",
+              "const": "dashed"
+            },
+            {
+              "description": "A dotted line.",
+              "type": "string",
+              "const": "dotted"
+            },
+            {
+              "description": "Two parallel lines.",
+              "type": "string",
+              "const": "double"
+            }
+          ]
+        },
+        "BorderWeight": {
+          "description": "Line weight, Sheets' thin / medium / thick.",
+          "oneOf": [
+            {
+              "description": "The default pen.",
+              "type": "string",
+              "const": "thin"
+            },
+            {
+              "description": "One step heavier.",
+              "type": "string",
+              "const": "medium"
+            },
+            {
+              "description": "The heaviest pen.",
+              "type": "string",
+              "const": "thick"
+            }
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        },
+        "NumberFormat": {
+          "description": "A number-display category, studio#10.",
+          "oneOf": [
+            {
+              "description": "Grouped fixed-point: `1,234.57`.",
+              "type": "string",
+              "const": "number"
+            },
+            {
+              "description": "The value times 100, with a `%` suffix.",
+              "type": "string",
+              "const": "percent"
+            },
+            {
+              "description": "Grouped fixed-point with a currency symbol.",
+              "type": "string",
+              "const": "currency"
+            },
+            {
+              "description": "The value read as a date serial. **Implies date typing**.",
+              "type": "string",
+              "const": "date"
+            },
+            {
+              "description": "The value read as a date-time serial.",
+              "type": "string",
+              "const": "datetime"
+            }
+          ]
+        },
+        "Decimals": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "HAlign": {
+          "description": "Horizontal text alignment.",
+          "oneOf": [
+            {
+              "description": "Hug the left edge of the cell box.",
+              "type": "string",
+              "const": "left"
+            },
+            {
+              "description": "Centre within the cell box.",
+              "type": "string",
+              "const": "center"
+            },
+            {
+              "description": "Hug the right edge of the cell box.",
+              "type": "string",
+              "const": "right"
+            }
+          ]
+        },
+        "VAlign": {
+          "description": "Vertical text alignment within the cell box.",
+          "oneOf": [
+            {
+              "description": "Top of the cell box.",
+              "type": "string",
+              "const": "top"
+            },
+            {
+              "description": "Vertically centred.",
+              "type": "string",
+              "const": "middle"
+            },
+            {
+              "description": "Bottom of the cell box, Sheets' default.",
+              "type": "string",
+              "const": "bottom"
+            }
+          ]
+        },
+        "Rotation": {
+          "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    }
+  },
+  "read:getCharts": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "No `commandId`/OCC field modeled.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "charts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChartInfo"
+          }
+        }
+      },
+      "required": [
+        "charts"
+      ],
+      "$defs": {
+        "ChartInfo": {
+          "description": "One chart's identity, placement, form, and renderer options.",
+          "type": "object",
+          "properties": {
+            "chartId": {
+              "type": "string"
+            },
+            "range": {
+              "description": "The chart's target rectangle, A1-rendered.",
+              "$ref": "#/$defs/CellRange"
+            },
+            "chartType": {
+              "description": "Which chart form to draw, e.g. `\"column\"`, `\"box-plot\"`.",
+              "type": "string"
+            },
+            "options": {
+              "description": "Renderer-specific knobs, opaque, unvalidated by this read, matches the TS source's own `options: c.options` passthrough."
+            }
+          },
+          "required": [
+            "chartId",
+            "range",
+            "chartType",
+            "options"
+          ]
+        },
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "read:getConditionalFormats": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "rules": {
+          "description": "Every conditional-format rule on `sheet`, in real precedence order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConditionalFormatRuleInfo"
+          }
+        }
+      },
+      "required": [
+        "rules"
+      ],
+      "$defs": {
+        "ConditionalFormatRuleInfo": {
+          "description": "One conditional-format rule's identity, target rectangle, and definition.",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "range": {
+              "$ref": "#/$defs/CellRange"
+            },
+            "rule": {
+              "$ref": "#/$defs/RuleOut"
+            }
+          },
+          "required": [
+            "id",
+            "range",
+            "rule"
+          ]
+        },
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "RuleOut": {
+          "description": "One rule's definition, as reported back by this command.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "operator": {
+                  "$ref": "#/$defs/OperatorOut"
+                },
+                "value": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "value2": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "format": "double"
+                },
+                "style": {
+                  "$ref": "#/$defs/CellFormat"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "singleCondition"
+                }
+              },
+              "required": [
+                "kind",
+                "operator",
+                "value",
+                "style"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "minColor": {
+                  "$ref": "#/$defs/HexColor"
+                },
+                "maxColor": {
+                  "$ref": "#/$defs/HexColor"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "colorScale"
+                }
+              },
+              "required": [
+                "kind",
+                "minColor",
+                "maxColor"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "formula": {
+                  "type": "string"
+                },
+                "style": {
+                  "$ref": "#/$defs/CellFormat"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "customFormula"
+                }
+              },
+              "required": [
+                "kind",
+                "formula",
+                "style"
+              ]
+            }
+          ]
+        },
+        "OperatorOut": {
+          "description": "A single-condition rule's operator, as reported back by this command.",
+          "type": "string",
+          "enum": [
+            "greaterThan",
+            "greaterThanOrEqual",
+            "lessThan",
+            "lessThanOrEqual",
+            "equal",
+            "notEqual",
+            "between",
+            "notBetween"
+          ]
+        },
+        "CellFormat": {
+          "description": "A cell's grid-owned presentation.",
+          "type": "object",
+          "properties": {
+            "bold": {
+              "description": "Bold text. Absent or `false` = not bold.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "italic": {
+              "description": "Italic text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "strike": {
+              "description": "Struck-through text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "underline": {
+              "description": "Underlined text.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "fontFamily": {
+              "description": "Font family. Absent = the grid's default face.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontFamily"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fontSize": {
+              "description": "Font size in points. Absent = the grid's default size.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/FontSize"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "borders": {
+              "description": "Per-edge cell borders. Absent = no borders, never present-and-empty.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CellBorders"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "color": {
+              "description": "Text colour. Absent = the grid's default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fill": {
+              "description": "Background fill. Absent = none, the grid's own background shows.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Color"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "numberFormat": {
+              "description": "Number-display category. Absent = automatic, the engine's raw display.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/NumberFormat"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decimals": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Decimals"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "align": {
+              "description": "Horizontal alignment. Absent = automatic, numbers right, else left.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "valign": {
+              "description": "Vertical alignment. Absent = bottom, Sheets' default.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/VAlign"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wrap": {
+              "description": "Wrap text into lines within the column width, growing the row to fit.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "rotation": {
+              "description": "Text rotation in degrees. Absent, or `0` = none.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rotation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "FontFamily": {
+          "description": "A font family name.",
+          "type": "string"
+        },
+        "FontSize": {
+          "description": "A font size in points.",
+          "type": "number",
+          "format": "double"
+        },
+        "CellBorders": {
+          "description": "A cell's borders, any **non-empty** subset of the four edges.",
+          "type": "object",
+          "properties": {
+            "bottom": {
+              "description": "The bottom edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "left": {
+              "description": "The left edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "right": {
+              "description": "The right edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "top": {
+              "description": "The top edge, if drawn.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/BorderEdge"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "BorderEdge": {
+          "description": "One drawn edge: how it looks.",
+          "type": "object",
+          "properties": {
+            "style": {
+              "description": "The line pattern.",
+              "$ref": "#/$defs/BorderStyle"
+            },
+            "weight": {
+              "description": "The line weight.",
+              "$ref": "#/$defs/BorderWeight"
+            },
+            "color": {
+              "description": "The line colour.",
+              "$ref": "#/$defs/Color"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "style",
+            "weight",
+            "color"
+          ]
+        },
+        "BorderStyle": {
+          "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
+          "oneOf": [
+            {
+              "description": "An unbroken line.",
+              "type": "string",
+              "const": "solid"
+            },
+            {
+              "description": "A dashed line.",
+              "type": "string",
+              "const": "dashed"
+            },
+            {
+              "description": "A dotted line.",
+              "type": "string",
+              "const": "dotted"
+            },
+            {
+              "description": "Two parallel lines.",
+              "type": "string",
+              "const": "double"
+            }
+          ]
+        },
+        "BorderWeight": {
+          "description": "Line weight, Sheets' thin / medium / thick.",
+          "oneOf": [
+            {
+              "description": "The default pen.",
+              "type": "string",
+              "const": "thin"
+            },
+            {
+              "description": "One step heavier.",
+              "type": "string",
+              "const": "medium"
+            },
+            {
+              "description": "The heaviest pen.",
+              "type": "string",
+              "const": "thick"
+            }
+          ]
+        },
+        "Color": {
+          "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
+          "type": "string"
+        },
+        "NumberFormat": {
+          "description": "A number-display category, studio#10.",
+          "oneOf": [
+            {
+              "description": "Grouped fixed-point: `1,234.57`.",
+              "type": "string",
+              "const": "number"
+            },
+            {
+              "description": "The value times 100, with a `%` suffix.",
+              "type": "string",
+              "const": "percent"
+            },
+            {
+              "description": "Grouped fixed-point with a currency symbol.",
+              "type": "string",
+              "const": "currency"
+            },
+            {
+              "description": "The value read as a date serial. **Implies date typing**.",
+              "type": "string",
+              "const": "date"
+            },
+            {
+              "description": "The value read as a date-time serial.",
+              "type": "string",
+              "const": "datetime"
+            }
+          ]
+        },
+        "Decimals": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "HAlign": {
+          "description": "Horizontal text alignment.",
+          "oneOf": [
+            {
+              "description": "Hug the left edge of the cell box.",
+              "type": "string",
+              "const": "left"
+            },
+            {
+              "description": "Centre within the cell box.",
+              "type": "string",
+              "const": "center"
+            },
+            {
+              "description": "Hug the right edge of the cell box.",
+              "type": "string",
+              "const": "right"
+            }
+          ]
+        },
+        "VAlign": {
+          "description": "Vertical text alignment within the cell box.",
+          "oneOf": [
+            {
+              "description": "Top of the cell box.",
+              "type": "string",
+              "const": "top"
+            },
+            {
+              "description": "Vertically centred.",
+              "type": "string",
+              "const": "middle"
+            },
+            {
+              "description": "Bottom of the cell box, Sheets' default.",
+              "type": "string",
+              "const": "bottom"
+            }
+          ]
+        },
+        "Rotation": {
+          "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
+          "type": "number",
+          "format": "double"
+        },
+        "HexColor": {
+          "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "read:getBandedRanges": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "bandedRanges": {
+          "description": "Every banded range on `sheet`, in real precedence order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BandedRangeInfo"
+          }
+        }
+      },
+      "required": [
+        "bandedRanges"
+      ],
+      "$defs": {
+        "BandedRangeInfo": {
+          "description": "One banded range's identity, target rectangle, and style.",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "range": {
+              "$ref": "#/$defs/CellRange"
+            },
+            "style": {
+              "$ref": "#/$defs/StyleOut"
+            }
+          },
+          "required": [
+            "id",
+            "range",
+            "style"
+          ]
+        },
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "StyleOut": {
+          "description": "A banded range's color assignment, as reported back by this command.",
+          "type": "object",
+          "properties": {
+            "headerColor": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "firstBandColor": {
+              "$ref": "#/$defs/HexColor"
+            },
+            "secondBandColor": {
+              "$ref": "#/$defs/HexColor"
+            },
+            "footerColor": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/HexColor"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "firstBandColor",
+            "secondBandColor"
+          ]
+        },
+        "HexColor": {
+          "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "read:getNamedRanges": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "Deliberately empty.",
+      "type": "object"
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "namedRanges": {
+          "description": "Every named range, in declaration order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NamedRangeInfo"
+          }
+        }
+      },
+      "required": [
+        "namedRanges"
+      ],
+      "$defs": {
+        "NamedRangeInfo": {
+          "description": "One named range's identity and real target.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "sheet": {
+              "description": "The named range's REAL target sheet, parsed from its own `ref`.",
+              "type": "string"
+            },
+            "range": {
+              "description": "The named range's target rectangle.",
+              "$ref": "#/$defs/CellRange"
+            }
+          },
+          "required": [
+            "name",
+            "sheet",
+            "range"
+          ]
+        },
+        "CellRange": {
+          "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Top-left cell, e.g. `\"A1\"`.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Bottom-right cell, e.g. `\"B3\"`.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        }
+      }
+    }
+  },
+  "read:getExtent": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "description": "The USED extent, not a capacity.",
+      "type": "object",
+      "properties": {
+        "rows": {
+          "description": "The highest populated row, 1-based, or `0` if the sheet is empty.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "cols": {
+          "description": "The highest populated column, 1-based, or `0` if the sheet is empty.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "rows",
+        "cols"
+      ]
+    }
+  },
+  "sheet:add": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name to give the new sheet. When present, this command trims it before validating. An explicit whitespace-only name is therefore refused as malformed, empty after trim, never silently treated as omitted.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "sheet:delete": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet to delete.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "sheet:rename": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet to rename. This is the sheet's NAME.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name to rename it to.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet",
+        "name"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "sheet:reorder": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet to move. This is the sheet's NAME.",
+          "type": "string"
+        },
+        "direction": {
+          "description": "Which way to move it, one tab position, never an absolute position.",
+          "$ref": "#/$defs/Direction"
+        }
+      },
+      "required": [
+        "sheet",
+        "direction"
+      ],
+      "$defs": {
+        "Direction": {
+          "description": "Which way to move the sheet.",
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ]
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "sheet:setActive": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "The sheet to activate.",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "description": "The sheet to make active.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sheet"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "view:setPageSetup": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "sheet": {
+          "type": "string"
+        },
+        "orientation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireOrientation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scale": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireScale"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "marginsMode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireMarginsMode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "customMargins": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireMargins"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "printArea": {
+          "description": "Three states.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WirePrintArea"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showGridlines": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "header": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireHeaderFooter"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "footer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WireHeaderFooter"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sheet"
+      ],
+      "$defs": {
+        "WireOrientation": {
+          "type": "string",
+          "enum": [
+            "portrait",
+            "landscape"
+          ]
+        },
+        "WireScale": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "$ref": "#/$defs/WireScaleMode"
+            },
+            "percent": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "format": "double"
+            }
+          },
+          "required": [
+            "mode"
+          ]
+        },
+        "WireScaleMode": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "fitWidth",
+            "custom"
+          ]
+        },
+        "WireMarginsMode": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "narrow",
+            "custom"
+          ]
+        },
+        "WireMargins": {
+          "type": "object",
+          "properties": {
+            "top": {
+              "type": "number",
+              "format": "double"
+            },
+            "right": {
+              "type": "number",
+              "format": "double"
+            },
+            "bottom": {
+              "type": "number",
+              "format": "double"
+            },
+            "left": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "required": [
+            "top",
+            "right",
+            "bottom",
+            "left"
+          ]
+        },
+        "WirePrintArea": {
+          "type": "object",
+          "properties": {
+            "r0": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "r1": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "c0": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "c1": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "r0",
+            "r1",
+            "c0",
+            "c1"
+          ]
+        },
+        "WireHeaderFooter": {
+          "type": "object",
+          "properties": {
+            "left": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "center": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "right": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "null",
+      "type": "null"
+    }
+  },
+  "history:undo": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "Deliberately empty.",
+      "type": "object"
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "undone": {
+          "description": "`true` only when something was actually popped AND fully reverted. `false` for a genuinely empty undo stack, a normal, non-error outcome, not a refusal.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "undone"
+      ]
+    }
+  },
+  "history:redo": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "description": "Deliberately empty.",
+      "type": "object"
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "redone": {
+          "description": "`true` only when something was actually popped AND fully reapplied. `false` for a genuinely empty redo stack, a normal, non-error outcome, not a refusal.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "redone"
+      ]
+    }
+  },
+  "history:restore": {
+    "payload": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Payload",
+      "type": "object",
+      "properties": {
+        "steps": {
+          "description": "How many undo steps to walk back, from wherever the stack is right now. `0` is a legal, trivially-successful no-op.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "steps"
+      ]
+    },
+    "output": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "stepsRequested": {
+          "description": "Echoed from the payload.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "stepsCompleted": {
+          "description": "How many steps actually completed, equal to `stepsRequested` on full success.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "stepsRequested",
+        "stepsCompleted"
+      ]
+    }
+  }
+}
