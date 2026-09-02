@@ -28,15 +28,14 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`chart:update`'s wire payload — see this module's own doc for why this\ndrops the TS source's `sheet` field.",
   "type": "object",
   "properties": {
     "chartId": {
-      "description": "The chart to patch — the FULL `<sheet>!<id>` composite\n[`Document::insert_chart`] returned.",
+      "description": "The chart to patch.",
       "type": "string"
     },
     "chartType": {
-      "description": "The new chart form, or omitted to leave it unchanged. A plain wire\n`String`, parsed via [`chart_type_from_wire`] — see `chart::insert`'s\nown doc on why [`ChartType`] is never a direct field type.",
+      "description": "The new chart form, or omitted to leave it unchanged.",
       "type": [
         "string",
         "null"
@@ -44,7 +43,7 @@ Request payload, as JSON Schema:
       "default": null
     },
     "options": {
-      "description": "Replaces the chart's options wholesale, or omitted to leave them\nunchanged.\n\n`ChartOptions` is a `serde_json::Map` type alias — ts-rs cannot derive\non it (this crate's `ts-rs` dependency does not enable the\n`serde-json-impl` feature), so `#[ts(type = \"...\")]` hand-writes its TS\nshape, the same escape hatch `chart::insert`'s own `options` field\nuses. `#[ts(type = \"...\")]` replaces the field's whole generated type\n(bypassing ts-rs's own `Option<T>` handling), so the `| null` half of\nthe union is spelled out here explicitly rather than coming from the\n`Option` wrapper automatically.",
+      "description": "Replaces the chart's options wholesale, or omitted to leave them unchanged.",
       "type": [
         "object",
         "null"
@@ -65,14 +64,13 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`chart:update`'s own extra result fields.",
   "type": "object",
   "properties": {
     "chartId": {
       "type": "string"
     },
     "chartType": {
-      "description": "The EFFECTIVE (post-patch) chart form — the patch's own value if it\nsupplied one, else the chart's unchanged existing type.",
+      "description": "The EFFECTIVE, post-patch chart form, the patch's own value if it supplied one, else the chart's unchanged existing type.",
       "type": "string"
     }
   },

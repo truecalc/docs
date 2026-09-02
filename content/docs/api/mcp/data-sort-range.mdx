@@ -30,7 +30,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:sortRange`'s wire payload — ported field-by-field from\n`DataSortRangeSchema`. `commandId` is not modeled here — see\n`crate::commands`' own module doc on why that is a future server-layer\nconcern.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -41,7 +40,7 @@ Request payload, as JSON Schema:
       "$ref": "#/$defs/CellRange"
     },
     "sortColumn": {
-      "description": "The column whose values order the rows, as an A1 column letter\n(`\"A\"`, `\"AB\"`). Must lie inside `range`. Validated by parsing\n([`col_letters_to_index`]) rather than by a schema-level regex\nattribute, since this crate's `Payload` types carry no such\nattributes today.",
+      "description": "The column whose values order the rows, as an A1 column letter, `\"A\"`, `\"AB\"`. Must lie inside `range`.",
       "type": "string"
     },
     "direction": {
@@ -56,7 +55,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -74,7 +73,7 @@ Request payload, as JSON Schema:
       ]
     },
     "SortDirection": {
-      "description": "Sort order for `sortColumn`'s values — ported from TS's\n`SortDirectionSchema`.",
+      "description": "Sort order for `sortColumn`'s values.",
       "type": "string",
       "enum": [
         "asc",
@@ -91,7 +90,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:sortRange`'s own extra response fields — see this file's own module\ndoc for why these live on `Output` rather than extending `Accepted`.",
   "type": "object",
   "properties": {
     "range": {
@@ -113,7 +111,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -131,7 +129,7 @@ Response payload, as JSON Schema:
       ]
     },
     "SortDirection": {
-      "description": "Sort order for `sortColumn`'s values — ported from TS's\n`SortDirectionSchema`.",
+      "description": "Sort order for `sortColumn`'s values.",
       "type": "string",
       "enum": [
         "asc",

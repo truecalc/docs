@@ -23,11 +23,11 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`sheet:setActive`'s wire payload — the sheet to activate.",
+  "description": "The sheet to activate.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet to make active — matched case-insensitively, like every\nother [`Document`] sheet-targeting method. This is the sheet's NAME,\nnot a `SheetId`; see this file's own module doc for why there is no\nseparate id.",
+      "description": "The sheet to make active.",
       "type": "string"
     }
   },

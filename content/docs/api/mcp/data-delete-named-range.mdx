@@ -27,11 +27,9 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:deleteNamedRange`'s wire payload — ported field-by-field from\n`DataDeleteNamedRangeSchema`.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "Carried into [`Accepted`] only — see this file's own module doc.",
       "type": "string"
     },
     "name": {
@@ -52,7 +50,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:deleteNamedRange`'s own extra result fields — ported from\n`DataDeleteNamedRangeResult`.",
   "type": "object",
   "properties": {
     "name": {

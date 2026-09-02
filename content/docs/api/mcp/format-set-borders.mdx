@@ -26,15 +26,14 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`format:setBorders`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "range": {
-      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately\narrive \"backwards\" (`from` below/right of `to`) — normalized before\nuse.",
+      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
       "$ref": "#/$defs/CellRange"
     },
     "mode": {
@@ -42,7 +41,7 @@ Request payload, as JSON Schema:
       "$ref": "#/$defs/BorderMode"
     },
     "edge": {
-      "description": "How the targeted edges should look. Required even for `mode: clear`\n(parsed but unused there) — matching `truecalc/studio`'s own\nalways-required `edge` field.",
+      "description": "How the targeted edges should look. Required even for `mode: clear`, parsed but unused there.",
       "$ref": "#/$defs/BorderEdge"
     }
   },
@@ -54,7 +53,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -72,7 +71,7 @@ Request payload, as JSON Schema:
       ]
     },
     "BorderMode": {
-      "description": "The Sheets border-position options — ported verbatim from\n`truecalc/studio`'s own `BorderMode` (`capabilities/format/borders.ts`).",
+      "description": "The Sheets border-position options.",
       "oneOf": [
         {
           "description": "Every edge of every cell in the range.",
@@ -80,17 +79,17 @@ Request payload, as JSON Schema:
           "const": "all"
         },
         {
-          "description": "The internal grid lines only — neither the range's outer perimeter.",
+          "description": "The internal grid lines only, neither the range's outer perimeter.",
           "type": "string",
           "const": "inner"
         },
         {
-          "description": "The internal horizontal grid lines only (between rows).",
+          "description": "The internal horizontal grid lines only, between rows.",
           "type": "string",
           "const": "horizontal"
         },
         {
-          "description": "The internal vertical grid lines only (between columns).",
+          "description": "The internal vertical grid lines only, between columns.",
           "type": "string",
           "const": "vertical"
         },
@@ -120,14 +119,14 @@ Request payload, as JSON Schema:
           "const": "bottom"
         },
         {
-          "description": "Removes borders instead of drawing them — `edge` is parsed but never\nread for this mode. See this file's own module doc.",
+          "description": "Removes borders instead of drawing them, `edge` is parsed but never read for this mode.",
           "type": "string",
           "const": "clear"
         }
       ]
     },
     "BorderEdge": {
-      "description": "One drawn edge: how it looks.\n\n`schema.ts`'s `isBorderEdge` requires **exactly** these three keys — an edge\nwith a fourth is rejected rather than trimmed, and one missing `color` is\nrejected rather than defaulted. A plain struct with three required fields and\n`deny_unknown_fields` is that rule, with no validator to keep in step.",
+      "description": "One drawn edge: how it looks.",
       "type": "object",
       "properties": {
         "style": {
@@ -151,7 +150,7 @@ Request payload, as JSON Schema:
       ]
     },
     "BorderStyle": {
-      "description": "Line pattern for an edge — Sheets' solid / dashed / dotted plus the double\nrule.",
+      "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
       "oneOf": [
         {
           "description": "An unbroken line.",
@@ -176,7 +175,7 @@ Request payload, as JSON Schema:
       ]
     },
     "BorderWeight": {
-      "description": "Line weight — Sheets' thin / medium / thick.",
+      "description": "Line weight, Sheets' thin / medium / thick.",
       "oneOf": [
         {
           "description": "The default pen.",
@@ -196,7 +195,7 @@ Request payload, as JSON Schema:
       ]
     },
     "Color": {
-      "description": "A CSS colour string — `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.\n\n# Why this is not a parsed colour\n\n`schema.ts`'s validator for `color`/`fill` is `typeof v === 'string'`, full\nstop. Studio's own writers only ever emit `#rrggbb`, and its\nconditional-format wire validator *does* enforce a `HEX_COLOR` pattern —\nbut the plain cell format's does not, and a document containing\n`color: \"rebeccapurple\"` loads today.\n\nParsing to an RGB triple here would therefore make documents that open stop\nopening, and would re-serialize `\"#FF0000\"` as `\"#ff0000\"` — different\ncanonical bytes for a document nobody edited. So this is a validated\n*string*, and the one thing it rejects is the empty string, which is not a\ncolour and which TypeScript only ever tolerated because\n`isEmptyFormat` treated it as \"no colour at all\" (see\n[`CellFormat::is_empty`](super::CellFormat::is_empty)).",
+      "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
       "type": "string"
     }
   }

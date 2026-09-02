@@ -27,7 +27,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`clipboard:paste`'s wire payload — ported field-by-field from the TS\ncommand's own schema, minus `commandId` (see this module's own doc).",
   "type": "object",
   "properties": {
     "sheet": {
@@ -38,7 +37,7 @@ Request payload, as JSON Schema:
       "type": "string"
     },
     "raw": {
-      "description": "The clipboard contents AT COPY/CUT TIME — a literal, a formula\n(leading `=`), or `\"\"`.",
+      "description": "The clipboard contents AT COPY/CUT TIME, a literal, a formula, leading `=`, or `\"\"`.",
       "type": "string"
     },
     "target": {
@@ -46,7 +45,7 @@ Request payload, as JSON Schema:
       "type": "string"
     },
     "cut": {
-      "description": "`false` = copy (the default), `true` = cut (move).",
+      "description": "`false` = copy, the default, `true` = cut, move.",
       "type": "boolean",
       "default": false
     }

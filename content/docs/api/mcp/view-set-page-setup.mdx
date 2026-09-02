@@ -31,7 +31,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`view:setPageSetup`'s wire payload — ported field-by-field from\n`ViewSetPageSetupSchema`. `commandId` is NOT modeled here — see this\nmodule's own doc.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -78,7 +77,7 @@ Request payload, as JSON Schema:
       ]
     },
     "printArea": {
-      "description": "Three states — see [`deserialize_some`]'s own doc. `ts-rs` renders a\nbare `Option<Option<T>>` as `T | null | null`; `#[ts(as = \"...\")]`\n(not `#[ts(type = \"...\")]` — a raw string override drops the\ngenerated import for `WirePrintArea` entirely) tells `ts-rs` to\nderive this field's TS type from `Option<WirePrintArea>` instead,\ncollapsing to the correct `WirePrintArea | null` while still\nresolving the cross-file import.",
+      "description": "Three states.",
       "anyOf": [
         {
           "$ref": "#/$defs/WirePrintArea"

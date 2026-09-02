@@ -23,7 +23,7 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getSheets`'s wire payload — deliberately empty; see this module's\nown doc for why no `sheet` field is modeled. Accepts any JSON object\n(including `{}`), ignoring unknown fields — there is no\n`#[serde(deny_unknown_fields)]` here because a caller migrating from a\nTS-shaped `{ sheet: \"...\" }` call should not hard-fail on the vestigial\nfield this command has no use for.",
+  "description": "Deliberately empty. Accepts any JSON object, including `{}`, ignoring unknown fields.",
   "type": "object"
 }
 ```
@@ -34,7 +34,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getSheets`'s own extra payload.",
   "type": "object",
   "properties": {
     "sheets": {

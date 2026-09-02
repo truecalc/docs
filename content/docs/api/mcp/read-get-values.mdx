@@ -34,15 +34,14 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getValues`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "range": {
-      "description": "The inclusive rectangle to read. Capped at\n[`MAX_RANGE_CELLS`] cells, the same bound\n[`super::get_range::MAX_RANGE_CELLS`] enforces.",
+      "description": "The inclusive rectangle to read.",
       "$ref": "#/$defs/CellRange"
     },
     "layers": {
@@ -60,7 +59,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -78,7 +77,7 @@ Request payload, as JSON Schema:
       ]
     },
     "Layers": {
-      "description": "Which layer(s) to read. Default `Values` — Google Sheets' own\n`getValues()` default.",
+      "description": "Which layer(s) to read. Google Sheets' own `getValues()` default.",
       "type": "string",
       "enum": [
         "values",
@@ -90,12 +89,12 @@ Request payload, as JSON Schema:
       "description": "How to shape `values`/`formulas` in the response.",
       "oneOf": [
         {
-          "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s\n`i`-th row, `j`-th column.",
+          "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s `i`-th row, `j`-th column.",
           "type": "string",
           "const": "rows"
         },
         {
-          "description": "A map keyed by plain A1 form (`\"A1\"`), one entry per address in\n`range`.",
+          "description": "A map keyed by plain A1 form, `\"A1\"`, one entry per address in `range`.",
           "type": "string",
           "const": "a1"
         }
@@ -111,7 +110,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getValues`'s own extra payload — see [`super::get_range`]'s own doc\nfor why a pure read's answer lives here rather than in `observed`/\n`accepted`.",
   "type": "object",
   "properties": {
     "range": {
@@ -131,21 +129,21 @@ Response payload, as JSON Schema:
       "minimum": 0
     },
     "encoding": {
-      "description": "Echoes the requested shape, so a caller reading `values`/`formulas`\nout of band still knows how to interpret it.",
+      "description": "Echoes the requested shape, so a caller reading `values`/`formulas` out of band still knows how to interpret it.",
       "$ref": "#/$defs/Encoding"
     },
     "nonEmpty": {
-      "description": "Every address in `range` whose display text is non-empty or which\nholds a formula, in row-major (reading) order — the sparse summary a\ncaller wants before paying to decode a mostly-empty rectangle.",
+      "description": "Every address in `range` whose display text is non-empty or which holds a formula, in row-major, reading order, the sparse summary a caller wants before paying to decode a mostly-empty rectangle.",
       "type": "array",
       "items": {
         "type": "string"
       }
     },
     "values": {
-      "description": "Present iff `layers` was `values`/`both`. Row-major `Vec<Vec<String>>`\nor an A1-keyed map, depending on `encoding` — loosely typed for the\nsame \"shape depends on a sibling field\" reason\n[`crate::commands::CellOutcome::value`] is. `#[ts(type = \"unknown\")]`:\nthis crate's `ts-rs` dependency does not enable the `serde-json-impl`\nfeature, so a bare `serde_json::Value` cannot derive `TS`."
+      "description": "Present iff `layers` was `values`/`both`. Row-major `Vec<Vec<String>>` or an A1-keyed map, depending on `encoding`."
     },
     "formulas": {
-      "description": "Present iff `layers` was `formulas`/`both`. Same shape rule as\n`values`; an empty string where a cell holds no formula."
+      "description": "Present iff `layers` was `formulas`/`both`. Same shape rule as `values`, an empty string where a cell holds no formula."
     }
   },
   "required": [
@@ -157,7 +155,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -178,12 +176,12 @@ Response payload, as JSON Schema:
       "description": "How to shape `values`/`formulas` in the response.",
       "oneOf": [
         {
-          "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s\n`i`-th row, `j`-th column.",
+          "description": "Row-major arrays: `values[i][j]` is the cell at `range`'s `i`-th row, `j`-th column.",
           "type": "string",
           "const": "rows"
         },
         {
-          "description": "A map keyed by plain A1 form (`\"A1\"`), one entry per address in\n`range`.",
+          "description": "A map keyed by plain A1 form, `\"A1\"`, one entry per address in `range`.",
           "type": "string",
           "const": "a1"
         }

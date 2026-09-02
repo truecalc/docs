@@ -26,11 +26,10 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`history:restore`'s wire payload — see this module's own doc for why a\nplain step count, not an opaque token.",
   "type": "object",
   "properties": {
     "steps": {
-      "description": "How many undo steps to walk back, from wherever the stack is right\nnow. `0` is a legal, trivially-successful no-op.",
+      "description": "How many undo steps to walk back, from wherever the stack is right now. `0` is a legal, trivially-successful no-op.",
       "type": "integer",
       "format": "uint32",
       "minimum": 0
@@ -48,7 +47,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`history:restore`'s own extra result fields.",
   "type": "object",
   "properties": {
     "stepsRequested": {
@@ -58,7 +56,7 @@ Response payload, as JSON Schema:
       "minimum": 0
     },
     "stepsCompleted": {
-      "description": "How many steps actually completed — equal to `stepsRequested` on\nfull success; less on a clamp (the stack ran out) or, when this\ncommand instead returns `Err`, on the step that failed partway.",
+      "description": "How many steps actually completed, equal to `stepsRequested` on full success.",
       "type": "integer",
       "format": "uint32",
       "minimum": 0

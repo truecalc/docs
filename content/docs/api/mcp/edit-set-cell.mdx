@@ -26,11 +26,10 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`edit:setCell`'s wire payload — ported field-by-field from\n`EditSetCellSchema`. `commandId` and batch/version/OCC bookkeeping are\nNOT modeled here — see `crate::commands`' own module doc on why that is a\nfuture server-layer concern, not a gap in this command's own port.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "a1": {
@@ -38,7 +37,7 @@ Request payload, as JSON Schema:
       "type": "string"
     },
     "value": {
-      "description": "Raw input: a literal, a formula (leading `=`), or `\"\"` to clear.",
+      "description": "Raw input: a literal, a formula, leading `=`, or `\"\"` to clear.",
       "type": "string"
     },
     "inputMode": {
@@ -59,7 +58,6 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "InputMode": {
-      "description": "Reserved wire knob, carried but not enforced — ported from\n`EditSetCellSchema`'s own `inputMode` in `truecalc/studio`.\n[`classify_literal`] always infers formula-vs-literal from a leading `=`,\nthe same rule `truecalc-wasm-workbook`'s own public `JsWorkbook::set`\ncoercion and Studio's `StudioDocument.setCell` both already use.",
       "type": "string",
       "enum": [
         "raw"

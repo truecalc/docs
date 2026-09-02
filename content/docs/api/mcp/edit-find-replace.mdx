@@ -33,14 +33,13 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`edit:findReplace`'s wire payload — every option flag defaults to `false`\nvia `#[serde(default)]`, matching the zod schema's own `.default(false)`s.",
   "type": "object",
   "properties": {
     "sheet": {
       "type": "string"
     },
     "range": {
-      "description": "The scope to search — the whole sheet's occupied footprint when\nabsent (see [`bounding_box_of_populated_cells`]).",
+      "description": "The scope to search, the whole sheet's occupied footprint when absent.",
       "anyOf": [
         {
           "$ref": "#/$defs/CellRange"
@@ -80,7 +79,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -107,15 +106,15 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "This command's own extra result fields — see this file's own module doc\nfor why they live here rather than on `accepted`.",
+  "description": "This command's own extra result fields.",
   "type": "object",
   "properties": {
     "queryCompiled": {
-      "description": "Whether `query` compiled as a regex (always `true` when `useRegex` is\n`false`, since the literal form is always `regex::escape`d before\ncompiling — escaping cannot fail).",
+      "description": "Whether `query` compiled as a regex, always `true` when `useRegex` is `false`, since the literal form is always `regex::escape`d before compiling, escaping cannot fail.",
       "type": "boolean"
     },
     "matched": {
-      "description": "How many scope cells' search text matched — counted whether or not\nthe match was eligible to be written back (a formula cell matched by\nits *displayed* value under `withinFormulas: false` counts here, even\nthough it is answered `Unchanged`, never rewritten).",
+      "description": "How many scope cells' search text matched, counted whether or not the match was eligible to be written back.",
       "type": "integer",
       "format": "uint",
       "minimum": 0

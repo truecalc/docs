@@ -23,11 +23,10 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`sheet:add`'s wire payload — ported from `SheetAddSchema`, minus\n`commandId`/wire `type`, and minus the context-only `sheet` field (see\nthis file's own module doc).",
   "type": "object",
   "properties": {
     "name": {
-      "description": "The name to give the new sheet. Omitted (or `None`), the workbook\npicks a `SheetN`-shaped default via [`next_sheet_name`]. When\npresent, this command trims it before validating — unlike\n[`Document::add_sheet`] itself, which does NOT trim its input (unlike\n[`Document::rename_sheet`]), so trimming here is this command's own\nresponsibility. An explicit whitespace-only name is therefore refused\nas malformed (empty after trim), never silently treated as omitted.",
+      "description": "The name to give the new sheet. When present, this command trims it before validating. An explicit whitespace-only name is therefore refused as malformed, empty after trim, never silently treated as omitted.",
       "type": [
         "string",
         "null"

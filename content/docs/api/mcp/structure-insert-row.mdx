@@ -25,7 +25,7 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`structure:insertRow`'s wire payload — `beforeRow`/`count`, matching\nstudio's `insert-row` schema (`Store.insertRows`' own `at = beforeRow - 1`\ncompensates for ITS 0-based `doc.insertRows`; [`Document::insert_rows`]\nis already 1-based \"insert above row at\", so `before_row` maps straight\nthrough with no `-1`).",
+  "description": "`beforeRow`/`count`, matching studio's `insert-row` schema.",
   "type": "object",
   "properties": {
     "sheet": {

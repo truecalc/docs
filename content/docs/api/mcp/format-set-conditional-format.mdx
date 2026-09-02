@@ -28,7 +28,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`format:setConditionalFormat`'s wire payload — ported field-by-field from\n`FormatSetConditionalFormatSchema`.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -48,7 +47,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -66,7 +65,7 @@ Request payload, as JSON Schema:
       ]
     },
     "RuleWire": {
-      "description": "One conditional-format rule's wire shape — ported from Studio's\ndiscriminated union `SingleConditionRuleSchema | ColorScaleRuleSchema |\nCustomFormulaRuleSchema`, tagged the same way (`kind`).",
+      "description": "One conditional-format rule's wire shape.",
       "oneOf": [
         {
           "type": "object",
@@ -143,7 +142,7 @@ Request payload, as JSON Schema:
       ]
     },
     "OperatorWire": {
-      "description": "The wire shape of a single-condition rule's numeric comparison operator —\nported field-by-field from Studio's `CompareOperator` union. Variant names\nmatch [`CompareOperator`]'s own 1:1 (both come from the same Sheets\ndropdown), but this is a SEPARATE enum: [`CompareOperator`] itself derives\nno `serde` traits (`document::conditional_format` hand-rolls its own\non-disk JSON via `read_operator`/`write_operator`), so this wire copy is\nwhat actually parses the envelope.",
+      "description": "The wire shape of a single-condition rule's numeric comparison operator.",
       "type": "string",
       "enum": [
         "greaterThan",
@@ -157,7 +156,7 @@ Request payload, as JSON Schema:
       ]
     },
     "StyleWire": {
-      "description": "A conditional-format rule's style, as the wire restricts it — see this\nfile's own module doc (\"Write-side `style` is a restricted `StyleWire`\")\nfor why this is not the full [`CellFormat`]. `deny_unknown_fields`\nmirrors `ConditionalStyleSchema`'s own `.strict()`.",
+      "description": "A conditional-format rule's style, as the wire restricts it.",
       "type": "object",
       "properties": {
         "bold": {
@@ -208,7 +207,7 @@ Request payload, as JSON Schema:
       "additionalProperties": false
     },
     "HexColor": {
-      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour — `schema.ts`'s\nown `HEX_COLOR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/`,\ntranscribed field for field rather than assumed from either capability\nmodule.\n\n# Why this is not [`Color`]\n\n[`Color`] is deliberately loose — `schema.ts`'s plain per-cell\n`color`/`fill` validator is `typeof v === 'string'`, full stop (see its own\ndoc). Banding/conditional-format's colours are validated by a genuinely\nstricter wire rule, cited by `schema.ts` itself as shared by both\n`set-conditional-format` and `set-banded-range`. Reusing [`Color`] here\nwould silently accept a document `schema.ts` rejects on the way in (e.g.\n`\"headerColor\": \"red\"`) — this type exists so that mistake is a compile\nerror, not a divergence discovered by a fuzzer.",
+      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
       "type": "string"
     }
   }
@@ -221,15 +220,13 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`format:setConditionalFormat`'s own extra result fields — ported from\n`FormatSetConditionalFormatResult`.",
   "type": "object",
   "properties": {
     "range": {
-      "description": "Canonicalized via [`Address::to_a1`], not a raw echo of `range` — see\nthis issue's own scope-adjustment note: both cited TS sources echo\n`this.range` unmodified (even reversed), but this port instead matches\nthe already-merged `format:setBandedRange` Rust port's own\ncanonicalizing behaviour, for consistency within this crate's own\ncommand family.",
       "$ref": "#/$defs/CellRange"
     },
     "id": {
-      "description": "The new rule's id — see this file's own module doc for why this is a\nbare per-sheet id, not Studio's `sheet!<nanoid>` composite.",
+      "description": "The new rule's id.",
       "type": "string"
     }
   },
@@ -239,7 +236,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {

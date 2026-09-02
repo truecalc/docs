@@ -28,7 +28,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:setValidation`'s wire payload — ported field-by-field from\n`DataSetValidationSchema`.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -38,7 +37,7 @@ Request payload, as JSON Schema:
       "$ref": "#/$defs/CellRange"
     },
     "rule": {
-      "description": "`Some(_)` sets a rule; `None` is an explicit clear-by-range, never a\ntoggle. Required on the wire (as literal `null` to clear) — not\n`#[ts(optional)]`, matching this module's own doc: `null` is the\ndocumented clear signal, not an omitted key.",
+      "description": "`Some(_)` sets a rule. Required on the wire, as literal `null` to clear.",
       "anyOf": [
         {
           "$ref": "#/$defs/WireRule"
@@ -55,7 +54,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -73,7 +72,7 @@ Request payload, as JSON Schema:
       ]
     },
     "WireRule": {
-      "description": "The one rule kind on the wire today — ported from\n`DataSetValidationRuleSchema`. An internally-tagged enum so\n`#[serde(rename_all = \"camelCase\")]` turns the Rust variant `List` into\nwire `\"kind\": \"list\"` automatically, and — because the tag is checked at\ndeserialize time — any other `kind` is rejected at\n[`crate::commands::WireCommand::parse`] time, mirroring zod's `.parse`\nthrowing there rather than inside `apply`.",
+      "description": "The one rule kind on the wire today. because the tag is checked at deserialize time.",
       "oneOf": [
         {
           "type": "object",
@@ -106,7 +105,7 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:setValidation`'s own extra result fields — ported from\n`DataSetValidationResult`. **Echoes `payload.range`/`payload.rule`\nverbatim** — see this file's own module doc for why this command does not\ncanonicalize the echoed range the way its `data:*` siblings do.",
+  "description": "**Echoes `payload.range`/`payload.rule` verbatim**.",
   "type": "object",
   "properties": {
     "range": {
@@ -128,7 +127,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -146,7 +145,7 @@ Response payload, as JSON Schema:
       ]
     },
     "WireRule": {
-      "description": "The one rule kind on the wire today — ported from\n`DataSetValidationRuleSchema`. An internally-tagged enum so\n`#[serde(rename_all = \"camelCase\")]` turns the Rust variant `List` into\nwire `\"kind\": \"list\"` automatically, and — because the tag is checked at\ndeserialize time — any other `kind` is rejected at\n[`crate::commands::WireCommand::parse`] time, mirroring zod's `.parse`\nthrowing there rather than inside `apply`.",
+      "description": "The one rule kind on the wire today. because the tag is checked at deserialize time.",
       "oneOf": [
         {
           "type": "object",

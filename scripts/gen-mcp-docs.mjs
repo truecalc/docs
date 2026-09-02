@@ -375,6 +375,32 @@ function paramsTable(objectSchema, defs) {
   return ['| Name | Type | Required | Description |', '| --- | --- | --- | --- |', ...rows].join('\n');
 }
 
+/**
+ * Deep-clone a JSON Schema node with every `description` string replaced by
+ * its cleanText()-salvaged form, or removed entirely when nothing
+ * salvageable survives. The raw JSON Schema block on each page (below) dumps
+ * `payload`/`output` verbatim, `$defs` included -- without this pass it
+ * would leak the exact same Rust-implementation narration (private repo
+ * names, crate paths, internal issue IDs, source file paths) that
+ * cleanText()/isJargon() exist to keep out of the prose tables above it.
+ */
+function sanitizeSchemaForDisplay(node) {
+  if (Array.isArray(node)) return node.map(sanitizeSchemaForDisplay);
+  if (node && typeof node === 'object') {
+    const out = {};
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'description' && typeof value === 'string') {
+        const cleaned = cleanText(value);
+        if (cleaned) out[key] = cleaned;
+        continue; // nothing salvageable -- drop the key rather than leak it
+      }
+      out[key] = sanitizeSchemaForDisplay(value);
+    }
+    return out;
+  }
+  return node;
+}
+
 // ---------------------------------------------------------------------------
 // Page generation.
 // ---------------------------------------------------------------------------
@@ -423,14 +449,14 @@ function toolPage(wireName, entry) {
   lines.push('Request payload, as JSON Schema:');
   lines.push('');
   lines.push('```json');
-  lines.push(JSON.stringify(payload, null, 2));
+  lines.push(JSON.stringify(sanitizeSchemaForDisplay(payload), null, 2));
   lines.push('```');
   lines.push('');
   if (!outputIsNull) {
     lines.push('Response payload, as JSON Schema:');
     lines.push('');
     lines.push('```json');
-    lines.push(JSON.stringify(output, null, 2));
+    lines.push(JSON.stringify(sanitizeSchemaForDisplay(output), null, 2));
     lines.push('```');
     lines.push('');
   }

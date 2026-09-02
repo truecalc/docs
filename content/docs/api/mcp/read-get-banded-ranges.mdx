@@ -25,7 +25,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getBandedRanges`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -44,11 +43,10 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getBandedRanges`'s own extra payload.",
   "type": "object",
   "properties": {
     "bandedRanges": {
-      "description": "Every banded range on `sheet`, in real precedence order — see this\nmodule's own doc for why this is never sorted.",
+      "description": "Every banded range on `sheet`, in real precedence order.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/BandedRangeInfo"
@@ -64,7 +62,6 @@ Response payload, as JSON Schema:
       "type": "object",
       "properties": {
         "id": {
-          "description": "This crate's bare per-sheet id — see this module's own doc.",
           "type": "string"
         },
         "range": {
@@ -81,7 +78,7 @@ Response payload, as JSON Schema:
       ]
     },
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -99,7 +96,7 @@ Response payload, as JSON Schema:
       ]
     },
     "StyleOut": {
-      "description": "A banded range's color assignment, as reported back by this command.\n\nA LOCAL struct, independent of\n`commands::format::set_banded_range::StyleWire` — cross-directory type\nsharing between `format/` and `read/` has no precedent anywhere in this\nbatch, and this crate's established convention (`format::fill_color`'s\nown module doc) is per-file duplication of these small wire shapes.\nSerialize-only: this file never deserializes a style, only echoes one\nback.",
+      "description": "A banded range's color assignment, as reported back by this command.",
       "type": "object",
       "properties": {
         "headerColor": {
@@ -135,7 +132,7 @@ Response payload, as JSON Schema:
       ]
     },
     "HexColor": {
-      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour — `schema.ts`'s\nown `HEX_COLOR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/`,\ntranscribed field for field rather than assumed from either capability\nmodule.\n\n# Why this is not [`Color`]\n\n[`Color`] is deliberately loose — `schema.ts`'s plain per-cell\n`color`/`fill` validator is `typeof v === 'string'`, full stop (see its own\ndoc). Banding/conditional-format's colours are validated by a genuinely\nstricter wire rule, cited by `schema.ts` itself as shared by both\n`set-conditional-format` and `set-banded-range`. Reusing [`Color`] here\nwould silently accept a document `schema.ts` rejects on the way in (e.g.\n`\"headerColor\": \"red\"`) — this type exists so that mistake is a compile\nerror, not a divergence discovered by a fuzzer.",
+      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
       "type": "string"
     }
   }

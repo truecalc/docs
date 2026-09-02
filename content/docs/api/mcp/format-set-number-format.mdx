@@ -25,19 +25,17 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`format:setNumberFormat`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "range": {
-      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately\narrive \"backwards\" (`from` below/right of `to`) — normalized before\nuse.",
+      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
       "$ref": "#/$defs/CellRange"
     },
     "value": {
-      "description": "The number-display category to set, or `null` to clear it (and any\n[`decimals`](crate::document::format::CellFormat::decimals) riding on\nit — see this file's module doc).",
       "anyOf": [
         {
           "$ref": "#/$defs/NumberFormat"
@@ -54,7 +52,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -72,7 +70,7 @@ Request payload, as JSON Schema:
       ]
     },
     "NumberFormat": {
-      "description": "A number-display category (studio#10).\n\nPurely presentation, with the [module-level exception](self) for\n[`NumberFormat::Date`]: it changes how a number or a date **serial** is\nrendered in the cell, never the underlying calc value. Absent means\n\"automatic\" — the engine's raw display.",
+      "description": "A number-display category, studio#10.",
       "oneOf": [
         {
           "description": "Grouped fixed-point: `1,234.57`.",
@@ -90,7 +88,7 @@ Request payload, as JSON Schema:
           "const": "currency"
         },
         {
-          "description": "The value read as a date serial. **Implies date typing** — see the\nmodule docs.",
+          "description": "The value read as a date serial. **Implies date typing**.",
           "type": "string",
           "const": "date"
         },

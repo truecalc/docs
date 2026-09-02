@@ -25,19 +25,18 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`format:setFontSize`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "range": {
-      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately\narrive \"backwards\" (`from` below/right of `to`) — normalized before\nuse.",
+      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
       "$ref": "#/$defs/CellRange"
     },
     "value": {
-      "description": "The font size to set. Non-nullable — see this file's module doc.",
+      "description": "The font size to set. Non-nullable.",
       "$ref": "#/$defs/FontSize"
     }
   },
@@ -48,7 +47,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -66,7 +65,7 @@ Request payload, as JSON Schema:
       ]
     },
     "FontSize": {
-      "description": "A font size in points.\n\n# The one place this is stricter than TypeScript\n\n`schema.ts`'s validator is `typeof v === 'number' && Number.isFinite(v)` —\nso `fontSize: 0` and `fontSize: -8` are *accepted* by the importer. Neither\nrenders as anything, and neither survives an edit: `isEmptyFormat` treats\n`0` as falsy, so the first format touch on such a cell deletes the whole\nrecord.\n\nThis type refuses both. Nothing is lost, because the wire reader\n([`super::wire`]) drops a non-positive size to absence rather than failing\nthe load — the identical outcome to the collapse the TypeScript already\nperforms, reached deliberately instead of by accident.",
+      "description": "A font size in points.",
       "type": "number",
       "format": "double"
     }

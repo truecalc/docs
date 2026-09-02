@@ -29,7 +29,7 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:setNamedRange`'s wire payload — ported field-by-field from\n`DataSetNamedRangeSchema`. `commandId` is not modeled — see\n`crate::commands`' own module doc on why batch/OCC bookkeeping is a\nfuture server-layer concern.\n\n**Reuses [`CellRange`], the same shared type `edit::set_cell`'s sibling\n`data:setFilter` also carries.** The two commands give it different\nmeaning — this one treats `range` as an arbitrary sheet-relative\nrectangle, `data:setFilter` additionally treats `range.from`'s row as an\nun-hideable header row — an asymmetry that lives only in each command's\nown `apply`, not in the shared struct itself.",
+  "description": "`commandId` is not modeled.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -52,7 +52,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -79,19 +79,18 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:setNamedRange`'s own extra result fields — ported from\n`DataSetNamedRangeResult`.",
   "type": "object",
   "properties": {
     "name": {
-      "description": "Echoed exactly as the caller sent it (matching\n`DataSetNamedRangeResult`'s own `name: this.name`) — never trimmed or\nre-cased; [`EntityOutcome::id`] on `observed`, by contrast, is the\ncanonical (trimmed) form actually stored.",
+      "description": "Echoed exactly as the caller sent it, never trimmed or re-cased.",
       "type": "string"
     },
     "range": {
-      "description": "Canonicalized via [`Address::to_a1`] — not a raw echo of whatever\ncase or corner order `range.from`/`range.to` arrived in.",
+      "description": "Not a raw echo of whatever case or corner order `range.from`/`range.to` arrived in.",
       "$ref": "#/$defs/CellRange"
     },
     "created": {
-      "description": "`true` when this call DEFINED a brand-new name; `false` when it\nRETARGETED an existing one.",
+      "description": "`true` when this call DEFINED a brand-new name, `false` when it RETARGETED an existing one.",
       "type": "boolean"
     }
   },
@@ -102,7 +101,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {

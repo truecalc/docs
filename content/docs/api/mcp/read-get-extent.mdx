@@ -26,11 +26,10 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getExtent`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     }
   },
@@ -46,17 +45,17 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getExtent`'s own extra payload — the USED extent, not a capacity.\nSee this module's own doc.",
+  "description": "The USED extent, not a capacity.",
   "type": "object",
   "properties": {
     "rows": {
-      "description": "The highest populated row (1-based), or `0` if the sheet is empty.",
+      "description": "The highest populated row, 1-based, or `0` if the sheet is empty.",
       "type": "integer",
       "format": "uint32",
       "minimum": 0
     },
     "cols": {
-      "description": "The highest populated column (1-based), or `0` if the sheet is empty.",
+      "description": "The highest populated column, 1-based, or `0` if the sheet is empty.",
       "type": "integer",
       "format": "uint32",
       "minimum": 0

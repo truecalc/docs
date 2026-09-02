@@ -27,7 +27,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:insertPivot`'s wire payload — ported from `DataInsertPivotSchema`.\n\n**Reuses [`CellRange`]**, the same shared type `data:setFilter`/\n`data:setNamedRange` carry. Row/value fields are not configurable here —\n[`Document::insert_pivot_table`] hardcodes them to the first two columns\nof `range` (row field 0, value field 1, `SUM` aggregation), matching\nStudio's own v1 scope exactly.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -43,7 +42,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -70,15 +69,13 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:insertPivot`'s own extra result fields — ported from\n`DataInsertPivotResult`, minus the `sheetId` field this crate has no\nanalogue for (see this file's own module doc).",
   "type": "object",
   "properties": {
     "range": {
-      "description": "Canonicalized via [`Address::to_a1`], not a raw echo of `range`.",
       "$ref": "#/$defs/CellRange"
     },
     "destSheet": {
-      "description": "The newly-created destination sheet's name — this crate's identity\nfor what Studio's `name` field reports. Intentionally the same string\nas `observed`'s `EntityOutcome::id`; see this file's own module doc.",
+      "description": "The newly-created destination sheet's name.",
       "type": "string"
     }
   },
@@ -88,7 +85,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {

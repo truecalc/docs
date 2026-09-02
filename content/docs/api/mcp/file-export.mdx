@@ -27,11 +27,11 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`file:export`'s wire payload — ported field-by-field from\n`FileExportSchema`. `commandId` is dropped, the same Batch-0 convention\n`edit::set_cell::Payload` already uses.",
+  "description": "`commandId` is dropped, the same Batch-0 convention `edit::set_cell::Payload` already uses.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet named on the wire — validated to exist for every `format`;\nsee this module's own doc for why that is a deliberate hardening\nbeyond the TS source.",
+      "description": "The sheet named on the wire, validated to exist for every `format`.",
       "type": "string"
     },
     "format": {
@@ -44,7 +44,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "Format": {
-      "description": "`file:export`'s wire format — ported from `FileExportFormatSchema`\n(`json`/`csv`/`xlsx`). Every variant PARSES; only `apply()`'s `Xlsx` arm\nrefuses, and only there, so a caller sending a legitimate `\"xlsx\"`\nrequest gets a real `NotImplemented` failure rather than a payload-parse\nerror that would misreport the request as malformed.",
+      "description": "Every variant PARSES.",
       "type": "string",
       "enum": [
         "json",
@@ -62,7 +62,7 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`file:export`'s typed result — mirrors `FileExportResult` field-for-field.\n`content` stays a plain `String` for every format, including `json`\n(never a nested object), so the wire shape is uniform across formats;\n`xlsx`'s TS counterpart is a `Blob`, which has no Rust equivalent in this\nslice either way (the `Xlsx` arm never reaches a value to put here).",
+  "description": "`file:export`'s typed result.",
   "type": "object",
   "properties": {
     "format": {
@@ -78,7 +78,7 @@ Response payload, as JSON Schema:
   ],
   "$defs": {
     "Format": {
-      "description": "`file:export`'s wire format — ported from `FileExportFormatSchema`\n(`json`/`csv`/`xlsx`). Every variant PARSES; only `apply()`'s `Xlsx` arm\nrefuses, and only there, so a caller sending a legitimate `\"xlsx\"`\nrequest gets a real `NotImplemented` failure rather than a payload-parse\nerror that would misreport the request as malformed.",
+      "description": "Every variant PARSES.",
       "type": "string",
       "enum": [
         "json",

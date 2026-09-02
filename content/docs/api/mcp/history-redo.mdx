@@ -23,7 +23,7 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`history:redo`'s wire payload — deliberately empty; see\n[`super::undo::Payload`]'s own doc.",
+  "description": "Deliberately empty.",
   "type": "object"
 }
 ```
@@ -34,11 +34,10 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`history:redo`'s own extra result field.",
   "type": "object",
   "properties": {
     "redone": {
-      "description": "`true` only when something was actually popped AND fully reapplied.\n`false` for a genuinely empty redo stack — a normal, non-error\noutcome, not a refusal.",
+      "description": "`true` only when something was actually popped AND fully reapplied. `false` for a genuinely empty redo stack, a normal, non-error outcome, not a refusal.",
       "type": "boolean"
     }
   },

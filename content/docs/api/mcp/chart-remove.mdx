@@ -26,11 +26,10 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`chart:remove`'s wire payload — see this module's own doc for why this\ndrops the TS source's `sheet` field.",
   "type": "object",
   "properties": {
     "chartId": {
-      "description": "The chart to remove — the FULL `<sheet>!<id>` composite\n[`Document::insert_chart`] returned.",
+      "description": "The chart to remove.",
       "type": "string"
     }
   },
@@ -46,7 +45,6 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`chart:remove`'s own extra result fields.",
   "type": "object",
   "properties": {
     "chartId": {

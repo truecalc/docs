@@ -25,7 +25,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getConditionalFormats`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -44,11 +43,10 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getConditionalFormats`'s own extra payload — the field is named\n`rules`, ported VERBATIM from Studio's `ReadGetConditionalFormatsResult`,\ndeliberately NOT mirroring `read:getBandedRanges`' own `bandedRanges`\nfield name: the two TS sources genuinely differ on this point, and this\nport follows each command's real wire schema field-by-field rather than\nforcing cross-command field-name symmetry.",
   "type": "object",
   "properties": {
     "rules": {
-      "description": "Every conditional-format rule on `sheet`, in real precedence order —\nsee this module's own doc for why this is never sorted.",
+      "description": "Every conditional-format rule on `sheet`, in real precedence order.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/ConditionalFormatRuleInfo"
@@ -64,7 +62,6 @@ Response payload, as JSON Schema:
       "type": "object",
       "properties": {
         "id": {
-          "description": "This crate's bare per-sheet id — see this module's own doc.",
           "type": "string"
         },
         "range": {
@@ -81,7 +78,7 @@ Response payload, as JSON Schema:
       ]
     },
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -99,7 +96,7 @@ Response payload, as JSON Schema:
       ]
     },
     "RuleOut": {
-      "description": "One rule's definition, as reported back by this command — see this\nmodule's own doc (\"Read-side `style` is the FULL `CellFormat`\") for why\n`style` here is not the restricted `StyleWire` the write side intakes.",
+      "description": "One rule's definition, as reported back by this command.",
       "oneOf": [
         {
           "type": "object",
@@ -176,7 +173,7 @@ Response payload, as JSON Schema:
       ]
     },
     "OperatorOut": {
-      "description": "A single-condition rule's operator, as reported back by this command — see\n`commands::format::set_conditional_format::OperatorWire`'s own doc for why\nthis is a separate enum from the domain [`CompareOperator`] (which derives\nno `serde` traits of its own).",
+      "description": "A single-condition rule's operator, as reported back by this command.",
       "type": "string",
       "enum": [
         "greaterThan",
@@ -190,7 +187,7 @@ Response payload, as JSON Schema:
       ]
     },
     "CellFormat": {
-      "description": "A cell's grid-owned presentation.\n\nEvery field is optional and absence is meaningful — see each field's doc for\nwhat absent means, because it is not \"false\" everywhere: an absent `align`\nis *automatic* (type-based), an absent `valign` is *bottom*, and an absent\n`decimals` is *two*, not zero.\n\n# Equality and hashing\n\nDerives `Eq` and `Hash`, matching `truecalc_workbook::Workbook`, so a\ndocument can be hashed as one value. That is only sound because\n[`Rotation`] and [`FontSize`] refuse non-finite values and normalize `-0.0`\nat construction; a bare `f64` field here would make `Hash` and `PartialEq`\ndisagree.",
+      "description": "A cell's grid-owned presentation.",
       "type": "object",
       "properties": {
         "bold": {
@@ -244,7 +241,7 @@ Response payload, as JSON Schema:
           ]
         },
         "borders": {
-          "description": "Per-edge cell borders. Absent = no borders; never present-and-empty.",
+          "description": "Per-edge cell borders. Absent = no borders, never present-and-empty.",
           "anyOf": [
             {
               "$ref": "#/$defs/CellBorders"
@@ -266,7 +263,7 @@ Response payload, as JSON Schema:
           ]
         },
         "fill": {
-          "description": "Background fill. Absent = none (the grid's own background shows).",
+          "description": "Background fill. Absent = none, the grid's own background shows.",
           "anyOf": [
             {
               "$ref": "#/$defs/Color"
@@ -277,7 +274,7 @@ Response payload, as JSON Schema:
           ]
         },
         "numberFormat": {
-          "description": "Number-display category. Absent = automatic (the engine's raw display).",
+          "description": "Number-display category. Absent = automatic, the engine's raw display.",
           "anyOf": [
             {
               "$ref": "#/$defs/NumberFormat"
@@ -288,7 +285,6 @@ Response payload, as JSON Schema:
           ]
         },
         "decimals": {
-          "description": "Fixed decimal places for [`CellFormat::number_format`].\n\n**Absent is not zero.** Absent means the category's default,\n[`DEFAULT_DECIMALS`] — two places. `Some(Decimals(0))` means the user\nasked for none. TypeScript cannot tell those apart on an otherwise-empty\nformat; see [`CellFormat::is_empty`].",
           "anyOf": [
             {
               "$ref": "#/$defs/Decimals"
@@ -299,7 +295,7 @@ Response payload, as JSON Schema:
           ]
         },
         "align": {
-          "description": "Horizontal alignment. Absent = automatic (numbers right, else left).",
+          "description": "Horizontal alignment. Absent = automatic, numbers right, else left.",
           "anyOf": [
             {
               "$ref": "#/$defs/HAlign"
@@ -310,7 +306,7 @@ Response payload, as JSON Schema:
           ]
         },
         "valign": {
-          "description": "Vertical alignment. Absent = bottom (Sheets' default).",
+          "description": "Vertical alignment. Absent = bottom, Sheets' default.",
           "anyOf": [
             {
               "$ref": "#/$defs/VAlign"
@@ -328,7 +324,7 @@ Response payload, as JSON Schema:
           ]
         },
         "rotation": {
-          "description": "Text rotation in degrees. Absent (or `0`) = none.",
+          "description": "Text rotation in degrees. Absent, or `0` = none.",
           "anyOf": [
             {
               "$ref": "#/$defs/Rotation"
@@ -342,16 +338,16 @@ Response payload, as JSON Schema:
       "additionalProperties": false
     },
     "FontFamily": {
-      "description": "A font family name.\n\nValidated only for non-emptiness, for the same reason [`Color`](super::Color)\nis: `schema.ts` accepts any string, the toolbar writes a small fixed list,\nand turning the field into an enum would refuse documents that open today.",
+      "description": "A font family name.",
       "type": "string"
     },
     "FontSize": {
-      "description": "A font size in points.\n\n# The one place this is stricter than TypeScript\n\n`schema.ts`'s validator is `typeof v === 'number' && Number.isFinite(v)` —\nso `fontSize: 0` and `fontSize: -8` are *accepted* by the importer. Neither\nrenders as anything, and neither survives an edit: `isEmptyFormat` treats\n`0` as falsy, so the first format touch on such a cell deletes the whole\nrecord.\n\nThis type refuses both. Nothing is lost, because the wire reader\n([`super::wire`]) drops a non-positive size to absence rather than failing\nthe load — the identical outcome to the collapse the TypeScript already\nperforms, reached deliberately instead of by accident.",
+      "description": "A font size in points.",
       "type": "number",
       "format": "double"
     },
     "CellBorders": {
-      "description": "A cell's borders — any **non-empty** subset of the four edges.\n\n# Why non-emptiness is a type invariant here\n\nIn TypeScript this is `Partial<Record<BorderSide, BorderEdge>>`, and `{}`\nis a perfectly good value of that type. Three separate things then conspire\nto keep it out of a document:\n\n- the borders op collapses an edge-less result to `undefined`\n  (`capabilities/format/borders.ts`);\n- `format.ts` documents the consequence — \"Never stored empty (`{}`) … so a\n  present `borders` is truthy and correctly keeps the format\";\n- `schema.ts`'s `isCellBorders` rejects `{}` on import.\n\nThree enforcement points for one invariant, in three files, none of which\nthe type mentions. Here [`CellBorders::new`] is the only constructor and it\nrefuses an empty set, so a `CellBorders` that exists has at least one edge —\nwhich is exactly the premise\n[`CellFormat::is_empty`](super::CellFormat::is_empty) relies on.\n\nFields are declared in the order the wire sorts them. That is documentation,\nnot mechanism: [`canonical`](crate::document::canonical) sorts keys on the\nway out, so the bytes do not depend on this declaration order. A test pins\nthe emitted order anyway.",
+      "description": "A cell's borders, any **non-empty** subset of the four edges.",
       "type": "object",
       "properties": {
         "bottom": {
@@ -402,7 +398,7 @@ Response payload, as JSON Schema:
       "additionalProperties": false
     },
     "BorderEdge": {
-      "description": "One drawn edge: how it looks.\n\n`schema.ts`'s `isBorderEdge` requires **exactly** these three keys — an edge\nwith a fourth is rejected rather than trimmed, and one missing `color` is\nrejected rather than defaulted. A plain struct with three required fields and\n`deny_unknown_fields` is that rule, with no validator to keep in step.",
+      "description": "One drawn edge: how it looks.",
       "type": "object",
       "properties": {
         "style": {
@@ -426,7 +422,7 @@ Response payload, as JSON Schema:
       ]
     },
     "BorderStyle": {
-      "description": "Line pattern for an edge — Sheets' solid / dashed / dotted plus the double\nrule.",
+      "description": "Line pattern for an edge, Sheets' solid / dashed / dotted plus the double rule.",
       "oneOf": [
         {
           "description": "An unbroken line.",
@@ -451,7 +447,7 @@ Response payload, as JSON Schema:
       ]
     },
     "BorderWeight": {
-      "description": "Line weight — Sheets' thin / medium / thick.",
+      "description": "Line weight, Sheets' thin / medium / thick.",
       "oneOf": [
         {
           "description": "The default pen.",
@@ -471,11 +467,11 @@ Response payload, as JSON Schema:
       ]
     },
     "Color": {
-      "description": "A CSS colour string — `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.\n\n# Why this is not a parsed colour\n\n`schema.ts`'s validator for `color`/`fill` is `typeof v === 'string'`, full\nstop. Studio's own writers only ever emit `#rrggbb`, and its\nconditional-format wire validator *does* enforce a `HEX_COLOR` pattern —\nbut the plain cell format's does not, and a document containing\n`color: \"rebeccapurple\"` loads today.\n\nParsing to an RGB triple here would therefore make documents that open stop\nopening, and would re-serialize `\"#FF0000\"` as `\"#ff0000\"` — different\ncanonical bytes for a document nobody edited. So this is a validated\n*string*, and the one thing it rejects is the empty string, which is not a\ncolour and which TypeScript only ever tolerated because\n`isEmptyFormat` treated it as \"no colour at all\" (see\n[`CellFormat::is_empty`](super::CellFormat::is_empty)).",
+      "description": "A CSS colour string, `#ff0000`, `#fff2cc`, `rgb(…)`, a named colour.",
       "type": "string"
     },
     "NumberFormat": {
-      "description": "A number-display category (studio#10).\n\nPurely presentation, with the [module-level exception](self) for\n[`NumberFormat::Date`]: it changes how a number or a date **serial** is\nrendered in the cell, never the underlying calc value. Absent means\n\"automatic\" — the engine's raw display.",
+      "description": "A number-display category, studio#10.",
       "oneOf": [
         {
           "description": "Grouped fixed-point: `1,234.57`.",
@@ -493,7 +489,7 @@ Response payload, as JSON Schema:
           "const": "currency"
         },
         {
-          "description": "The value read as a date serial. **Implies date typing** — see the\nmodule docs.",
+          "description": "The value read as a date serial. **Implies date typing**.",
           "type": "string",
           "const": "date"
         },
@@ -505,14 +501,13 @@ Response payload, as JSON Schema:
       ]
     },
     "Decimals": {
-      "description": "A fixed decimal-place count for a [`NumberFormat`].\n\n# `Decimals(0)` is a value, not an absence\n\nThis is the type that carries the port's one deliberate behaviour change.\nIn TypeScript `decimals` is `number | undefined` and\n`isEmptyFormat` — `Object.values(f).every(v => !v)` — reads `0` as falsy, so\nsetting zero decimal places on an otherwise-unformatted cell deletes the\ncell's whole format record and the cell falls back to **automatic, which is\ntwo decimal places**. Studio's own write-observer classifies that as\n`blocked` and calls it \"the exact false success R10 names\"\n(`api-contract/src/observe-writes.ts:280-320`).\n\n`Option<Decimals>` cannot express that confusion: `Some(Decimals(0))` and\n`None` are different values, and reproducing the collapse would mean writing\nit deliberately. See [`CellFormat::is_empty`](super::CellFormat::is_empty)\nfor the full decision.",
       "type": "integer",
       "format": "uint8",
       "minimum": 0,
       "maximum": 255
     },
     "HAlign": {
-      "description": "Horizontal text alignment.\n\nAbsent means **automatic**: numbers and dates hug the right, everything else\nthe left — the type-based default the grid already draws. An explicit value\noverrides that choice (studio#47). There is deliberately no `Auto` member:\n\"automatic\" is the absence of the field, which is what the wire encodes and\nwhat the merge semantics depend on.",
+      "description": "Horizontal text alignment.",
       "oneOf": [
         {
           "description": "Hug the left edge of the cell box.",
@@ -532,7 +527,7 @@ Response payload, as JSON Schema:
       ]
     },
     "VAlign": {
-      "description": "Vertical text alignment within the cell box.\n\nAbsent means Sheets' default, **bottom**.",
+      "description": "Vertical text alignment within the cell box.",
       "oneOf": [
         {
           "description": "Top of the cell box.",
@@ -545,19 +540,19 @@ Response payload, as JSON Schema:
           "const": "middle"
         },
         {
-          "description": "Bottom of the cell box (Sheets' default).",
+          "description": "Bottom of the cell box, Sheets' default.",
           "type": "string",
           "const": "bottom"
         }
       ]
     },
     "Rotation": {
-      "description": "Text rotation in degrees: positive tilts counter-clockwise (Sheets' \"up\"),\nnegative clockwise (\"down\").\n\n`0` is the identity and is **not** a distinguishable state — `format.ts`\nsays so outright (\"`undefined` (or `0`) = no rotation\"), so\n[`CellFormat`](super::CellFormat) normalizes it away rather than storing a\nrotation of nothing.\n\n# Why `f64` and not an integer\n\nSheets' UI only offers whole degrees and five presets (±45, ±90, 0), so an\n`i8` is tempting and would make this type `Copy + Eq + Hash` for free.\n`schema.ts`'s validator is `Number.isFinite(v) && v >= -90 && v <= 90`,\nthough — **not** `Number.isInteger` — so a document carrying `rotation:\n45.5` loads today, and an `i8` port would refuse to open it. Narrowing an\naccept-set is a migration, not a translation.",
+      "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
       "type": "number",
       "format": "double"
     },
     "HexColor": {
-      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour — `schema.ts`'s\nown `HEX_COLOR = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/`,\ntranscribed field for field rather than assumed from either capability\nmodule.\n\n# Why this is not [`Color`]\n\n[`Color`] is deliberately loose — `schema.ts`'s plain per-cell\n`color`/`fill` validator is `typeof v === 'string'`, full stop (see its own\ndoc). Banding/conditional-format's colours are validated by a genuinely\nstricter wire rule, cited by `schema.ts` itself as shared by both\n`set-conditional-format` and `set-banded-range`. Reusing [`Color`] here\nwould silently accept a document `schema.ts` rejects on the way in (e.g.\n`\"headerColor\": \"red\"`) — this type exists so that mistake is a compile\nerror, not a divergence discovered by a fuzzer.",
+      "description": "A strictly-validated `#rgb`/`#rrggbb`/`#rrggbbaa` hex colour.",
       "type": "string"
     }
   }

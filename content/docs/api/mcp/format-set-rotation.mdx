@@ -25,19 +25,18 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`format:setRotation`'s wire payload.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     },
     "range": {
-      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately\narrive \"backwards\" (`from` below/right of `to`) — normalized before\nuse.",
+      "description": "The target range, e.g. `{\"from\": \"A1\", \"to\": \"B3\"}`. May legitimately arrive \"backwards\", `from` below/right of `to`, normalized before use.",
       "$ref": "#/$defs/CellRange"
     },
     "value": {
-      "description": "The rotation in degrees to set, or `null` (equivalently `0`) to clear\nit.",
+      "description": "The rotation in degrees to set, or `null`, equivalently `0` to clear it.",
       "anyOf": [
         {
           "$ref": "#/$defs/Rotation"
@@ -54,7 +53,7 @@ Request payload, as JSON Schema:
   ],
   "$defs": {
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {
@@ -72,7 +71,7 @@ Request payload, as JSON Schema:
       ]
     },
     "Rotation": {
-      "description": "Text rotation in degrees: positive tilts counter-clockwise (Sheets' \"up\"),\nnegative clockwise (\"down\").\n\n`0` is the identity and is **not** a distinguishable state — `format.ts`\nsays so outright (\"`undefined` (or `0`) = no rotation\"), so\n[`CellFormat`](super::CellFormat) normalizes it away rather than storing a\nrotation of nothing.\n\n# Why `f64` and not an integer\n\nSheets' UI only offers whole degrees and five presets (±45, ±90, 0), so an\n`i8` is tempting and would make this type `Copy + Eq + Hash` for free.\n`schema.ts`'s validator is `Number.isFinite(v) && v >= -90 && v <= 90`,\nthough — **not** `Number.isInteger` — so a document carrying `rotation:\n45.5` loads today, and an `i8` port would refuse to open it. Narrowing an\naccept-set is a migration, not a translation.",
+      "description": "Text rotation in degrees: positive tilts counter-clockwise, Sheets' \"up\", negative clockwise, \"down\".",
       "type": "number",
       "format": "double"
     }

@@ -25,11 +25,11 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`read:getCharts`'s wire payload — ported field-by-field from\n`ReadGetChartsSchema`. No `commandId`/OCC field modeled (matches every\nother ported command in this crate); no `#[serde(deny_unknown_fields)]`\n(matches `SetCell`/`GetExtent`/`GetNamedRanges`, tolerating a caller that\nstill sends `commandId`).",
+  "description": "No `commandId`/OCC field modeled.",
   "type": "object",
   "properties": {
     "sheet": {
-      "description": "The sheet name — matched case-insensitively, like every other\n[`Document`] method.",
+      "description": "The sheet name.",
       "type": "string"
     }
   },
@@ -45,11 +45,9 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`read:getCharts`'s own extra payload.",
   "type": "object",
   "properties": {
     "charts": {
-      "description": "Every chart on the requested sheet, in [`Document::charts`]' own\norder.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/ChartInfo"
@@ -65,7 +63,6 @@ Response payload, as JSON Schema:
       "type": "object",
       "properties": {
         "chartId": {
-          "description": "[`Document::charts`]' full `<sheet>!<id>` composite, verbatim — see\nthis module's own doc for why this is not the same bug the TS source\n(bare id) has.",
           "type": "string"
         },
         "range": {
@@ -77,7 +74,7 @@ Response payload, as JSON Schema:
           "type": "string"
         },
         "options": {
-          "description": "Renderer-specific knobs — opaque, unvalidated by this read (matches\nthe TS source's own `options: c.options` passthrough). `#[ts(type =\n\"...\")]`: this crate's `ts-rs` dependency does not enable the\n`serde-json-impl` feature, so a bare `serde_json::Value` cannot derive\n`TS` — hand-write the opaque-JSON escape hatch instead, matching\nevery other raw-JSON field in this batch (e.g.\n[`super::get_values::Output::values`])."
+          "description": "Renderer-specific knobs, opaque, unvalidated by this read, matches the TS source's own `options: c.options` passthrough."
         }
       },
       "required": [
@@ -88,7 +85,7 @@ Response payload, as JSON Schema:
       ]
     },
     "CellRange": {
-      "description": "An inclusive rectangle — ported from `envelope.ts`'s `CellRangeSchema`.\n`from`/`to` may be equal (a single cell).\n\n`#[derive(TS)]` here (issue `pro#120`) even though this file is otherwise\nfrozen after Batch 0 (see this module's own doc and `crate::commands`'\nmodule doc): `CellRange` is embedded directly as a field of dozens of\ncommands' own `Payload`/`Output` types, so ts-rs cannot derive on THOSE\nwithout `CellRange: TS` too — this is the one shared shape that could not\nbe added from a leaf file alone. No other envelope type is a direct field\nof any command's `Payload`/`Output` (grep confirms it — every other\nenvelope shape only ever appears inside `CommandOutcome`/`EnvelopeFailure`\nthemselves, which are not per-command wire types), so this is the ONLY\nline this PR adds here.",
+      "description": "An inclusive rectangle. `from`/`to` may be equal, a single cell.",
       "type": "object",
       "properties": {
         "from": {

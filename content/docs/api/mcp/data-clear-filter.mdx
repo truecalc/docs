@@ -25,7 +25,6 @@ Request payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Payload",
-  "description": "`data:clearFilter`'s wire payload — ported field-by-field from\n`DataClearFilterSchema`.",
   "type": "object",
   "properties": {
     "sheet": {
@@ -44,11 +43,10 @@ Response payload, as JSON Schema:
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Output",
-  "description": "`data:clearFilter`'s own extra result fields — ported from\n`DataClearFilterResult`.",
   "type": "object",
   "properties": {
     "removed": {
-      "description": "A no-op (`false`) if `sheet` had no filter.",
+      "description": "A no-op, `false` if `sheet` had no filter.",
       "type": "boolean"
     }
   },
