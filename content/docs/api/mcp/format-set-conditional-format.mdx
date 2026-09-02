@@ -10,15 +10,15 @@ description: "Sets the conditional format."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `range` | `{ from: string; to: string }` | yes | An.inclusive.rectangle..`from`/`to`.may.be.equal.a.single.cell. |
-| `rule` | `object or { minColor: string; maxColor: string; kind: string } or object` | yes | One.conditional-format.rule's.wire.shape. |
+| `range` | `{ from: string; to: string }` | yes | An inclusive rectangle. `from`/`to` may be equal, a single cell. |
+| `rule` | `{ kind: "singleCondition", … } or { minColor: string; maxColor: string; kind: "colorScale" } or { kind: "customFormula", … }` | yes | One conditional-format rule's wire shape. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | An.inclusive.rectangle..`from`/`to`.may.be.equal.a.single.cell. |
-| `id` | `string` | yes | The.new.rule's.id. |
+| `range` | `{ from: string; to: string }` | yes | An inclusive rectangle. `from`/`to` may be equal, a single cell. |
+| `id` | `string` | yes | The new rule's id. |
 
 ## Schema
 

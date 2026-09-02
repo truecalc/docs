@@ -9,17 +9,17 @@ description: "Sets the named range."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.`range`.is.relative.to. |
-| `name` | `string` | yes | The.named.range's.identifier.e.g..`"MyRange"`. |
-| `range` | `{ from: string; to: string }` | yes | The.rectangle.to.bind.`name`.to. |
+| `sheet` | `string` | yes | The sheet `range` is relative to. |
+| `name` | `string` | yes | The named range's identifier, e.g. `"MyRange"`. |
+| `range` | `{ from: string; to: string }` | yes | The rectangle to bind `name` to. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `name` | `string` | yes | Echoed.exactly.as.the.caller.sent.it.never.trimmed.or.re-cased. |
-| `range` | `{ from: string; to: string }` | yes | Not.a.raw.echo.of.whatever.case.or.corner.order.`range.from`/`range.to`.arrived.in. |
-| `created` | `boolean` | yes | `true`.when.this.call.DEFINED.a.brand-new.name.`false`.when.it.RETARGETED.an.existing.one. |
+| `name` | `string` | yes | Echoed exactly as the caller sent it, never trimmed or re-cased. |
+| `range` | `{ from: string; to: string }` | yes | Not a raw echo of whatever case or corner order `range.from`/`range.to` arrived in. |
+| `created` | `boolean` | yes | `true` when this call DEFINED a brand-new name, `false` when it RETARGETED an existing one. |
 
 ## Schema
 

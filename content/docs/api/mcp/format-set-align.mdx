@@ -9,9 +9,9 @@ description: "Sets the horizontal text alignment of a range."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.name. |
-| `range` | `{ from: string; to: string }` | yes | The.target.range.e.g..`{"from":."A1"."to":."B3"}`..May.legitimately.arrive."backwards".`from`.below/right.of.`to`.normalized.before.use. |
-| `value` | `"left", "center", "right" or null` | no | The.horizontal.alignment.to.set.or.`null`.for.automatic.type-based:.numbers.and.dates.right.everything.else.left. |
+| `sheet` | `string` | yes | The sheet name. |
+| `range` | `{ from: string; to: string }` | yes | The target range, e.g. `{"from": "A1", "to": "B3"}`. May legitimately arrive "backwards", `from` below/right of `to`, normalized before use. |
+| `value` | `"left", "center", "right" or null` | no | The horizontal alignment to set, or `null` for automatic, type-based: numbers and dates right, everything else left. |
 
 ## Returns
 

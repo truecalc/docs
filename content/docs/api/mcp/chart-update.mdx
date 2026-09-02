@@ -9,16 +9,16 @@ description: "Updates a chart."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `chartId` | `string` | yes | The.chart.to.patch. |
-| `chartType` | `string or null` | no | The.new.chart.form.or.omitted.to.leave.it.unchanged. Defaults to `null`. |
-| `options` | `object or null` | no | Replaces.the.chart's.options.wholesale.or.omitted.to.leave.them.unchanged. Defaults to `null`. |
+| `chartId` | `string` | yes | The chart to patch. |
+| `chartType` | `string or null` | no | The new chart form, or omitted to leave it unchanged. Defaults to `null`. |
+| `options` | `object or null` | no | Replaces the chart's options wholesale, or omitted to leave them unchanged. Defaults to `null`. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `chartId` | `string` | yes | — |
-| `chartType` | `string` | yes | The.EFFECTIVE.post-patch.chart.form.the.patch's.own.value.if.it.supplied.one.else.the.chart's.unchanged.existing.type. |
+| `chartType` | `string` | yes | The EFFECTIVE, post-patch chart form, the patch's own value if it supplied one, else the chart's unchanged existing type. |
 
 ## Schema
 

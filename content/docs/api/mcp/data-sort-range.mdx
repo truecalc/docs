@@ -10,17 +10,17 @@ description: "Sorts the range."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `range` | `{ from: string; to: string }` | yes | The.rectangle.to.permute..Nothing.outside.it.is.read.or.written. |
-| `sortColumn` | `string` | yes | The.column.whose.values.order.the.rows.as.an.A1.column.letter.`"A"`.`"AB"`..Must.lie.inside.`range`. |
-| `direction` | `"asc", "desc"` | yes | Sort.order.for.`sortColumn`'s.values. |
+| `range` | `{ from: string; to: string }` | yes | The rectangle to permute. Nothing outside it is read or written. |
+| `sortColumn` | `string` | yes | The column whose values order the rows, as an A1 column letter, `"A"`, `"AB"`. Must lie inside `range`. |
+| `direction` | `"asc", "desc"` | yes | Sort order for `sortColumn`'s values. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | The.normalized.rectangle.actually.sorted. |
-| `sortColumn` | `string` | yes | The.sort.column.canonical.uppercase. |
-| `direction` | `"asc", "desc"` | yes | Sort.order.for.`sortColumn`'s.values. |
+| `range` | `{ from: string; to: string }` | yes | The normalized rectangle actually sorted. |
+| `sortColumn` | `string` | yes | The sort column, canonical uppercase. |
+| `direction` | `"asc", "desc"` | yes | Sort order for `sortColumn`'s values. |
 
 ## Schema
 

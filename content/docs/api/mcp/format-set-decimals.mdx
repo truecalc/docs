@@ -9,10 +9,10 @@ description: "Sets the decimals."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.name. |
-| `range` | `{ from: string; to: string }` | yes | The.target.range.e.g..`{"from":."A1"."to":."B3"}`..May.legitimately.arrive."backwards".`from`.below/right.of.`to`.normalized.before.use. |
-| `value` | `integer` | yes | The.decimal.count.to.set..`0`.is.a.real.value.here. |
-| `numberFormat` | `"number", "percent", "currency", "date", "datetime" or null` | no | An.optional.companion.category.to.set.alongside.`value`.in.the.same.call..Omitted.not.merely.`null`.means."leave.the.category.alone". Defaults to `null`. |
+| `sheet` | `string` | yes | The sheet name. |
+| `range` | `{ from: string; to: string }` | yes | The target range, e.g. `{"from": "A1", "to": "B3"}`. May legitimately arrive "backwards", `from` below/right of `to`, normalized before use. |
+| `value` | `integer` | yes | The decimal count to set. `0` is a real value here. |
+| `numberFormat` | `"number", "percent", "currency", "date", "datetime" or null` | no | An optional companion category to set alongside `value` in the same call. Omitted, not merely `null` means "leave the category alone". Defaults to `null`. |
 
 ## Returns
 

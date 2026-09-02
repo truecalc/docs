@@ -10,16 +10,16 @@ description: "Imports a workbook file."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `format` | `"json", "csv", "tsv", "xlsx"` | yes | — |
-| `encoding` | `"text", "base64"` | no | How.`data`.is.encoded.on.the.wire..`base64`.is.required.for.`xlsx`.binary.and.allowed.for.`csv`/`tsv`/`json`.too.if.the.caller's.bytes.happen.to.be.base64-wrapped.UTF-8. Defaults to `"text"`. |
+| `encoding` | `"text", "base64"` | no | How `data` is encoded on the wire. `base64` is required for `xlsx`, binary, and allowed for `csv`/`tsv`/`json` too if the caller's bytes happen to be base64-wrapped UTF-8. Defaults to `"text"`. |
 | `data` | `string` | yes | — |
-| `sheetName` | `string or null` | no | Base.name.for.the.created.sheet..Omitted.defaults.to.`"Imported"`..NOT.validated.the.way.`sheet:add`'s.`name`.field.is. |
+| `sheetName` | `string or null` | no | Base name for the created sheet. Omitted defaults to `"Imported"`. NOT validated the way `sheet:add`'s `name` field is. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.created.sheet's.final.deduped.sanitized.name. |
-| `cellsWritten` | `integer` | yes | Computed.by.reading.the.engine.back.after.the.write.never.a.count.of.attempted.writes.the.same.discipline.`sheet:add`/`sheet:rename`/.`edit:setCell`.all.already.apply.never.assume.a.write.landed. |
+| `sheet` | `string` | yes | The created sheet's final, deduped, sanitized name. |
+| `cellsWritten` | `integer` | yes | Computed by reading the engine back after the write, never a count of attempted writes, the same discipline `sheet:add`/`sheet:rename`/ `edit:setCell` all already apply, never assume a write landed. |
 
 ## Schema
 

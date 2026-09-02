@@ -9,17 +9,17 @@ description: "Inserts a chart."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.`range`.is.relative.to. |
-| `range` | `{ from: string; to: string }` | yes | The.rectangle.to.bind.the.chart.to.as.A1.corners. |
-| `chartType` | `string` | yes | The.chart.form.to.draw.a.closed.wire.vocabulary. |
-| `options` | `object` | no | Renderer-specific.knobs.opaque.here.on.purpose.defaults.to.`{}`. |
+| `sheet` | `string` | yes | The sheet `range` is relative to. |
+| `range` | `{ from: string; to: string }` | yes | The rectangle to bind the chart to, as A1 corners. |
+| `chartType` | `string` | yes | The chart form to draw, a closed wire vocabulary. |
+| `options` | `object` | no | Renderer-specific knobs, opaque here on purpose, defaults to `{}`. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `chartId` | `string` | yes | The.new.chart's.id. |
-| `range` | `{ from: string; to: string }` | yes | Canonicalized.top-left/bottom-right.corners. |
+| `chartId` | `string` | yes | The new chart's id. |
+| `range` | `{ from: string; to: string }` | yes | Canonicalized top-left/bottom-right corners. |
 | `chartType` | `string` | yes | — |
 
 ## Schema

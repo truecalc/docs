@@ -10,10 +10,10 @@ description: "Pastes previously copied or cut cells into a range."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `source` | `string` | yes | The.cell.the.clipboard.content.was.copied/cut.FROM.e.g..`"A1"`. |
-| `raw` | `string` | yes | The.clipboard.contents.AT.COPY/CUT.TIME.a.literal.a.formula.leading.`=`.or.`""`. |
-| `target` | `string` | yes | The.cell.being.pasted.INTO.e.g..`"B2"`. |
-| `cut` | `boolean` | no | `false`.=.copy.the.default.`true`.=.cut.move. |
+| `source` | `string` | yes | The cell the clipboard content was copied/cut FROM, e.g. `"A1"`. |
+| `raw` | `string` | yes | The clipboard contents AT COPY/CUT TIME, a literal, a formula, leading `=`, or `""`. |
+| `target` | `string` | yes | The cell being pasted INTO, e.g. `"B2"`. |
+| `cut` | `boolean` | no | `false` = copy, the default, `true` = cut, move. |
 
 ## Returns
 

@@ -9,22 +9,22 @@ description: "Gets the values."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.name. |
-| `range` | `{ from: string; to: string }` | yes | The.inclusive.rectangle.to.read. |
-| `layers` | `"values", "formulas", "both"` | no | Which.layer(s).to.read..Google.Sheets'.own.`getValues()`.default. |
-| `encoding` | `"rows", "a1"` | no | How.to.shape.`values`/`formulas`.in.the.response. Defaults to `"rows"`. |
+| `sheet` | `string` | yes | The sheet name. |
+| `range` | `{ from: string; to: string }` | yes | The inclusive rectangle to read. |
+| `layers` | `"values", "formulas", "both"` | no | Which layer(s) to read. Google Sheets' own `getValues()` default. |
+| `encoding` | `"rows", "a1"` | no | How to shape `values`/`formulas` in the response. Defaults to `"rows"`. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | The.rectangle.this.call.answered.for.completely. |
-| `rows` | `integer` | yes | `range`'s.row.count. |
-| `cols` | `integer` | yes | `range`'s.column.count. |
-| `encoding` | `"rows", "a1"` | yes | Echoes.the.requested.shape.so.a.caller.reading.`values`/`formulas`.out.of.band.still.knows.how.to.interpret.it. |
-| `nonEmpty` | `array of string` | yes | Every.address.in.`range`.whose.display.text.is.non-empty.or.which.holds.a.formula.in.row-major.reading.order.the.sparse.summary.a.caller.wants.before.paying.to.decode.a.mostly-empty.rectangle. |
-| `values` | `any` | no | Present.iff.`layers`.was.`values`/`both`..Row-major.`Vec<Vec<String>>`.or.an.A1-keyed.map.depending.on.`encoding`. |
-| `formulas` | `any` | no | Present.iff.`layers`.was.`formulas`/`both`..Same.shape.rule.as.`values`.an.empty.string.where.a.cell.holds.no.formula. |
+| `range` | `{ from: string; to: string }` | yes | The rectangle this call answered for, completely. |
+| `rows` | `integer` | yes | `range`'s row count. |
+| `cols` | `integer` | yes | `range`'s column count. |
+| `encoding` | `"rows", "a1"` | yes | Echoes the requested shape, so a caller reading `values`/`formulas` out of band still knows how to interpret it. |
+| `nonEmpty` | `array of string` | yes | Every address in `range` whose display text is non-empty or which holds a formula, in row-major, reading order, the sparse summary a caller wants before paying to decode a mostly-empty rectangle. |
+| `values` | `any` | no | Present iff `layers` was `values`/`both`. Row-major `Vec<Vec<String>>` or an A1-keyed map, depending on `encoding`. |
+| `formulas` | `any` | no | Present iff `layers` was `formulas`/`both`. Same shape rule as `values`, an empty string where a cell holds no formula. |
 
 ## Schema
 

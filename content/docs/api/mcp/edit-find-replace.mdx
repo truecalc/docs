@@ -10,7 +10,7 @@ description: "Finds and replaces text within a range."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `range` | `{ from: string; to: string } or null` | no | The.scope.to.search.the.whole.sheet's.occupied.footprint.when.absent. |
+| `range` | `{ from: string; to: string } or null` | no | The scope to search, the whole sheet's occupied footprint when absent. |
 | `query` | `string` | yes | — |
 | `replacement` | `string` | yes | — |
 | `matchCase` | `boolean` | no | Defaults to `false`. |
@@ -22,8 +22,8 @@ description: "Finds and replaces text within a range."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `queryCompiled` | `boolean` | yes | Whether.`query`.compiled.as.a.regex.always.`true`.when.`useRegex`.is.`false`.since.the.literal.form.is.always.`regex::escape`d.before.compiling.escaping.cannot.fail. |
-| `matched` | `integer` | yes | How.many.scope.cells'.search.text.matched.counted.whether.or.not.the.match.was.eligible.to.be.written.back. |
+| `queryCompiled` | `boolean` | yes | Whether `query` compiled as a regex, always `true` when `useRegex` is `false`, since the literal form is always `regex::escape`d before compiling, escaping cannot fail. |
+| `matched` | `integer` | yes | How many scope cells' search text matched, counted whether or not the match was eligible to be written back. |
 
 ## Schema
 

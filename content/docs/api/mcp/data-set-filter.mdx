@@ -10,15 +10,15 @@ description: "Sets the filter."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `range` | `{ from: string; to: string }` | yes | The.filter's.own.range.its.FIRST.row.is.the.un-hideable.header.row..Must.span.more.than.one.row.a.single-row.range.has.no.body.rows.to.filter. |
-| `criteria` | `array of { column: string; values: array of string }` | no | Per-column.checked-value.lists.to.apply.right.after.creating.the.filter..A.column.omitted.here.starts.unfiltered. Defaults to `[]`. |
+| `range` | `{ from: string; to: string }` | yes | The filter's own range, its FIRST row is the un-hideable header row. Must span more than one row, a single-row range has no body rows to filter. |
+| `criteria` | `array of { column: string; values: array of string }` | no | Per-column checked-value lists to apply right after creating the filter. A column omitted here starts unfiltered. Defaults to `[]`. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | An.inclusive.rectangle..`from`/`to`.may.be.equal.a.single.cell. |
-| `criteria` | `array of { column: string; values: array of string }` | yes | Echoed.back.exactly.as.applied. |
+| `range` | `{ from: string; to: string }` | yes | An inclusive rectangle. `from`/`to` may be equal, a single cell. |
+| `criteria` | `array of { column: string; values: array of string }` | yes | Echoed back exactly as applied. |
 
 ## Schema
 

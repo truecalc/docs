@@ -113,8 +113,14 @@ function isJargon(clause) {
 
 // Protect abbreviations ("e.g.", "i.e.", "etc.") from being mistaken for a
 // sentence end by the period+space sentence splitter below: their periods
-// are swapped for a placeholder before splitting, then restored afterward.
-const ABBREV_PLACEHOLDER = ' ';
+// are swapped for a placeholder before splitting, then restored afterward. This
+// MUST be a value that cannot occur anywhere in ordinary source text -- a plain
+// space is NOT safe: unguardAbbreviations restores it with a blind
+// find-and-replace over the whole string, which would turn every space in the
+// text into a period, not just the ones this function introduced. U+0000 (NUL)
+// qualifies: it can never appear in a JSON string (JSON.parse rejects a raw
+// control character there) and JS source never emits it either.
+const ABBREV_PLACEHOLDER = '\u0000';
 
 function guardAbbreviations(text) {
   return text.replace(/\b(e\.g|i\.e|etc)\./gi, (m) => m.split('.').join(ABBREV_PLACEHOLDER));
@@ -298,6 +304,9 @@ function typeLabel(nodeIn, defs, depth = 0) {
   if (Array.isArray(node.enum)) {
     return node.enum.map((v) => JSON.stringify(v)).join(', ');
   }
+  if (node.const !== undefined) {
+    return JSON.stringify(node.const);
+  }
   if (Array.isArray(node.type)) {
     const nonNull = node.type.filter((t) => t !== 'null');
     const hasNull = node.type.includes('null');
@@ -318,6 +327,22 @@ function typeLabel(nodeIn, defs, depth = 0) {
       // levels would make the two indistinguishable.
       const inline = `{ ${fields.join('; ')} }`;
       if (fields.length > 0 && inline.length <= 160) return inline;
+      // Too long to inline in full. If this object is one branch of a
+      // discriminated union (a literal-string `const` field, conventionally
+      // named `kind`), keep at least that tag rather than falling all the
+      // way to a bare "object" -- when this shows up beside sibling
+      // branches in a oneOf/anyOf listing, the tag is exactly what lets a
+      // reader tell the branches apart; the full field list is still one
+      // click away in the raw JSON Schema below.
+      const discriminator = Object.entries(node.properties).find(([, val]) => {
+        const resolved = resolveRef(val, defs) ?? {};
+        return typeof resolved.const === 'string';
+      });
+      if (discriminator) {
+        const [key, val] = discriminator;
+        const resolved = resolveRef(val, defs) ?? {};
+        return `{ ${key}: ${JSON.stringify(resolved.const)}, … }`;
+      }
     }
     if (node.additionalProperties && typeof node.additionalProperties === 'object' && depth < maxDepth) {
       return `{ [key: string]: ${typeLabel(node.additionalProperties, defs, depth + 1)} }`;

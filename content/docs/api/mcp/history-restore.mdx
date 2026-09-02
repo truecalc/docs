@@ -9,14 +9,14 @@ description: "Restores the workbook to a specific point in its edit history."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `steps` | `integer` | yes | How.many.undo.steps.to.walk.back.from.wherever.the.stack.is.right.now..`0`.is.a.legal.trivially-successful.no-op. |
+| `steps` | `integer` | yes | How many undo steps to walk back, from wherever the stack is right now. `0` is a legal, trivially-successful no-op. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `stepsRequested` | `integer` | yes | Echoed.from.the.payload. |
-| `stepsCompleted` | `integer` | yes | How.many.steps.actually.completed.equal.to.`stepsRequested`.on.full.success. |
+| `stepsRequested` | `integer` | yes | Echoed from the payload. |
+| `stepsCompleted` | `integer` | yes | How many steps actually completed, equal to `stepsRequested` on full success. |
 
 ## Schema
 

@@ -10,15 +10,15 @@ description: "Sets the validation."
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `sheet` | `string` | yes | — |
-| `range` | `{ from: string; to: string }` | yes | An.inclusive.rectangle..`from`/`to`.may.be.equal.a.single.cell. |
-| `rule` | `{ values: array of string; kind: string } or null` | no | `Some(_)`.sets.a.rule..Required.on.the.wire.as.literal.`null`.to.clear. |
+| `range` | `{ from: string; to: string }` | yes | An inclusive rectangle. `from`/`to` may be equal, a single cell. |
+| `rule` | `{ values: array of string; kind: "list" } or null` | no | `Some(_)` sets a rule. Required on the wire, as literal `null` to clear. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | An.inclusive.rectangle..`from`/`to`.may.be.equal.a.single.cell. |
-| `rule` | `{ values: array of string; kind: string } or null` | no | — |
+| `range` | `{ from: string; to: string }` | yes | An inclusive rectangle. `from`/`to` may be equal, a single cell. |
+| `rule` | `{ values: array of string; kind: "list" } or null` | no | — |
 
 ## Schema
 

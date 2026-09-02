@@ -9,10 +9,10 @@ description: "Sets the borders."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.name. |
-| `range` | `{ from: string; to: string }` | yes | The.target.range.e.g..`{"from":."A1"."to":."B3"}`..May.legitimately.arrive."backwards".`from`.below/right.of.`to`.normalized.before.use. |
-| `mode` | `"all", "inner", "horizontal", "vertical", "outer", "left", "top", "right", "bottom", "clear"` | yes | Which.edges.to.target. |
-| `edge` | `{ style: "solid", "dashed", "dotted", "double"; weight: "thin", "medium", "thick"; color: string }` | yes | How.the.targeted.edges.should.look..Required.even.for.`mode:.clear`.parsed.but.unused.there. |
+| `sheet` | `string` | yes | The sheet name. |
+| `range` | `{ from: string; to: string }` | yes | The target range, e.g. `{"from": "A1", "to": "B3"}`. May legitimately arrive "backwards", `from` below/right of `to`, normalized before use. |
+| `mode` | `"all", "inner", "horizontal", "vertical", "outer", "left", "top", "right", "bottom", "clear"` | yes | Which edges to target. |
+| `edge` | `{ style: "solid", "dashed", "dotted", "double"; weight: "thin", "medium", "thick"; color: string }` | yes | How the targeted edges should look. Required even for `mode: clear`, parsed but unused there. |
 
 ## Returns
 

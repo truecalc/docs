@@ -9,15 +9,15 @@ description: "Gets the formats."
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sheet` | `string` | yes | The.sheet.name. |
-| `range` | `{ from: string; to: string }` | yes | The.inclusive.rectangle.to.read. |
+| `sheet` | `string` | yes | The sheet name. |
+| `range` | `{ from: string; to: string }` | yes | The inclusive rectangle to read. |
 
 ## Returns
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `range` | `{ from: string; to: string }` | yes | The.rectangle.this.call.answered.for.completely. |
-| `cells` | `{ [key: string]: { format: object; effectiveFormat: object; merged: boolean; spilled: boolean } }` | yes | One.entry.per.address.in.`range`.keyed.by.its.plain.A1.form. |
+| `range` | `{ from: string; to: string }` | yes | The rectangle this call answered for, completely. |
+| `cells` | `{ [key: string]: { format: object; effectiveFormat: object; merged: boolean; spilled: boolean } }` | yes | One entry per address in `range`, keyed by its plain A1 form. |
 
 ## Schema
 
